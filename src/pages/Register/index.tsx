@@ -2,7 +2,10 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Toaster, toast } from "react-hot-toast";
 
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const [emailInput, setEmailInput] = useState(
@@ -42,8 +45,44 @@ const Register: React.FC = () => {
     }
   };
 
+  const register = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const data = JSON.stringify({
+        idToken: tokenResponse.access_token,
+      });
+      try {
+        const response = await fetch(`${baseUrl}/api/auth/google-register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: data,
+        });
+        const responseData = await response.json();
+        if (response.ok) {
+          localStorage.setItem("userId", responseData.user._id);
+          localStorage.setItem("accessToken", responseData.accessToken);
+          toast.success("User registered successfully", {
+            position: "bottom-center",
+          });
+          setTimeout(() => {
+            navigate("/dashboard", { replace: true });
+          }, 1000);
+        } else if (response.status === 404) {
+          toast.error("User already exists", { position: "bottom-center" });
+        } else {
+          toast.error("Server error", { position: "bottom-center" });
+        }
+      } catch (error) {}
+    },
+    onError: (error: any) => console.error("Login Failed:", error),
+    scope:
+      "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
+  });
+
   return (
     <>
+      <Toaster />
       <Header />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
@@ -55,7 +94,10 @@ const Register: React.FC = () => {
           </p>
 
           {/* Google Sign-In Button */}
-          <button className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition">
+          <button
+            onClick={() => register()}
+            className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
+          >
             <FcGoogle className="text-lg" />
             <span className="text-xs pl-2">Continue with Google</span>
           </button>
