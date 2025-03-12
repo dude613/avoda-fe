@@ -14,10 +14,9 @@ const SetPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const emailLocalStorage = localStorage.getItem("email");
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
-    console.log(emailLocalStorage);
     if (!email || !emailLocalStorage) {
       navigate("/register");
     }
