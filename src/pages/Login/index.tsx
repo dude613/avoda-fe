@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import * as Constants from "../../constants/Login";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login: React.FC = () => {
@@ -25,7 +26,7 @@ const Login: React.FC = () => {
     const email = e.target.value;
     setEmailInput(email);
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setError("");
     }
@@ -33,7 +34,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setLoading(true);
       try {
@@ -51,19 +52,19 @@ const Login: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User login successfully", {
+          toast.success(Constants.LOGIN_SUCCESS_TOAST, {
             position: "bottom-center",
           });
           setTimeout(() => {
             navigate("/dashboard", { replace: true });
           }, 1000);
         } else if (response.status === 400) {
-          toast.error("User not found", { position: "bottom-center" });
+          toast.error(Constants.USER_NOT_FOUND_TOAST, { position: "bottom-center" });
         } else {
-          toast.error("Server error", { position: "bottom-center" });
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
       } catch (error) {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
       } finally {
         setLoading(false);
       }
@@ -86,16 +87,16 @@ const Login: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User login successfully", {
+          toast.success(Constants.LOGIN_SUCCESS_TOAST, {
             position: "bottom-center",
           });
           setTimeout(() => {
             navigate("/dashboard", { replace: true });
           }, 1000);
         } else if (response.status === 400) {
-          toast.error("User not found", { position: "bottom-center" });
+          toast.error(Constants.USER_NOT_FOUND_TOAST, { position: "bottom-center" });
         } else {
-          toast.error("Server error", { position: "bottom-center" });
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
       } catch (error) {}
     },
@@ -111,34 +112,34 @@ const Login: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Login
+            {Constants.LOGIN_PAGE_TITLE}
           </h2>
           <p className="text-xs text-gray-500 mb-4 text-center">
-            Enter your credentials to access your account
+            {Constants.LOGIN_PAGE_SUBTITLE}
           </p>
 
           {/* Google Sign-In Button */}
-          <label className="text-xs mb-6">Email</label>
+          <label className="text-xs mb-6">{Constants.EMAIL_LABEL}</label>
           <button
             onClick={() => login()}
             className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
           >
             <FcGoogle className="text-lg" />
-            <span className="text-xs pl-2">Google</span>
+            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
           {/* Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-xs">OR CONTINUE WITH</span>
+            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
           {/* Email Input */}
-          <label className="text-xs mb-6">Email</label>
+          <label className="text-xs mb-6">{Constants.EMAIL_LABEL}</label>
           <input
             type="email"
-            placeholder="you@example.com"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
             className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
@@ -146,10 +147,10 @@ const Login: React.FC = () => {
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
 
           <div className="relative mb-4">
-            <label className="text-xs mb-6">Password</label>
+            <label className="text-xs mb-6">{Constants.PASSWORD_LABEL}</label>
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder={Constants.PASSWORD_PLACEHOLDER}
               className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -169,26 +170,26 @@ const Login: React.FC = () => {
           >
             {loading ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">Logging in</span>
+                <span className="animate-pulse">{Constants.LOADING_TEXT}</span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
               </span>
             ) : (
-              " Continue with Email"
+              Constants.EMAIL_BUTTON_TEXT
             )}
           </button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            Didn't have an account?{" "}
+            {Constants.NO_ACCOUNT_TEXT}{" "}
             <span className="text-black text-sm  hover:underline">
-              <Link to={"/register"}>Sign up</Link>
+              <Link to={"/register"}>{Constants.SIGNUP_LINK_TEXT}</Link>
             </span>
           </p>
 
           <p className="text-black text-sm text-center mt-5">
             <Link to={"/forgot-password"} className="hover:underline">
-              Forgot password?
+              {Constants.FORGOT_PASSWORD_LINK_TEXT}
             </Link>
           </p>
         </div>

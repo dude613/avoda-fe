@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { LuPlane } from "react-icons/lu";
 import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
+import * as Constants from "../../constants/ForgotPassword";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -32,12 +33,12 @@ export default function ResendForgotEmail() {
 
             const data = await response.json();
             if (data.success) {
-                toast.success(data?.message || "Password reset successfully.");
+                toast.success(data?.message || Constants.PASSWORD_RESET_SUCCESS_TOAST);
             } else {
-                toast.error(data.error || "Failed to reset password.");
+                toast.error(data.error || Constants.PASSWORD_RESET_FAILED_TOAST);
             }
         } catch (error) {
-            toast.error("Failed to reset password.");
+            toast.error(Constants.PASSWORD_RESET_FAILED_TOAST);
         }
     }
     return (
@@ -52,16 +53,16 @@ export default function ResendForgotEmail() {
                     </div>
 
                     <h2 className="mt-8 text-2xl font-bold text-gray-800 ">
-                        Please check your email
+                        {Constants.CHECK_EMAIL_TITLE}
                     </h2>
 
                     <p className="text-gray-600 text-sm mt-4">
-                        We sent you a verification link. Please check your email to verify your account.
+                        {Constants.CHECK_EMAIL_SUBTITLE}
                     </p>
 
                     <button className="mt-6 w-full border-2 border-gray-200 py-2 rounded-lg hover:bg-gray-800 hover:text-white transition"
                         onClick={handleSubmit}>
-                        Resend Email
+                        {Constants.RESEND_EMAIL_BUTTON_TEXT}
                     </button>
                 </div>
             </div>

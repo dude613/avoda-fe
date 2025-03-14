@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
+import * as Constants from "@/constants/Register";
+import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const SetPassword: React.FC = () => {
@@ -23,13 +25,13 @@ const SetPassword: React.FC = () => {
   }, [email, emailLocalStorage]);
 
   const validatePassword = () => {
-    if (!password) return "Please enter your password.";
-    if (password.length < 8) return "Password must be at least 8 characters.";
-    if (!/[A-Z]/.test(password)) return "Must include an uppercase letter.";
-    if (!/[0-9]/.test(password)) return "Must include a number.";
+    if (!password) return Constants.EMPTY_PASSWORD_ERROR;
+    if (password.length < 8) return Constants.PASSWORD_LENGTH_ERROR;
+    if (!/[A-Z]/.test(password)) return Constants.PASSWORD_UPPERCASE_ERROR;
+    if (!/[0-9]/.test(password)) return Constants.PASSWORD_NUMBER_ERROR;
     if (!/[!@#$%^&*]/.test(password))
-      return "Must include a special character.";
-    if (password !== confirmPassword) return "Passwords do not match.";
+      return Constants.PASSWORD_SPECIAL_CHAR_ERROR;
+    if (password !== confirmPassword) return Constants.PASSWORDS_MISMATCH_ERROR;
     return "";
   };
 
@@ -52,19 +54,19 @@ const SetPassword: React.FC = () => {
         }),
       });
       if (response.ok) {
-        toast.success("User registered successfully", {
+        toast.success(Constants.REGISTER_SUCCESS_TOAST, {
           position: "bottom-center",
         });
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
       } else if (response.status === 400) {
-        toast.error("User already exists", { position: "bottom-center" });
+        toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
     } finally {
       setLoading(false);
     }
@@ -76,27 +78,27 @@ const SetPassword: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Set your password
+            {Constants.SET_PASSWORD_TITLE}
           </h2>
           <p className="text-xs text-gray-500 mb-4 text-center">
-            Choose a secure password for your account
+            {Constants.SET_PASSWORD_SUBTITLE}
           </p>
 
           <input
             type="email"
-            placeholder="name@example.com"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
             className="border text-xs p-2 w-full mb-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={email}
             disabled
           />
           <p className="text-red-500 text-[10px] opacity-80 mb-2">
-            Go back to edit your email
+            {Constants.EDIT_EMAIL_MESSAGE}
           </p>
 
-          <div className="relative mb-4">
+          <div className="relative mb-1">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder={Constants.PASSWORD_PLACEHOLDER}
               className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -108,11 +110,13 @@ const SetPassword: React.FC = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+          
+          <PasswordStrengthMeter password={password} />
 
           <div className="relative mb-4">
             <input
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
+              placeholder={Constants.CONFIRM_PASSWORD_PLACEHOLDER}
               className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -130,7 +134,7 @@ const SetPassword: React.FC = () => {
             onClick={handleCreateAccount}
             className="bg-gray-500 text-white py-2 w-full rounded mt-2"
           >
-            {loading ? "Creating Account" : "Create Account"}
+            {loading ? Constants.CREATING_ACCOUNT_TEXT : Constants.CREATE_ACCOUNT_BUTTON_TEXT}
           </button>
         </div>
       </div>

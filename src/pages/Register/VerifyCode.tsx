@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
+import * as Constants from "../../constants/Register";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const VerifyCode: React.FC = () => {
@@ -51,7 +52,7 @@ const VerifyCode: React.FC = () => {
 
   const handleVerify = async (code: any) => {
     if (code.some((digit: any) => digit === "")) {
-      setError("Please fill in all the fields.");
+      setError(Constants.EMPTY_CODE_ERROR);
       return;
     }
     setLoading(true);
@@ -69,22 +70,22 @@ const VerifyCode: React.FC = () => {
       if (response.ok && response.status === 200) {
         localStorage.setItem("userId", responseData.user._id);
         localStorage.setItem("accessToken", responseData.accessToken);
-        toast.success("User verified successfully", {
+        toast.success(Constants.USER_VERIFIED_TOAST, {
           position: "bottom-center",
         });
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 1000);
       } else if (response.status === 201) {
-        toast.success("User already verified", { position: "bottom-center" });
+        toast.success(Constants.USER_ALREADY_VERIFIED_TOAST, { position: "bottom-center" });
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 1000);
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
     } finally {
       setLoading(false);
     }
@@ -101,19 +102,19 @@ const VerifyCode: React.FC = () => {
         body: JSON.stringify({ email }),
       });
       if (response.ok && response.status === 200) {
-        toast.success("Verification code sent successfully", {
+        toast.success(Constants.CODE_SENT_TOAST, {
           position: "bottom-center",
         });
       } else if (response.status === 201) {
-        toast.success("User already verified", { position: "bottom-center" });
+        toast.success(Constants.USER_ALREADY_VERIFIED_TOAST, { position: "bottom-center" });
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 1000);
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
     } finally {
       setResending(false);
     }
@@ -125,10 +126,10 @@ const VerifyCode: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            Enter Verification Code
+            {Constants.VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            We've sent a 6-digit code to {email}
+            {Constants.VERIFY_CODE_SUBTITLE}{email}
           </p>
 
           <div className="flex justify-between mb-4">
@@ -157,18 +158,18 @@ const VerifyCode: React.FC = () => {
           >
             {loading ? (
               <>
-                <span className="animate-pulse">Verifying</span>
+                <span className="animate-pulse">{Constants.VERIFYING_CODE_TEXT}</span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
               </>
             ) : (
-              "Verify Code"
+              Constants.VERIFY_CODE_BUTTON_TEXT
             )}
           </button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            Didn't receive the code?{" "}
+            {Constants.DIDNT_RECEIVE_CODE_TEXT}{" "}
           </p>
           <p
             className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
@@ -176,13 +177,13 @@ const VerifyCode: React.FC = () => {
           >
             {resending ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">Resending</span>
+                <span className="animate-pulse">{Constants.RESENDING_CODE_TEXT}</span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
               </span>
             ) : (
-              "Resend Code"
+              Constants.RESEND_CODE_TEXT
             )}
           </p>
         </div>
