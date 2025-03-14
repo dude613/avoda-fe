@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
 import * as Constants from "@/constants/Register";
-import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
+import Email from "@/components/form/email";
+import PasswordWithStrength from "@/components/form/PasswordWithStrength";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const SetPassword: React.FC = () => {
@@ -12,9 +12,8 @@ const SetPassword: React.FC = () => {
   const { email } = location.state || {};
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [passwordMeetsRequirements, setPasswordMeetsRequirements] = useState(false);
   const emailLocalStorage = localStorage.getItem("email");
   const [loading, setLoading] = useState(false); 
 
@@ -84,49 +83,44 @@ const SetPassword: React.FC = () => {
             {Constants.SET_PASSWORD_SUBTITLE}
           </p>
 
-          <input
-            type="email"
-            placeholder={Constants.EMAIL_PLACEHOLDER}
-            className="border text-xs p-2 w-full mb-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={email}
-            disabled
+          <Email 
+            value={email} 
+            disabled={true}
           />
           <p className="text-red-500 text-[10px] opacity-80 mb-2">
             {Constants.EDIT_EMAIL_MESSAGE}
           </p>
 
-          <div className="relative mb-1">
-            <input
-              type={showPassword ? "text" : "password"}
+          <div className="mb-4">
+            <PasswordWithStrength
               placeholder={Constants.PASSWORD_PLACEHOLDER}
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const newPassword = e.target.value;
+                setPassword(newPassword);
+                
+                // Check if password meets all requirements
+                const requirements = [
+                  /.{8,}/,         // At least 8 characters
+                  /[0-9]/,         // At least 1 number
+                  /[a-z]/,         // At least 1 lowercase letter
+                  /[A-Z]/          // At least 1 uppercase letter
+                ];
+                
+                const allRequirementsMet = requirements.every(regex => regex.test(newPassword));
+                setPasswordMeetsRequirements(allRequirementsMet);
+              }}
+              showStrengthIndicator={!passwordMeetsRequirements}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
           </div>
-          
-          <PasswordStrengthMeter password={password} />
 
-          <div className="relative mb-4">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
+          <div className="mb-4">
+            <PasswordWithStrength
               placeholder={Constants.CONFIRM_PASSWORD_PLACEHOLDER}
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
+              showStrengthIndicator={false}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
           </div>
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}

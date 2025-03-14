@@ -15,13 +15,18 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     
     // Length check
     if (password.length >= 8) score += 1;
-    if (password.length >= 12) score += 1;
     
     // Character type checks
-    if (/[A-Z]/.test(password)) score += 1;
-    if (/[a-z]/.test(password)) score += 1;
+    if (/[A-Z]/.test(password)) score += .5;
+    if (/[a-z]/.test(password)) score += .5;
     if (/[0-9]/.test(password)) score += 1;
-    if (/[!@#$%^&*]/.test(password)) score += 1;
+    if (/[!@#$%^&*]/.test(password)) score += 2;
+
+    // admin / password / 1234 - minus 1 point
+    if (password.toLowerCase().includes("admin")) score -= 1;
+    if (password.toLowerCase().includes("password")) score -= 1;
+    if (password.toLowerCase().includes("1234")) score -= 1;
+
     
     // Cap the score at 5
     return Math.min(5, score);
@@ -36,11 +41,11 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     switch (strength) {
       case 0:
         text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-gray-300";
+        color = "bg-red-400";
         break;
       case 1:
         text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-red-500";
+        color = "bg-red-300";
         break;
       case 2:
         text = Constants.PASSWORD_WEAK;
@@ -52,15 +57,15 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
         break;
       case 4:
         text = Constants.PASSWORD_STRONG;
-        color = "bg-blue-500";
+        color = "bg-green-200";
         break;
       case 5:
         text = Constants.PASSWORD_VERY_STRONG;
-        color = "bg-green-500";
+        color = "bg-green-400";
         break;
       default:
         text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-gray-300";
+        color = "bg-red-400";
     }
     
     return {

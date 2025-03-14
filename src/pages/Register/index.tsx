@@ -111,6 +111,7 @@ const Register: React.FC = () => {
           </div>
 
           {/* Email Input */}
+          {/* TODO Make the email input like the password input (components) */}
           <input
             type="email"
             placeholder={Constants.EMAIL_PLACEHOLDER}

@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Constants from "../../constants/Register";
+import OTP from "@/components/form/otp";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const VerifyCode: React.FC = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -24,31 +24,10 @@ const VerifyCode: React.FC = () => {
 
   useEffect(() => {
     if (otp) {
-      const code = otp.split("");
-      setCode(code);
+      const otpCode = otp.split("");
+      setCode(otpCode);
     }
   }, [otp, location.search]);
-
-  const handleChange = (index: number, value: string) => {
-    if (!/^\d?$/.test(value)) return;
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    } else if (e.key === "Enter" && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
 
   const handleVerify = async (code: any) => {
     if (code.some((digit: any) => digit === "")) {
@@ -132,21 +111,18 @@ const VerifyCode: React.FC = () => {
             {Constants.VERIFY_CODE_SUBTITLE}{email}
           </p>
 
-          <div className="flex justify-between mb-4">
-            {code.map((digit, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength={1}
-                className="border text-center w-10 h-10 text-xl"
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                ref={(el) => {
-                  inputRefs.current[index] = el;
-                }}
-              />
-            ))}
+          <div className="mb-4">
+            <OTP
+              value={code.join("")}
+              onChange={(value) => {
+                const newCode = value.split("");
+                // Ensure the array has exactly 6 elements, filling with empty strings if needed
+                const fullCode = [...newCode, ...Array(6).fill("")].slice(0, 6);
+                setCode(fullCode);
+              }}
+              maxLength={6}
+              containerClassName="flex justify-between w-full"
+            />
           </div>
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
