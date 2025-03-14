@@ -116,8 +116,8 @@ const VerifyCode: React.FC = () => {
               value={code.join("")}
               onChange={(value) => {
                 const newCode = value.split("");
-                // Ensure the array has exactly 6 elements, filling with empty strings if needed
-                const fullCode = [...newCode, ...Array(6).fill("")].slice(0, 6);
+                // Create an array of exactly 6 elements
+                const fullCode = Array(6).fill("").map((_, i) => newCode[i] || "");
                 setCode(fullCode);
               }}
               maxLength={6}
