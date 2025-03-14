@@ -17,8 +17,8 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     if (password.length >= 8) score += 1;
     
     // Character type checks
-    if (/[A-Z]/.test(password)) score += .5;
-    if (/[a-z]/.test(password)) score += .5;
+    if (/[A-Z]/.test(password)) score += 0.5;
+    if (/[a-z]/.test(password)) score += 0.5;
     if (/[0-9]/.test(password)) score += 1;
     if (/[!@#$%^&*]/.test(password)) score += 2;
 
