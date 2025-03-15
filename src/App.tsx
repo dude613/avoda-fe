@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SetPassword from "./pages/Register/SetPassword";
 import VerifyCode from "./pages/Register/VerifyCode";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -42,9 +42,10 @@ function App() {
       <Route path="/register/verifyCode" element={<VerifyCode />} />
       <Route path="/new-password" element={<ResetNewPassword />} />
       <Route path="/create-organization" element={<CreateOrganization />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       {/* Protected Route for Dashboard */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
       </Route>
     </Routes>
   );

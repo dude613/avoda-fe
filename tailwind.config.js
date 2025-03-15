@@ -12,6 +12,7 @@ export default {
         background: "#000000",
         textPrimary: "#111827",
         text: "#FFFFFF",
+        textMandatory: "#EF4444",
       },
     },
   },
