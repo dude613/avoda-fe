@@ -6,12 +6,15 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [emailInput, setEmailInput] = useState("");
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,52 +24,84 @@ const Login: React.FC = () => {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password: string) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\W).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
     setEmailInput(email);
-    if (!validateEmail(email)) {
+    if (!email) {
+      setError("Email is required.");
+    }
+    else if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
     } else {
       setError("");
     }
   };
 
-  const handleLogin = async () => {
-    if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pass = e.target.value;
+    setPassword(pass);
+    if (!pass) {
+      setPasswordError("Password is required.");
+    } else if (!validatePassword(pass)) {
+      setPasswordError(
+        "Password must be at least 8 characters, with 1 uppercase letter and 1 special character."
+      );
     } else {
-      setLoading(true);
-      try {
-        const response = await fetch(`${baseUrl}/api/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: emailInput,
-            password,
-          }),
-        });
-        const responseData = await response.json();
-        if (response.ok) {
-          localStorage.setItem("userId", responseData.user._id);
-          localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User login successfully", {
-            position: "bottom-center",
-          });
-          setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-          }, 1000);
-        } else if (response.status === 400) {
-          toast.error("User not found", { position: "bottom-center" });
-        } else {
-          toast.error("Server error", { position: "bottom-center" });
-        }
-      } catch (error) {
-        toast.error("Server error", { position: "bottom-center" });
-      } finally {
-        setLoading(false);
+      setPasswordError("");
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!emailInput) {
+      setError("Email is required.");
+    } else if (!validateEmail(emailInput)) {
+      setError("Please enter a valid email address.");
+    }
+
+    if (!password) {
+      setPasswordError("Password is required.");
+    } else if (!validatePassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters, with 1 uppercase letter and 1 special character."
+      );
+    }
+    if (!validateEmail(emailInput) || !validatePassword(password)) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`${baseUrl}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailInput,
+          password,
+        }),
+      });
+      const data = await response.json();
+      console.log(data)
+      if (data.success === true) {
+        localStorage.setItem("userId", data.user._id);
+        localStorage.setItem("accessToken", data.accessToken);
+        toast.success(data?.message || "User login successfully");
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 1000);
+      } else {
+        toast.error(data?.error || "User does not exist in database please try another email");
       }
+    } catch (e) {
+      toast.error("login server error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,7 +132,7 @@ const Login: React.FC = () => {
         } else {
           toast.error("Server error", { position: "bottom-center" });
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
@@ -127,33 +162,26 @@ const Login: React.FC = () => {
             <span className="text-xs pl-2">Google</span>
           </button>
 
-          {/* Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
             <span className="mx-2 text-gray-500 text-xs">OR CONTINUE WITH</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
-          {/* Email Input */}
           <label className="text-xs mb-6">Email</label>
-          <input
-            type="email"
-            placeholder="you@example.com"
-            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+          <Input type="email"
+            placeholder="name@example.com"
             value={emailInput}
             onChange={handleEmailChange}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+            error={error} />
 
           <div className="relative mb-4">
             <label className="text-xs mb-6">Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+            <Input type={showPassword ? "text" : "password"}
+              placeholder="name@example.com"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              onChange={handlePasswordChange}
+              error={passwordError} />
             <span
               className="absolute right-3 top-8 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
@@ -162,22 +190,7 @@ const Login: React.FC = () => {
             </span>
           </div>
 
-          {/* Login */}
-          <button
-            onClick={handleLogin}
-            className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
-          >
-            {loading ? (
-              <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">Logging in</span>
-                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
-                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
-              </span>
-            ) : (
-              " Continue with Email"
-            )}
-          </button>
+          <Button onClick={handleLogin} text={loading ? "Logging in..." : "Continue with Email"} />
 
           <p className="text-gray-500 text-sm text-center mt-3">
             Didn't have an account?{" "}

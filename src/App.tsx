@@ -17,6 +17,8 @@ import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
 import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
+import CreateOrganization from "./components/CreateOrganization ";
+
 
 function App() {
   const location = useLocation();
@@ -39,7 +41,7 @@ function App() {
       <Route path="/register/setPassword" element={<SetPassword />} />
       <Route path="/register/verifyCode" element={<VerifyCode />} />
       <Route path="/new-password" element={<ResetNewPassword />} />
-      
+      <Route path="/create-organization" element={<CreateOrganization />} />
       {/* Protected Route for Dashboard */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />

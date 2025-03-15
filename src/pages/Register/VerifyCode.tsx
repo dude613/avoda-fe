@@ -65,31 +65,26 @@ const VerifyCode: React.FC = () => {
         },
         body: JSON.stringify({ email, otp }),
       });
-      const responseData = await response.json();
-      if (response.ok && response.status === 200) {
-        localStorage.setItem("userId", responseData.user._id);
-        localStorage.setItem("accessToken", responseData.accessToken);
-        toast.success("User verified successfully", {
-          position: "bottom-center",
-        });
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 1000);
-      } else if (response.status === 201) {
-        toast.success("User already verified", { position: "bottom-center" });
+      const data = await response.json();
+      if (data.success === true) {
+        localStorage.setItem("userId", data.user._id);
+        localStorage.setItem("accessToken", data.accessToken);
+        toast.success(data?.message || "User verified successfully");
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 1000);
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(data?.error || "User already verified");
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 1000);
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error("Server error");
     } finally {
       setLoading(false);
     }
   };
-
   const handleResend = async () => {
     setResending(true);
     try {

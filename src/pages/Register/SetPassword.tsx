@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const SetPassword: React.FC = () => {
@@ -14,7 +16,9 @@ const SetPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const emailLocalStorage = localStorage.getItem("email");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   useEffect(() => {
     if (!email || !emailLocalStorage) {
@@ -22,23 +26,63 @@ const SetPassword: React.FC = () => {
     }
   }, [email, emailLocalStorage]);
 
-  const validatePassword = () => {
-    if (!password) return "Please enter your password.";
-    if (password.length < 8) return "Password must be at least 8 characters.";
-    if (!/[A-Z]/.test(password)) return "Must include an uppercase letter.";
-    if (!/[0-9]/.test(password)) return "Must include a number.";
-    if (!/[!@#$%^&*]/.test(password))
-      return "Must include a special character.";
-    if (password !== confirmPassword) return "Passwords do not match.";
-    return "";
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pass = e.target.value;
+    setPassword(pass);
+
+    // Password validation
+    if (!pass) {
+      setPasswordError("Password is required.");
+    } else if (!validatePassword(pass)) {
+      setPasswordError("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.");
+    } else {
+      setPasswordError("");
+    }
+
+    // Confirm password validation (if already entered)
+    if (confirmPassword && pass !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const confirmPass = e.target.value;
+    setConfirmPassword(confirmPass);
+
+    if (!confirmPass) {
+      setConfirmPasswordError("Confirm password is required.");
+    } else if (password && confirmPass !== password) {
+      setConfirmPasswordError("Passwords do not match.");
+    } else {
+      setConfirmPasswordError("");
+    }
   };
 
   const handleCreateAccount = async () => {
-    const errorMsg = validatePassword();
-    if (errorMsg) {
-      setError(errorMsg);
+    if (!password) {
+      setPasswordError("Password is required.");
       return;
     }
+    if (!validatePassword(password)) {
+      setPasswordError("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.");
+      return;
+    }
+    if (!confirmPassword) {
+      setConfirmPasswordError("Confirm password is required.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/auth/register`, {
@@ -51,20 +95,18 @@ const SetPassword: React.FC = () => {
           password: password,
         }),
       });
-      if (response.ok) {
-        toast.success("User registered successfully", {
-          position: "bottom-center",
-        });
+      const data = await response.json();
+
+      if (data.success === true) {
+        toast.success(data?.message || "User registered successfully");
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
-      } else if (response.status === 400) {
-        toast.error("User already exists", { position: "bottom-center" });
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(data?.error || "");
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error("Server error");
     } finally {
       setLoading(false);
     }
@@ -82,56 +124,35 @@ const SetPassword: React.FC = () => {
             Choose a secure password for your account
           </p>
 
-          <input
-            type="email"
-            placeholder="name@example.com"
-            className="border text-xs p-2 w-full mb-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={email}
-            disabled
-          />
-          <p className="text-red-500 text-[10px] opacity-80 mb-2">
-            Go back to edit your email
-          </p>
+          <Input type="email" placeholder="name@example.com" value={email} error="" disabled />
+
 
           <div className="relative mb-4">
-            <input
+            <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
+              error={passwordError}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+            <span className="absolute right-3 top-3 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
 
           <div className="relative mb-4">
-            <input
+            <Input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
+              error={confirmPasswordError}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
+            <span className="absolute right-3 top-3 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-          <button
-            onClick={handleCreateAccount}
-            className="bg-gray-500 text-white py-2 w-full rounded mt-2"
-          >
-            {loading ? "Creating Account" : "Create Account"}
-          </button>
+          <Button onClick={handleCreateAccount} text={loading ? "Creating Account..." : "Create Account"} />
         </div>
       </div>
     </>
