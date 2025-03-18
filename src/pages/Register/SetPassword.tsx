@@ -9,12 +9,14 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const SetPassword: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state || {};
+  const queryParams = new URLSearchParams(location.search);
+  const emailFromQuery = queryParams.get("email");
+  const emailFromState = location.state?.email;
+  const email = emailFromQuery || emailFromState;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
   const emailLocalStorage = localStorage.getItem("email");
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -35,7 +37,6 @@ const SetPassword: React.FC = () => {
     const pass = e.target.value;
     setPassword(pass);
 
-    // Password validation
     if (!pass) {
       setPasswordError("Password is required.");
     } else if (!validatePassword(pass)) {
@@ -44,7 +45,6 @@ const SetPassword: React.FC = () => {
       setPasswordError("");
     }
 
-    // Confirm password validation (if already entered)
     if (confirmPassword && pass !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match.");
     } else {
@@ -124,7 +124,7 @@ const SetPassword: React.FC = () => {
             Choose a secure password for your account
           </p>
           <div className="relative mb-4">
-          <Input type="email" placeholder="name@example.com" value={email} error="" disabled />
+            <Input type="email" placeholder="name@example.com" value={email} error="" disabled />
           </div>
 
           <div className="relative mb-4">

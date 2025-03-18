@@ -92,7 +92,7 @@ const Login: React.FC = () => {
         localStorage.setItem("accessToken", data.accessToken);
         toast.success(data?.message || "User login successfully");
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/create-organization", { replace: true });
         }, 1000);
       } else {
         toast.error(data?.error || "User does not exist in database please try another email");

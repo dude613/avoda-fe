@@ -10,14 +10,14 @@ interface InputProps {
     disabled?: boolean;
     className?: string;
 }
- 
+
 const Input: React.FC<InputProps> = ({ type = "text", placeholder, value, onChange, onKeyDown, error, disabled, className }) => {
     return (
         <div>
             <input
                 type={type}
                 placeholder={placeholder}
-                className={`border text-xs p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-black ${className}`}
+                className={`border text-sm p-3 w-full rounded focus:outline-none ${className}`}
                 value={value}
                 onChange={onChange}
                 onKeyDown={onKeyDown}

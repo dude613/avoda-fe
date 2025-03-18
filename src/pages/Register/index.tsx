@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
 import Button from "../../ui/Button";
@@ -83,7 +82,6 @@ const Register: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Header />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">

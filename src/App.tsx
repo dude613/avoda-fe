@@ -1,6 +1,5 @@
 import "./App.css";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
@@ -12,12 +11,13 @@ import SetPassword from "./pages/Register/SetPassword";
 import VerifyCode from "./pages/Register/VerifyCode";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
 import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
 import CreateOrganization from "./components/CreateOrganization ";
 import Header from "./components/Header";
+import AddTeamMembers from "./components/AddTeamMembers";
 
 function App() {
   const location = useLocation();
@@ -27,11 +27,15 @@ function App() {
       localStorage.removeItem("email");
     }
   }, [location.pathname]);
-
+  const isLoggedIn = !!localStorage.getItem("accessToken");
   return (
     <>
       <Header />
       <Routes>
+        <Route
+          path="/"
+          element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />}
+        />
         <Route
           path="/login"
           element={<Login />}
@@ -47,6 +51,8 @@ function App() {
         <Route path="/new-password" element={<ResetNewPassword />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
+          <Route path="/add-employ" element={<AddTeamMembers />} />
+
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
         <Route path="*" element={<Navigate to="/404" />} />
