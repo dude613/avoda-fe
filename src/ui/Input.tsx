@@ -8,21 +8,22 @@ interface InputProps {
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     error?: string;
     disabled?: boolean;
+    className?: string;
 }
  
-const Input: React.FC<InputProps> = ({ type = "text", placeholder, value, onChange, onKeyDown, error, disabled }) => {
+const Input: React.FC<InputProps> = ({ type = "text", placeholder, value, onChange, onKeyDown, error, disabled, className }) => {
     return (
         <div>
             <input
                 type={type}
                 placeholder={placeholder}
-                className="border text-xs p-3 w-full mb-2 rounded focus:outline-none focus:ring-1 focus:ring-gray-400"
+                className={`border text-xs p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-black ${className}`}
                 value={value}
                 onChange={onChange}
                 onKeyDown={onKeyDown}
                 disabled={disabled}
             />
-            {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+            {error && <p className="text-red-500 text-xs mb-2 mt-2">{error}</p>}
         </div>
     );
 };

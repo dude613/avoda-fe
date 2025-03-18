@@ -123,9 +123,9 @@ const SetPassword: React.FC = () => {
           <p className="text-xs text-gray-500 mb-4 text-center">
             Choose a secure password for your account
           </p>
-
+          <div className="relative mb-4">
           <Input type="email" placeholder="name@example.com" value={email} error="" disabled />
-
+          </div>
 
           <div className="relative mb-4">
             <Input

@@ -6,14 +6,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
+import { Link } from "react-router-dom";
 
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [emailInput, setEmailInput] = useState(
-    localStorage.getItem("email") || ""
-  );
+  const [emailInput, setEmailInput] = useState("");
   const [error, setError] = useState("");
 
   const validateEmail = (email: string) => {
@@ -91,7 +90,10 @@ const Register: React.FC = () => {
             Create an account
           </h2>
           <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
-            Choose how you'd like to sign up
+            Choose how you'd like to{" "}
+            <Link to={"/login"} className="hover:underline">
+              sign up
+            </Link>
           </p>
 
           <button
@@ -108,13 +110,14 @@ const Register: React.FC = () => {
             <hr className="flex-grow border-gray-300" />
           </div>
 
-          <Input type="email"
-            placeholder="name@example.com"
-            value={emailInput}
-            onChange={handleEmailChange}
-            onKeyDown={handleEnter}
-            error={error} />
-
+          <div className="relative mb-4">
+            <Input type="email"
+              placeholder="name@example.com"
+              value={emailInput}
+              onChange={handleEmailChange}
+              onKeyDown={handleEnter}
+              error={error} />
+          </div>
           <Button onClick={handleContinue} text="Continue with Email" />
         </div>
       </div>

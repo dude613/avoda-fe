@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   return (
     <div className="bg-gray-500 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">
-        <Link to="/">My App</Link>
+        <Link to="/">Orlian</Link>
       </h1>
       <nav>
         {accessToken ? (

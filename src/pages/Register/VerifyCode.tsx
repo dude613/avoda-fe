@@ -71,12 +71,12 @@ const VerifyCode: React.FC = () => {
         localStorage.setItem("accessToken", data.accessToken);
         toast.success(data?.message || "User verified successfully");
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/create-organization", { replace: true });
         }, 1000);
       } else {
         toast.error(data?.error || "User already verified");
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/register", { replace: true });
         }, 1000);
       }
     } catch (error) {
@@ -85,6 +85,8 @@ const VerifyCode: React.FC = () => {
       setLoading(false);
     }
   };
+
+
   const handleResend = async () => {
     setResending(true);
     try {
