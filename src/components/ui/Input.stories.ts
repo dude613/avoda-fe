@@ -22,6 +22,7 @@ export const Default: Story = {
 export const File: Story = {
   args: {
     type: 'file',
-    placeholder: 'Search',
+    accept: '.jpg,.png,.pdf',
   },
+};
 };
