@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
+import * as Constants from "../../constants/Register";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const Register: React.FC = () => {
@@ -22,7 +23,7 @@ const Register: React.FC = () => {
     const email = e.target.value;
     setEmailInput(email);
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setError("");
     }
@@ -36,7 +37,7 @@ const Register: React.FC = () => {
 
   const handleContinue = () => {
     if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       localStorage.setItem("email", emailInput);
       navigate("/register/setPassword", {
@@ -62,18 +63,20 @@ const Register: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User registered successfully", {
+          toast.success(Constants.REGISTER_SUCCESS_TOAST, {
             position: "bottom-center",
           });
           setTimeout(() => {
             navigate("/dashboard", { replace: true });
           }, 1000);
         } else if (response.status === 404) {
-          toast.error("User already exists", { position: "bottom-center" });
+          toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
         } else {
-          toast.error("Server error", { position: "bottom-center" });
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
-      } catch (error) {}
+      } catch (error) {
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
@@ -87,10 +90,10 @@ const Register: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Create an account
+            {Constants.REGISTER_PAGE_TITLE}
           </h2>
           <p className="text-xs text-gray-500 mb-4 text-center">
-            Choose how you'd like to sign up
+            {Constants.REGISTER_PAGE_SUBTITLE}
           </p>
 
           {/* Google Sign-In Button */}
@@ -99,20 +102,21 @@ const Register: React.FC = () => {
             className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
           >
             <FcGoogle className="text-lg" />
-            <span className="text-xs pl-2">Continue with Google</span>
+            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
           {/* Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-xs">OR CONTINUE WITH</span>
+            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
           {/* Email Input */}
+          {/* TODO Make the email input like the password input (components) */}
           <input
             type="email"
-            placeholder="name@example.com"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
             className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
@@ -125,7 +129,7 @@ const Register: React.FC = () => {
             onClick={handleContinue}
             className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
           >
-            Continue with Email
+            {Constants.EMAIL_BUTTON_TEXT}
           </button>
         </div>
       </div>

@@ -15,6 +15,8 @@ import Dashboard from "./components/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
+import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
 
 function App() {
   const location = useLocation();
@@ -26,24 +28,23 @@ function App() {
   }, []);
 
   return (
-    <>
-      <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/forgot-resend" element={<ResendForgotEmail />} />
 
-        {/* Register Routes */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/register/setPassword" element={<SetPassword />} />
-        <Route path="/register/verifyCode" element={<VerifyCode />} />
-
-        {/* Protected Route for Dashboard */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-      </Routes>
-    </>
+      {/* Register Routes */}
+      <Route path="/register" element={<Register />} />
+      <Route path="/register/setPassword" element={<SetPassword />} />
+      <Route path="/register/verifyCode" element={<VerifyCode />} />
+      <Route path="/new-password" element={<ResetNewPassword />} />
+      
+      {/* Protected Route for Dashboard */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
+    </Routes>
   );
 }
 
