@@ -29,7 +29,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
 
     
     // Cap the score at 5
-    return Math.min(5, score);
+    return Math.min(5, Math.max(0, score));
   };
 
   const { strengthLevel, strengthText, strengthColor } = useMemo(() => {
