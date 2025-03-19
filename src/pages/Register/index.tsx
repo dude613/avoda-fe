@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
+import Button from "../../ui/Button";
+import Input from "../../ui/Input";
+import { Link } from "react-router-dom";
 import * as Constants from "../../constants/Register";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [emailInput, setEmailInput] = useState(
-    localStorage.getItem("email") || ""
-  );
+  const [emailInput, setEmailInput] = useState("");
   const [error, setError] = useState("");
 
   const validateEmail = (email: string) => {
+    if (!email) return "Email is required.";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(email) ? "" : "Please enter a valid email address.";
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +45,10 @@ const Register: React.FC = () => {
         state: { email: emailInput },
       });
     }
+    localStorage.setItem("email", emailInput);
+    navigate("/register/setPassword", {
+      state: { email: emailInput },
+    });
   };
 
   const register = useGoogleLogin({
@@ -86,17 +91,18 @@ const Register: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Header />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
+          <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
             {Constants.REGISTER_PAGE_TITLE}
           </h2>
-          <p className="text-xs text-gray-500 mb-4 text-center">
-            {Constants.REGISTER_PAGE_SUBTITLE}
+          <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
+            {Constants.REGISTER_PAGE_SUBTITLE}{" "}
+            <Link to={"/login"} className="hover:underline">
+              sign up
+            </Link>
           </p>
 
-          {/* Google Sign-In Button */}
           <button
             onClick={() => register()}
             className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
@@ -105,7 +111,6 @@ const Register: React.FC = () => {
             <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
-          {/* Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
             <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>

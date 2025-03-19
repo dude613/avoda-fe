@@ -53,12 +53,12 @@ const VerifyCode: React.FC = () => {
           position: "bottom-center",
         });
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/create-organization", { replace: true });
         }, 1000);
       } else if (response.status === 201) {
         toast.success(Constants.USER_ALREADY_VERIFIED_TOAST, { position: "bottom-center" });
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/register", { replace: true });
         }, 1000);
       } else {
         toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
@@ -69,6 +69,7 @@ const VerifyCode: React.FC = () => {
       setLoading(false);
     }
   };
+
 
   const handleResend = async () => {
     setResending(true);

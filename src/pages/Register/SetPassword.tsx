@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
 import * as Constants from "@/constants/Register";
 import Email from "@/components/form/email";
 import PasswordWithStrength from "@/components/form/PasswordWithStrength";
@@ -9,13 +11,20 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const SetPassword: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state || {};
+  const queryParams = new URLSearchParams(location.search);
+  const emailFromQuery = queryParams.get("email");
+  const emailFromState = location.state?.email;
+  const email = emailFromQuery || emailFromState;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [passwordMeetsRequirements, setPasswordMeetsRequirements] = useState(false);
   const emailLocalStorage = localStorage.getItem("email");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   useEffect(() => {
     if (!email || !emailLocalStorage) {
@@ -35,11 +44,23 @@ const SetPassword: React.FC = () => {
   };
 
   const handleCreateAccount = async () => {
-    const errorMsg = validatePassword();
-    if (errorMsg) {
-      setError(errorMsg);
+    if (!password) {
+      setPasswordError("Password is required.");
       return;
     }
+    if (!validatePassword(password)) {
+      setPasswordError("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.");
+      return;
+    }
+    if (!confirmPassword) {
+      setConfirmPasswordError("Confirm password is required.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/auth/register`, {

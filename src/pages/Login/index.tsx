@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
 import * as Constants from "../../constants/Login";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -13,6 +14,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [emailInput, setEmailInput] = useState("");
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,12 @@ const Login: React.FC = () => {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password: string) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\W).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
     setEmailInput(email);
@@ -29,6 +37,20 @@ const Login: React.FC = () => {
       setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setError("");
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pass = e.target.value;
+    setPassword(pass);
+    if (!pass) {
+      setPasswordError("Password is required.");
+    } else if (!validatePassword(pass)) {
+      setPasswordError(
+        "Password must be at least 8 characters, with 1 uppercase letter and 1 special character."
+      );
+    } else {
+      setPasswordError("");
     }
   };
 
@@ -68,6 +90,10 @@ const Login: React.FC = () => {
       } finally {
         setLoading(false);
       }
+    } catch (e) {
+      toast.error("login server error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,7 +124,7 @@ const Login: React.FC = () => {
         } else {
           toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
@@ -108,7 +134,6 @@ const Login: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Header />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
@@ -128,7 +153,6 @@ const Login: React.FC = () => {
             <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
-          {/* Divider */}
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
             <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
@@ -143,8 +167,7 @@ const Login: React.FC = () => {
             className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+            error={error} />
 
           <div className="relative mb-4">
             <label className="text-xs mb-6">{Constants.PASSWORD_LABEL}</label>
@@ -153,8 +176,8 @@ const Login: React.FC = () => {
               placeholder={Constants.PASSWORD_PLACEHOLDER}
               className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              onChange={handlePasswordChange}
+              error={passwordError} />
             <span
               className="absolute right-3 top-8 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
