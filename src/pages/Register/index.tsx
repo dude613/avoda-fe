@@ -6,7 +6,7 @@ import { Toaster, toast } from "react-hot-toast";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 import { Link } from "react-router-dom";
-
+import * as Constants from "../../constants/Register";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const Register: React.FC = () => {
@@ -23,7 +23,11 @@ const Register: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
     setEmailInput(email);
-    setError(validateEmail(email));
+    if (!validateEmail(email)) {
+      setError(Constants.INVALID_EMAIL_ERROR);
+    } else {
+      setError("");
+    }
   };
 
   const handleEnter = (e: any) => {
@@ -33,10 +37,13 @@ const Register: React.FC = () => {
   };
 
   const handleContinue = () => {
-    const validationError = validateEmail(emailInput);
-    if (validationError) {
-      setError(validationError);
-      return;
+    if (!validateEmail(emailInput)) {
+      setError(Constants.INVALID_EMAIL_ERROR);
+    } else {
+      localStorage.setItem("email", emailInput);
+      navigate("/register/setPassword", {
+        state: { email: emailInput },
+      });
     }
     localStorage.setItem("email", emailInput);
     navigate("/register/setPassword", {
@@ -61,18 +68,20 @@ const Register: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User registered successfully", {
+          toast.success(Constants.REGISTER_SUCCESS_TOAST, {
             position: "bottom-center",
           });
           setTimeout(() => {
             navigate("/dashboard", { replace: true });
           }, 1000);
         } else if (response.status === 404) {
-          toast.error("User already exists", { position: "bottom-center" });
+          toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
         } else {
-          toast.error("Server error", { position: "bottom-center" });
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
-      } catch (error) { }
+      } catch (error) {
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
@@ -85,10 +94,10 @@ const Register: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
-            Create an account
+            {Constants.REGISTER_PAGE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
-            Choose how you'd like to{" "}
+            {Constants.REGISTER_PAGE_SUBTITLE}{" "}
             <Link to={"/login"} className="hover:underline">
               sign up
             </Link>
@@ -99,24 +108,34 @@ const Register: React.FC = () => {
             className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
           >
             <FcGoogle className="text-lg" />
-            <span className="text-sm text-background font-semibold pl-2">Continue with Google</span>
+            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-sm">OR CONTINUE WITH</span>
+            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
-          <div className="relative mb-4">
-            <Input type="email"
-              placeholder="name@example.com"
-              value={emailInput}
-              onChange={handleEmailChange}
-              onKeyDown={handleEnter}
-              error={error} />
-          </div>
-          <Button onClick={handleContinue} text="Continue with Email" />
+          {/* Email Input */}
+          {/* TODO Make the email input like the password input (components) */}
+          <input
+            type="email"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
+            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+            value={emailInput}
+            onChange={handleEmailChange}
+            onKeyDown={handleEnter}
+          />
+          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+
+          {/* Continue with Email */}
+          <button
+            onClick={handleContinue}
+            className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
+          >
+            {Constants.EMAIL_BUTTON_TEXT}
+          </button>
         </div>
       </div>
     </>

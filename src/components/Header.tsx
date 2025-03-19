@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import * as Constants from "../constants/Header";
 
 const Header: React.FC = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -11,7 +12,7 @@ const Header: React.FC = () => {
   return (
     <div className="bg-gray-500 text-white p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">
-        <Link to="/">Orlian</Link>
+        <Link to="/">{Constants.APP_NAME}</Link>
       </h1>
       <nav>
         {accessToken ? (
@@ -20,16 +21,16 @@ const Header: React.FC = () => {
               className="mr-4 hover:underline cursor-pointer"
               onClick={handleLogout}
             >
-              Logout
+              {Constants.LOGOUT_BUTTON_TEXT}
             </button>
           </>
         ) : (
           <>
             <Link to="/login" className="mr-4 hover:underline">
-              Login
+              {Constants.LOGIN_LINK_TEXT}
             </Link>
             <Link to="/register" className="hover:underline">
-              Register
+              {Constants.REGISTER_LINK_TEXT}
             </Link>
           </>
         )}{" "}

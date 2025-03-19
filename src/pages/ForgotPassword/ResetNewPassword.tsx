@@ -3,6 +3,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import * as Constants from "../../constants/ForgotPassword";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -26,9 +27,9 @@ export default function ResetNewPassword() {
         const newPassword = e.target.value;
         setPassword(newPassword);
         if (!newPassword) {
-            setPasswordError("Password is required.");
+            setPasswordError(Constants.PASSWORD_REQUIRED_ERROR);
         } else if (!validatePassword(newPassword)) {
-            setPasswordError("Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.");
+            setPasswordError(Constants.PASSWORD_VALIDATION_ERROR);
         } else {
             setPasswordError("");
         }
@@ -41,7 +42,7 @@ export default function ResetNewPassword() {
         if (!newConfirmPassword) {
             setConfirmPasswordError("");
         } else if (newConfirmPassword !== password) {
-            setConfirmPasswordError("Passwords do not match.");
+            setConfirmPasswordError(Constants.PASSWORDS_MISMATCH_ERROR);
         } else {
             setConfirmPasswordError("");
         }
@@ -49,15 +50,15 @@ export default function ResetNewPassword() {
 
     const handleResetPassword = async () => {
         if (!password) {
-            setPasswordError("Password is required.");
+            setPasswordError(Constants.PASSWORD_REQUIRED_ERROR);
             return;
         }
         if (!validatePassword(password)) {
-            setPasswordError("Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.");
+            setPasswordError(Constants.PASSWORD_VALIDATION_ERROR);
             return;
         }
         if (password !== confirmPassword) {
-            setConfirmPasswordError("Passwords do not match.");
+            setConfirmPasswordError(Constants.PASSWORDS_MISMATCH_ERROR);
             return;
         }
         setPasswordError("");
@@ -73,13 +74,13 @@ export default function ResetNewPassword() {
 
             const data = await response.json();
             if (data.success) {
-                toast.success(data?.message || "Password reset successfully.");
+                toast.success(data?.message || Constants.PASSWORD_RESET_SUCCESS_TOAST);
                 navigate("/login")
             } else {
-                toast.error(data.error || "Failed to reset password.");
+                toast.error(data.error || Constants.PASSWORD_RESET_FAILED_TOAST);
             }
         } catch (error) {
-            toast.error("Failed to reset password.");
+            toast.error(Constants.PASSWORD_RESET_FAILED_TOAST);
         }
     };
 
@@ -95,16 +96,16 @@ export default function ResetNewPassword() {
                     </div>
 
                     <h2 className="mt-8 text-2xl font-bold text-gray-800 mb-2 text-center">
-                        Reset New Password
+                        {Constants.RESET_PASSWORD_TITLE}
                     </h2>
                     <p className="text-sm font-semibold text-gray-500 text-center mb-8">
-                        Enter your new password below.
+                        {Constants.RESET_PASSWORD_SUBTITLE}
                     </p>
 
                     <div className="relative mb-2">
                         <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="New Password"
+                            placeholder={Constants.NEW_PASSWORD_PLACEHOLDER}
                             className="border text-sm p-3 w-full h-auto rounded focus:outline-none focus:ring-1 focus:ring-gray-200"
                             value={password}
                             onChange={handlePasswordChange}
@@ -122,7 +123,7 @@ export default function ResetNewPassword() {
                     <div className="relative mb-2">
                         <input
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Confirm Password"
+                            placeholder={Constants.CONFIRM_PASSWORD_PLACEHOLDER}
                             className="border text-sm p-3 w-full rounded focus:outline-none focus:ring-1 focus:ring-gray-200"
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
@@ -141,12 +142,12 @@ export default function ResetNewPassword() {
                         onClick={handleResetPassword}
                         className="bg-black text-sm mt-3 text-white font-bold py-3 w-full rounded hover:bg-gray-800 transition cursor-pointer"
                     >
-                        Reset Password
+                        {Constants.RESET_PASSWORD_BUTTON_TEXT}
                     </button>
 
                     <p className="text-gray-800 text-sm text-center mt-5">
                         <Link to={"/login"} className="hover:underline">
-                            Return to Sign in
+                            {Constants.RETURN_TO_SIGNIN_TEXT}
                         </Link>
                     </p>
                 </div>

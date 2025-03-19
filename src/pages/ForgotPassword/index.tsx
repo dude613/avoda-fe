@@ -6,6 +6,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
+import * as Constants from "../../constants/ForgotPassword";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const ForgotPassword: React.FC = () => {
@@ -24,7 +25,7 @@ const ForgotPassword: React.FC = () => {
     const email = e.target.value;
     setEmailInput(email);
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setError("");
     }
@@ -38,12 +39,12 @@ const ForgotPassword: React.FC = () => {
 
   const handleResetPassword = async () => {
     if (!emailInput.trim()) {
-      setError("Please enter your email.");
+      setError(Constants.EMPTY_EMAIL_ERROR);
       return;
     }
 
     if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
+      setError(Constants.INVALID_EMAIL_ERROR);
     }
     setError("");
 
@@ -58,7 +59,7 @@ const ForgotPassword: React.FC = () => {
 
       const data = await response.json();
       if (data.success === true) {
-        toast.success(data.message || "Reset link sent to your email.");
+        toast.success(data.message || Constants.RESET_LINK_SENT_TOAST);
           navigate(`/forgot-resend?email=${encodeURIComponent(emailInput)}`);
       } else {
         toast.error(data.error)
@@ -81,16 +82,16 @@ const ForgotPassword: React.FC = () => {
           </div>
 
           <h2 className="mt-8 text-xl font-semibold text-gray-800 mb-2 text-center">
-            Forgot your password?
+            {Constants.FORGOT_PASSWORD_TITLE}
           </h2>
           <p className="text-xs text-gray-500 mb-4 text-center">
-            No worries, we'll send you reset instructions
+            {Constants.FORGOT_PASSWORD_SUBTITLE}
           </p>
 
           {/* Email Input */}
           <input
             type="email"
-            placeholder="name@example.com"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
             className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
@@ -103,12 +104,12 @@ const ForgotPassword: React.FC = () => {
             onClick={handleResetPassword}
             className="bg-black text-xs mt-3 text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
           >
-            Reset Password
+            {Constants.RESET_PASSWORD_BUTTON_TEXT}
           </button>
 
           <p className="text-black text-sm text-center mt-5">
             <Link to={"/login"} className="hover:underline">
-              Back to Login
+              {Constants.BACK_TO_LOGIN_TEXT}
             </Link>
           </p>
         </div>

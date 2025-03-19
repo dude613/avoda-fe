@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import Input from "../../ui/Input";
 import Button from "../../ui/Button";
+import * as Constants from "../../constants/Login";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login: React.FC = () => {
@@ -32,11 +33,8 @@ const Login: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
     setEmailInput(email);
-    if (!email) {
-      setError("Email is required.");
-    }
-    else if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
+    if (!validateEmail(email)) {
+      setError(Constants.INVALID_EMAIL_ERROR);
     } else {
       setError("");
     }
@@ -57,44 +55,40 @@ const Login: React.FC = () => {
   };
 
   const handleLogin = async () => {
-    if (!emailInput) {
-      setError("Email is required.");
-    } else if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
-    }
-
-    if (!password) {
-      setPasswordError("Password is required.");
-    } else if (!validatePassword(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters, with 1 uppercase letter and 1 special character."
-      );
-    }
-    if (!validateEmail(emailInput) || !validatePassword(password)) {
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch(`${baseUrl}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: emailInput,
-          password,
-        }),
-      });
-      const data = await response.json();
-      if (data.success === true) {
-        localStorage.setItem("userId", data.user._id);
-        localStorage.setItem("accessToken", data.accessToken);
-        toast.success(data?.message || "User login successfully");
-        setTimeout(() => {
-          navigate("/create-organization", { replace: true });
-        }, 1000);
-      } else {
-        toast.error(data?.error || "User does not exist in database please try another email");
+    if (!validateEmail(emailInput)) {
+      setError(Constants.INVALID_EMAIL_ERROR);
+    } else {
+      setLoading(true);
+      try {
+        const response = await fetch(`${baseUrl}/api/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: emailInput,
+            password,
+          }),
+        });
+        const responseData = await response.json();
+        if (response.ok) {
+          localStorage.setItem("userId", responseData.user._id);
+          localStorage.setItem("accessToken", responseData.accessToken);
+          toast.success(Constants.LOGIN_SUCCESS_TOAST, {
+            position: "bottom-center",
+          });
+          setTimeout(() => {
+            navigate("/dashboard", { replace: true });
+          }, 1000);
+        } else if (response.status === 400) {
+          toast.error(Constants.USER_NOT_FOUND_TOAST, { position: "bottom-center" });
+        } else {
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+        }
+      } catch (error) {
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      } finally {
+        setLoading(false);
       }
     } catch (e) {
       toast.error("login server error");
@@ -119,16 +113,16 @@ const Login: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success("User login successfully", {
+          toast.success(Constants.LOGIN_SUCCESS_TOAST, {
             position: "bottom-center",
           });
           setTimeout(() => {
             navigate("/dashboard", { replace: true });
           }, 1000);
         } else if (response.status === 400) {
-          toast.error("User not found", { position: "bottom-center" });
+          toast.error(Constants.USER_NOT_FOUND_TOAST, { position: "bottom-center" });
         } else {
-          toast.error("Server error", { position: "bottom-center" });
+          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
       } catch (error) { }
     },
@@ -143,39 +137,44 @@ const Login: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Login
+            {Constants.LOGIN_PAGE_TITLE}
           </h2>
           <p className="text-xs text-gray-500 mb-4 text-center">
-            Enter your credentials to access your account
+            {Constants.LOGIN_PAGE_SUBTITLE}
           </p>
 
           {/* Google Sign-In Button */}
-          <label className="text-xs mb-6">Email</label>
+          <label className="text-xs mb-6">{Constants.EMAIL_LABEL}</label>
           <button
             onClick={() => login()}
             className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
           >
             <FcGoogle className="text-lg" />
-            <span className="text-xs pl-2">Google</span>
+            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
           </button>
 
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-xs">OR CONTINUE WITH</span>
+            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
-          <label className="text-xs mb-6">Email</label>
-          <Input type="email"
-            placeholder="name@example.com"
+          {/* Email Input */}
+          <label className="text-xs mb-6">{Constants.EMAIL_LABEL}</label>
+          <input
+            type="email"
+            placeholder={Constants.EMAIL_PLACEHOLDER}
+            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
             error={error} />
 
           <div className="relative mb-4">
-            <label className="text-xs mb-6">Password</label>
-            <Input type={showPassword ? "text" : "password"}
-              placeholder="name@example.com"
+            <label className="text-xs mb-6">{Constants.PASSWORD_LABEL}</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder={Constants.PASSWORD_PLACEHOLDER}
+              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
               onChange={handlePasswordChange}
               error={passwordError} />
@@ -187,18 +186,33 @@ const Login: React.FC = () => {
             </span>
           </div>
 
-          <Button onClick={handleLogin} text={loading ? "Logging in..." : "Continue with Email"} />
+          {/* Login */}
+          <button
+            onClick={handleLogin}
+            className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
+          >
+            {loading ? (
+              <span className="inline-flex items-center gap-1">
+                <span className="animate-pulse">{Constants.LOADING_TEXT}</span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
+              </span>
+            ) : (
+              Constants.EMAIL_BUTTON_TEXT
+            )}
+          </button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            Didn't have an account?{" "}
+            {Constants.NO_ACCOUNT_TEXT}{" "}
             <span className="text-black text-sm  hover:underline">
-              <Link to={"/register"}>Sign up</Link>
+              <Link to={"/register"}>{Constants.SIGNUP_LINK_TEXT}</Link>
             </span>
           </p>
 
           <p className="text-black text-sm text-center mt-5">
             <Link to={"/forgot-password"} className="hover:underline">
-              Forgot password?
+              {Constants.FORGOT_PASSWORD_LINK_TEXT}
             </Link>
           </p>
         </div>
