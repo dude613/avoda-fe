@@ -74,7 +74,9 @@ const Register: React.FC = () => {
         } else {
           toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
-      } catch (error) {}
+      } catch (error) {
+        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
