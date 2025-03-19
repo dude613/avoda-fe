@@ -15,7 +15,7 @@ interface OTPProps {
   labelText?: string;
 }
 
-export default function Component({
+export default function OTP({
   value = "",
   onChange = () => {},
   maxLength = 6,
