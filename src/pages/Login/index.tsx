@@ -86,7 +86,6 @@ const Login: React.FC = () => {
         }),
       });
       const data = await response.json();
-      console.log(data)
       if (data.success === true) {
         localStorage.setItem("userId", data.user._id);
         localStorage.setItem("accessToken", data.accessToken);
