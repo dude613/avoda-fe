@@ -29,8 +29,8 @@ const VerifyCode: React.FC = () => {
     }
   }, [otp, location.search]);
 
-  const handleVerify = async (code: any) => {
-    if (code.some((digit: any) => digit === "")) {
+  const handleVerify = async (code: string[]) => {
+    if (code.some((digit: string) => digit === "")) {
       setError(Constants.EMPTY_CODE_ERROR);
       return;
     }
