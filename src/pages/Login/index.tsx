@@ -188,7 +188,9 @@ const Login: React.FC = () => {
             </span>
           </div>
 
-          <Button onClick={handleLogin} text={loading ? "Logging in..." : "Continue with Email"} />
+          <Button onClick={handleLogin}
+            text={loading ? "Logging in..." : "Continue with Email"}
+            className="bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center " />
 
           <p className="text-gray-500 text-sm text-center mt-3">
             Didn't have an account?{" "}

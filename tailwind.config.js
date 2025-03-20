@@ -6,13 +6,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#1E40AF", 
-        secondary: "#9333EA", 
-        accent: "#FACC15",
-        background: "#000000",
-        textPrimary: "#111827",
-        text: "#FFFFFF",
-        textMandatory: "#EF4444",
+        primary: "#787878", //color - gray
+        secondary: "#9333EA", // color - Purple
+        accent: "#FACC15", // color - Yellow
+        background: "#000000", // color - Black
+        textPrimary: "#111827", // text color - Dark Gray
+        text: "#FFFFFF", // color - White
+        textMandatory: "#EF4444", // text color - Red
       },
     },
   },

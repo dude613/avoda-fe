@@ -116,7 +116,9 @@ const Register: React.FC = () => {
               onKeyDown={handleEnter}
               error={error} />
           </div>
-          <Button onClick={handleContinue} text="Continue with Email" />
+          <Button onClick={handleContinue}
+            className="bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+            text="Continue with Email" />
         </div>
       </div>
     </>

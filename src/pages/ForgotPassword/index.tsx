@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
-import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";

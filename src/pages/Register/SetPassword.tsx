@@ -152,7 +152,9 @@ const SetPassword: React.FC = () => {
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-          <Button onClick={handleCreateAccount} text={loading ? "Creating Account..." : "Create Account"} />
+          <Button onClick={handleCreateAccount}
+            className="bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+            text={loading ? "Creating Account..." : "Create Account"} />
         </div>
       </div>
     </>
