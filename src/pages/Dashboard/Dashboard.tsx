@@ -28,6 +28,7 @@ export default function Dashboard() {
     dispatch(fetchOrganizations(userId as string));
   }, [dispatch, userId]);
 
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
 
