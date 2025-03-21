@@ -17,8 +17,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 
-
-
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const userId = localStorage.getItem("userId")
