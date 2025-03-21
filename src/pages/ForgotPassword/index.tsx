@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const [emailInput, setEmailInput] = useState(
@@ -27,6 +28,7 @@ const ForgotPassword: React.FC = () => {
       setError("");
     }
   };
+
 
   const handleEnter = (e: any) => {
     if (e.key === "Enter") {

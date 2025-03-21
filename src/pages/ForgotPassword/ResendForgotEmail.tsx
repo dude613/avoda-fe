@@ -5,7 +5,6 @@ import { useSearchParams } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
-
 export default function ResendForgotEmail() {
     const [searchParams] = useSearchParams();
     const [email, setEmail] = useState("");
@@ -29,7 +28,6 @@ export default function ResendForgotEmail() {
                 },
                 body: JSON.stringify({ email }),
             });
-
             const data = await response.json();
             if (data.success) {
                 toast.success(data?.message || "Password reset successfully.");
