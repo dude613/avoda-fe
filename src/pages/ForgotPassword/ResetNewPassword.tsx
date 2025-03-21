@@ -17,11 +17,11 @@ export default function ResetNewPassword() {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    
+
     const validatePassword = (password: string) => {
         const passwordRegex = /^(?=(.*[A-Z]))(?=(.*\d))(?=(.*[\W_]))[A-Za-z\d\W_]{8,16}$/;
         return passwordRegex.test(password);
-    };
+    }; 
 
     const handlePasswordChange = (e: { target: { value: any; }; }) => {
         const newPassword = e.target.value;
