@@ -31,14 +31,14 @@ export default function Pagination({ table }: PaginationProps) {
                     {table.getPageCount()}
                 </span>
                 <button
-                    className="p-2 border border-gray-300 rounded disabled:opacity-50"
+                    className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     {"<<"}
                 </button>
                 <button
-                    className="p-2 border border-gray-300 rounded disabled:opacity-50"
+                    className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
@@ -46,14 +46,14 @@ export default function Pagination({ table }: PaginationProps) {
                 </button>
 
                 <button
-                    className="p-2 border border-gray-300 rounded disabled:opacity-50"
+                    className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     {">"}
                 </button>
                 <button
-                    className="p-2 border border-gray-300 rounded disabled:opacity-50"
+                    className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}
                 >

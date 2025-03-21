@@ -25,7 +25,7 @@ export default function FileUploader({
     const [errorRows, setErrorRows] = useState<any[]>([]);
     const [isFileUploaded, setIsFileUploaded] = useState(false);
     const [validRowCount, setValidRowCount] = useState(0)
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
 
     const validateEmail = (email: string) =>
         /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
@@ -182,9 +182,9 @@ export default function FileUploader({
 
     return (
         <div className="flex flex-col items-center">
-           {validRowCount > 0 && isFileUploaded && (
+            {validRowCount > 0 && isFileUploaded && (
                 <div className="text-green-500 text-sm font-medium mb-4">
-                    {`Total ${validRowCount} row(s) entries for upload`}
+                    {`Total ${validRowCount} entries for upload`}
                 </div>
             )}
 

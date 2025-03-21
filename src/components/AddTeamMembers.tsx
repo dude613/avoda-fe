@@ -1,4 +1,4 @@
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import { LuUserPlus } from "react-icons/lu";
 import Input from "../ui/Input";
 import { Controller, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
@@ -8,21 +8,31 @@ import { SiMinutemailer } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
 import { AddTeamMemberAPI, fetchOrganization } from "../service/api";
-import toast, { Toaster } from "react-hot-toast";
 import FileUploader from "../ui/FileUploader";
+import toast, { Toaster } from "react-hot-toast";
+
 interface FormData {
-  members: { email: string; role: string }[];
+  members: { name: string; email: string; role: string }[];
 }
+
 const AddTeamMembers = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [tab, setTab] = useState("email");
   const [organizationId, setOrganizationId] = useState("");
-  const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormData>({
-    defaultValues: { members: [{ email: "", role: "" }] },
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+    watch,
+  } = useForm<FormData>({
+    mode: "onChange",
+    defaultValues: { members: [{ name: "", email: "", role: "" }] },
   });
   const { fields, append } = useFieldArray({ control, name: "members" });
-  const [, startTransition] = useTransition();
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchOrganization();
@@ -33,13 +43,14 @@ const AddTeamMembers = () => {
     };
     fetchData();
   }, []);
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log("Form Submitted:", data);
     setLoading(true);
     const teamMembersData = data.members.map((member) => ({
+      name: member.name,
       email: member.email,
       role: member.role,
-      orgId: organizationId
+      orgId: organizationId,
     }));
     try {
       const response = await AddTeamMemberAPI({ members: teamMembersData });
@@ -57,23 +68,32 @@ const AddTeamMembers = () => {
       setLoading(false);
     }
   };
+
+  const membersData = watch("members");
+  const lastIndex = membersData.length - 1;
+  const lastMember = membersData[lastIndex];
+  const lastMemberErrors = errors.members && errors.members[lastIndex];
+  const canAddAnother = lastMember && lastMember.name && lastMember.email && lastMember.role && !lastMemberErrors;
+
   const handleAddMember = () => {
-    startTransition(() => {
-      append({ email: "", role: "Employee" });
-    });
+    if (canAddAnother) {
+      append({ name: "", email: "", role: "" });
+    }
   };
+
   const handleTabChange = (tabName: string) => {
     if (tabName !== tab) {
-      reset({ members: [{ email: "", role: "" }] });
+      reset({ members: [{ name: "", email: "", role: "" }] });
     }
     setTab(tabName);
   };
+
   return (
     <>
       <Toaster />
       <div className="flex flex-col items-center justify-center mt-10 w-full bg-gray-100 p-4">
-        <div className={`flex flex-col items-center justify-center bg-gray-100 px-1`}>
-          <div className={`bg-white p-6 rounded-lg shadow-lg border border-gray-300 lg:w-[600px] lg:min-h-[550px]`}>
+        <div className="flex flex-col items-center justify-center bg-gray-100 px-1">
+          <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 lg:w-[600px] lg:min-h-[550px]">
             <div className="mb-8">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium">Step 2 of 2</span>
@@ -104,12 +124,14 @@ const AddTeamMembers = () => {
               </div>
               <div className="flex overflow-hidden bg-gray-100 mb-8">
                 <button
+                  type="button"
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "email" ? "bg-white font-medium rounded-md shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("email")}
                 >
                   Email Invites
                 </button>
                 <button
+                  type="button"
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "bulk" ? "bg-white font-medium shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("bulk")}
                 >
@@ -119,9 +141,35 @@ const AddTeamMembers = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 {tab === "email" ? (
                   <div className="mb-8 space-y-6 w-full">
-                    {fields.map((field: any, index: number) => (
+                    {fields.map((field, index) => (
                       <div key={field.id} className="flex items-center gap-2">
-                        <div className="w-[50%] relative">
+                        <div className="w-[33%] relative">
+                          <Controller
+                            name={`members.${index}.name`}
+                            control={control}
+                            defaultValue={field.name}
+                            rules={{
+                              required: "Name is required",
+                              pattern: {
+                                value: /^[A-Za-z ]+$/,
+                                message: "Invalid name"
+                              }
+                            }}
+                            render={({ field: controllerField }) => (
+                              <Input
+                                {...controllerField}
+                                placeholder="Full Name"
+                                className={`py-4 text-sm ${errors.members?.[index]?.name ? 'border-red-500' : ''}`}
+                              />
+                            )}
+                          />
+                          {errors.members?.[index]?.name && (
+                            <p className="absolute text-xs text-red-500 bottom-[-16px]">
+                              {errors.members[index].name.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-[33%] relative">
                           <Controller
                             name={`members.${index}.email`}
                             control={control}
@@ -133,31 +181,28 @@ const AddTeamMembers = () => {
                                 message: "Invalid email format"
                               }
                             }}
-                            render={({ field }) => (
+                            render={({ field: controllerField }) => (
                               <Input
-                                {...field}
+                                {...controllerField}
                                 placeholder="Email address"
-                                className={`py-4 text-sm ${errors.members?.[index]?.email ? 'border-red-500' : ''} ${field.value && !errors.members?.[index]?.email ? 'border-green-500' : ''}`}
+                                className={`py-4 text-sm ${errors.members?.[index]?.email ? 'border-red-500' : ''}`}
                               />
                             )}
                           />
                           {errors.members?.[index]?.email && (
-                            <p className="absolute text-xs text-red-500 bottom-[-16px]">{errors.members[index].email.message}</p>
+                            <p className="absolute text-xs text-red-500 bottom-[-16px]">
+                              {errors.members[index].email.message}
+                            </p>
                           )}
                         </div>
-                        <div className="w-[50%] relative">
+                        <div className="w-[33%] relative">
                           <Controller
                             name={`members.${index}.role`}
                             control={control}
                             defaultValue={field.role}
-                            rules={{
-                              required: "Role is required",
-                            }}
-                            render={({ field }) => (
-                              <select
-                                {...field}
-                                className={`border py-4 text-sm p-3 rounded focus:outline-none focus:ring-1 bg-white focus:ring-gray-400 w-full ${errors.members?.[index]?.role ? 'border-red-500' : ''}`}
-                              >
+                            rules={{ required: "Role is required" }}
+                            render={({ field: controllerField }) => (
+                              <select {...controllerField} className={`border py-4 text-sm rounded w-full ${errors.members?.[index]?.role ? 'border-red-500' : ''}`}>
                                 <option value="">Select Role</option>
                                 <option value="Employee">Employee</option>
                                 <option value="Admin">Admin</option>
@@ -165,9 +210,6 @@ const AddTeamMembers = () => {
                               </select>
                             )}
                           />
-                          {errors.members?.[index]?.role && (
-                            <p className="absolute text-xs text-red-500 bottom-[-16px]">{errors.members[index].role.message}</p>
-                          )}
                         </div>
                       </div>
                     ))}
@@ -175,7 +217,9 @@ const AddTeamMembers = () => {
                       type="button"
                       icon={<LuUserPlus className="text-xl" />}
                       text={"Add another"}
-                      className={`flex rounded-lg w-fit md:px-4 py-4 mt-8 lg:px-8 bg-transparent text-textPrimary border hover:bg-transparent hover:scale-105`}
+                      disabled={!canAddAnother}
+                      className={`flex rounded-lg w-fit md:px-4 py-4 mt-8 lg:px-8 bg-transparent text-textPrimary border hover:bg-transparent ${!canAddAnother ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
+                        }`}
                       onClick={handleAddMember}
                     />
                   </div>
@@ -184,18 +228,18 @@ const AddTeamMembers = () => {
                     mode="csv"
                     allowedTypes={["text/csv"]}
                     onUpload={(data) => {
-                     
-                      setValue("members", data); 
+                      setValue("members", data);
                     }}
                   />
                 )}
                 <Button
                   type="submit"
-                  text={`${loading ? "Invitations Sending..." : "Send Invitations"}`}
-                  icon={loading && <CircularLoading />}
-                  iconRight={!loading && <SiMinutemailer className="" />}
+                  text={loading ? "Invitations Sending..." : "Send Invitations"}
+                  icon={loading ? <CircularLoading /> : undefined}
+                  iconRight={!loading ? <SiMinutemailer /> : undefined}
                   disabled={loading}
-                  className={`bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105 mt-5 py-4 text-lg`}
+                  className={`bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : "hover:scale-105"
+                    } mt-5 py-4 text-lg`}
                 />
               </form>
               <p className="text-sm text-gray-700 mt-5 text-center">

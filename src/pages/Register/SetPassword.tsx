@@ -9,24 +9,25 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const SetPassword: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const queryParams = new URLSearchParams(location.search);
   const emailFromQuery = queryParams.get("email");
   const emailFromState = location.state?.email;
-  const email = emailFromQuery || emailFromState;
+  const email = emailFromQuery || emailFromState || localStorage.getItem("email");
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const emailLocalStorage = localStorage.getItem("email");
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   useEffect(() => {
-    if (!email || !emailLocalStorage) {
+    if (!email) {
       navigate("/register");
     }
-  }, [email, emailLocalStorage]);
+  }, [email]);
 
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*\W).{8,}$/;

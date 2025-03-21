@@ -84,11 +84,10 @@ export default function CreateOrganization() {
         try {
             const res = await CreateOrganizationAPI(data);
             if (res.success === true) {
-                console.log(res?.message)
                 toast.success(res?.message || "Organization created successfully!", { duration: 2000 });
                 setFormData(null);
                 // setTimeout(() => {
-                navigate("/add-employ")
+                navigate("/add-employe")
                 // }, 500)
             } else {
                 toast.error(res?.error || "Server error please try again!" , { duration: 2000 });

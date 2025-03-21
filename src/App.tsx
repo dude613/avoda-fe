@@ -19,6 +19,7 @@ import CreateOrganization from "./components/CreateOrganization ";
 import Header from "./components/Header";
 import AddTeamMembers from "./components/AddTeamMembers";
 
+
 function App() {
   const location = useLocation();
 
@@ -51,7 +52,7 @@ function App() {
         <Route path="/new-password" element={<ResetNewPassword />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
-          <Route path="/add-employ" element={<AddTeamMembers />} />
+          <Route path="/add-employe" element={<AddTeamMembers />} />
 
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>

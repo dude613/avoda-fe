@@ -1,19 +1,20 @@
 import axios from "axios";
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER } from "../constants"
+
 const userId = localStorage.getItem("userId");
-const header = {
+ const header = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
 }
-
-export async function CreateOrganizationAPI(formData : any) {
+export async function CreateOrganizationAPI(formData: any) {
+   
     try {
         const body = {
             ...formData,
             userId: userId,
         };
         const response = await axios.post(
-            `${baseUrl}/api/admin/create-Organization`, body,
+            CREATE_ORGANIZATION, body,
             {
                 headers: header,
             }
@@ -28,7 +29,7 @@ export async function CreateOrganizationAPI(formData : any) {
 
 export async function fetchOrganization() {
     try {
-        const response = await axios.get(`${baseUrl}/api/admin/organization-list/${userId}`, {
+        const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
             headers: header,
         });
         const data = response.data;
@@ -39,10 +40,10 @@ export async function fetchOrganization() {
     }
 }
 
-export async function AddTeamMemberAPI(formData : any) {
+export async function AddTeamMemberAPI(formData: any) {
     try {
         const response = await axios.post(
-            `${baseUrl}/api/admin/add-teammeber`, formData,
+            ADD_TEAM_MEMBER, formData,
             {
                 headers: header,
             }

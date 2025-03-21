@@ -69,12 +69,12 @@ const VerifyCode: React.FC = () => {
       if (data.success === true) {
         localStorage.setItem("userId", data.user._id);
         localStorage.setItem("accessToken", data.accessToken);
-        toast.success(data?.message || "User verified successfully");
-        setTimeout(() => {
-          navigate("/create-organization", { replace: true });
-        }, 1000);
+        toast.success(data?.message || "User verified successfully", { duration: 2000 });
+        // setTimeout(() => {
+        navigate("/create-organization", { replace: true });
+        // }, 1000);
       } else {
-        toast.error(data?.error || "User already verified");
+        toast.error(data?.error || "User already verified", { duration: 2000 });
         setTimeout(() => {
           navigate("/register", { replace: true });
         }, 1000);

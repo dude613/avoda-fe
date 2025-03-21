@@ -86,16 +86,13 @@ const Login: React.FC = () => {
         }),
       });
       const data = await response.json();
-      console.log(data)
       if (data.success === true) {
         localStorage.setItem("userId", data.user._id);
         localStorage.setItem("accessToken", data.accessToken);
-        toast.success(data?.message || "User login successfully");
-        setTimeout(() => {
-          navigate("/create-organization", { replace: true });
-        }, 1000);
+        toast.success(data?.message || "User login successfully", { duration: 2000 });
+        navigate("/create-organization", { replace: true });
       } else {
-        toast.error(data?.error || "User does not exist in database please try another email");
+        toast.error(data?.error || "User does not exist in database please try another email", { duration: 2000 });
       }
     } catch (e) {
       toast.error("login server error");
@@ -181,7 +178,7 @@ const Login: React.FC = () => {
               onChange={handlePasswordChange}
               error={passwordError} />
             <span
-              className="absolute right-3 top-8 cursor-pointer"
+              className="absolute right-4 top-10 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
