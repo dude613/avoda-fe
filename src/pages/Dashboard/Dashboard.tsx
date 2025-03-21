@@ -23,11 +23,10 @@ export default function Dashboard() {
   const { teamMembers } = useSelector(
     (state: RootState) => state.organization
   );
-
+ 
   useEffect(() => {
     dispatch(fetchOrganizations(userId as string));
   }, [dispatch, userId]);
-
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
