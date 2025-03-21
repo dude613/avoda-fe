@@ -20,7 +20,6 @@ import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const userId = localStorage.getItem("userId")
-
   const { teamMembers } = useSelector(
     (state: RootState) => state.organization
   );
@@ -28,7 +27,6 @@ export default function Dashboard() {
   useEffect(() => {
     dispatch(fetchOrganizations(userId as string));
   }, [dispatch, userId]);
-
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
