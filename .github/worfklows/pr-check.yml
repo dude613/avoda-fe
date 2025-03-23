@@ -1,0 +1,25 @@
+name: PR Check (Install + Test)
+
+on:
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # or the version you're using
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: yarn test
