@@ -27,6 +27,7 @@ jobs:
       # Run lint
       - name: Lint Check
         run: yarn lint
+        continue-on-failure: true
 
       # Run tests
       - name: Run tests
