@@ -85,6 +85,8 @@ const Login: React.FC = () => {
         }
       } catch (error) {
         toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      } finally {
+        setLoading(false);
       }
     }
   };
