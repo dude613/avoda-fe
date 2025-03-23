@@ -34,7 +34,7 @@ export async function fetchOrganization() {
         const data = response.data;
         return data;
     } catch (error) {
-        console.log("error fetch organizaiton", error)
+        console.log("error fetch organization", error)
         return error
     }
 }

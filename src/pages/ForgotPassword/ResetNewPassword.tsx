@@ -23,7 +23,7 @@ export default function ResetNewPassword() {
         return passwordRegex.test(password);
     };
 
-    const handlePasswordChange = (e: { target: { value: any; }; }) => {
+    const handlePasswordChange = (e: { target: { value: string; }; }) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
         if (!newPassword) {
@@ -35,7 +35,7 @@ export default function ResetNewPassword() {
         }
     };
 
-    const handleConfirmPasswordChange = (e: { target: { value: any; }; }) => {
+    const handleConfirmPasswordChange = (e: { target: { value: string; }; }) => {
         const newConfirmPassword = e.target.value;
         setConfirmPassword(newConfirmPassword);
 

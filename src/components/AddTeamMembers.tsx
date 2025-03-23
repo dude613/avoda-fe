@@ -21,15 +21,20 @@ const AddTeamMembers = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [tab, setTab] = useState("email");
-  const [organizaitonId, setOrganizationId] = useState("");
-  const [, setCsvData] = useState<any[]>([]);
+  const [organizationId, setOrganizationId] = useState("");
+  const [, setCsvData] = useState<{ email: string; role: string }[]>([]);
   const [csvError, setCsvError] = useState<string>('')
   const { control, handleSubmit, formState: { errors }, trigger, setValue } = useForm<FormData>({
     defaultValues: { members: [{ email: "", role: "" }] },
   });
 
-  const { fields, append } = useFieldArray<any>({ control, name: "members" });
-
+  const { fields, append } = useFieldArray<FormData, "members">({ control, name: "members" });
+  // Or if that causes an overload issue, this fallback works:  
+/*   const { fields, append } = useFieldArray({
+    control,
+    name: "members",
+  });
+ */  
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchOrganization();
@@ -42,11 +47,11 @@ const AddTeamMembers = () => {
   }, [])
   
   
-  const handleCsvUpload = (data: any) => {
-    setCsvData(data);
+  const handleCsvUpload = (data: { Email: string; Role: string }[]) => {
+    setCsvData(data.map(item => ({ email: item.Email, role: item.Role })));
     setCsvError('');
     const seenEmails = new Set<string>();
-    const invalidEntries = data.filter((item: any, index: number) => {
+    const invalidEntries = data.filter((item: { Email: string; Role: string }, index: number) => {
       const email = item.Email ? item.Email.toLowerCase() : '';
       const role = item.Role ? item.Role.toLowerCase() : '';
       if (!email) {
@@ -78,7 +83,7 @@ const AddTeamMembers = () => {
       return;
     }
   
-    setValue("members", data.map((item: any) => ({
+    setValue("members", data.map((item: { Email: string; Role: string }) => ({
       email: item.Email ? item.Email.toLowerCase() : '',
       role: item.Role ? item.Role.toLowerCase() : ''
     })));
@@ -101,7 +106,7 @@ const AddTeamMembers = () => {
     const teamMembersData = data.members.map((member) => ({
       email: member.email,
       role: member.role,
-      orgId: organizaitonId
+      orgId: organizationId
     }));
     try {
       const response = await AddTeamMemberAPI({ members: teamMembersData });
@@ -190,7 +195,7 @@ const AddTeamMembers = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 {tab === "email" ? (
                 <div className="mb-8 space-y-4 w-full">
-                {fields.map((field: any, index: number) => (
+                {fields.map((field, index: number) => (
                   <div key={field.id} className="flex items-center gap-2">
                     <div className="w-[50%] relative">
                       <Controller
@@ -205,6 +210,7 @@ const AddTeamMembers = () => {
                           }
                         }}
                         render={({ field }) => (
+
                           <Input
                             {...field}
                             placeholder="Email address"

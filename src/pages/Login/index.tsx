@@ -120,7 +120,7 @@ const Login: React.FC = () => {
         }
       } catch (error) { }
     },
-    onError: (error: any) => console.error("Login Failed:", error),
+    onError: (error: unknown) => console.error("Login Failed:", error),
     scope:
       "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
