@@ -5,8 +5,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import Input from "../../ui/Input";
-import Button from "../../ui/Button";
 import * as Constants from "../../constants/Login";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -87,13 +85,7 @@ const Login: React.FC = () => {
         }
       } catch (error) {
         toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
-      } finally {
-        setLoading(false);
       }
-    } catch (e) {
-      toast.error("login server error");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -167,7 +159,7 @@ const Login: React.FC = () => {
             className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             value={emailInput}
             onChange={handleEmailChange}
-            error={error} />
+          />
 
           <div className="relative mb-4">
             <label className="text-xs mb-6">{Constants.PASSWORD_LABEL}</label>
@@ -177,7 +169,7 @@ const Login: React.FC = () => {
               className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={password}
               onChange={handlePasswordChange}
-              error={passwordError} />
+            />
             <span
               className="absolute right-3 top-8 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}

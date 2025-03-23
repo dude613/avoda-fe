@@ -25,4 +25,3 @@ export const File: Story = {
     accept: '.jpg,.png,.pdf',
   },
 };
-};
