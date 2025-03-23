@@ -8,6 +8,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vitest", "vite/client", "vitest/config", "vitest/globals"]
   }
 }
