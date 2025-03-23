@@ -1,0 +1,28 @@
+name: PR Check (Main)
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  full-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - run: yarn install
+      - run: yarn playwright install --with-deps
+
+      # Run type checking
+      - name: Type Check
+        run: yarn tsc --noEmit
+
+      # Run lint
+      - name: Lint Check
+        run: yarn lint
+
+      # Run full test suite
+      - name: Run Tests
+        run: yarn test

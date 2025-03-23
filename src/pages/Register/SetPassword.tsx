@@ -48,7 +48,7 @@ const SetPassword: React.FC = () => {
       setPasswordError("Password is required.");
       return;
     }
-    if (!validatePassword(password)) {
+    if (!validatePassword()) {
       setPasswordError("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.");
       return;
     }
