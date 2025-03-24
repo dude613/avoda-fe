@@ -1,192 +1,169 @@
-import React, { ReactNode, useMemo, useState } from 'react'
+import { useState, useMemo, useEffect } from "react";
 import {
-  createColumnHelper,
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import Pagination from "../../util/Pagination";
+import Button from "../../ui/Button";
+import { VscSettings } from "react-icons/vsc";
+import Input from "../../ui/Input";
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from "../../redux/Store";
+import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 
-const Dashboard: React.FC = () => {
+export default function Dashboard() {
+  const dispatch = useDispatch<AppDispatch>();
+  const userId = localStorage.getItem("userId")
+  const { teamMembers } = useSelector(
+    (state: RootState) => state.organization
+  );
+ 
+  useEffect(() => {
+    dispatch(fetchOrganizations(userId as string));
+  }, [dispatch, userId]);
 
-  const [selectList, setSelectList] = useState<number[]>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState({});
 
-  const columnHelper = createColumnHelper<any>();
-  const columns: ColumnDef<any>[] = useMemo(
+  const columns = useMemo<ColumnDef<any>[]>(
     () => [
-      // columnHelper.accessor("CreatedAt", {
-      //   header: t("order_date"),
-      //   cell: (info) => info.getValue(),
-      // }),
-      // columnHelper.accessor("State", {
-      //   header: t("status"),
-      //   cell: (info) => {
-      //     const value = info.getValue();
-      //     return (
-      //       <div
-      //         className={`${
-      //           (statusMapping[value as number] || value) === "Paid"
-      //             ? "bg-green-600 opacity-85 text-white"
-      //             : "bg-yellow-100"
-      //         } px-2.5 py-1 rounded-md`}
-      //       >
-      //         {statusMapping[value as number] || (value as string)}
-      //       </div>
-      //     );
-      //   },
-      // }),
+      {
+        id: "select",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            onChange={(e) => table.toggleAllRowsSelected(e.target.checked)}
+            checked={table.getIsAllRowsSelected()}
+            className="cursor-pointer"
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            className="cursor-pointer"
+          />
+        ),
+      },
+      { accessorKey: "_id", header: "ID" },
+      { accessorKey: "name", header: "Name" },
+      { accessorKey: "email", header: "Email" },
+      { accessorKey: "address", header: "Address" },
+      { accessorKey: "organizationName", header: "Organization" },
+      { accessorKey: "role", header: "Role" },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status;
+          const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+
+          return (
+            <span
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active" ? "bg-background text-text" : "text-background border border-gray-300"
+                }`}
+            >
+              {formattedStatus}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: () => <HiOutlineDotsHorizontal className="cursor-pointer text-background ml-4" />,
+      },
     ],
-    [columnHelper]
+    []
   );
 
   const table = useReactTable({
-    data: [],
+    data: teamMembers || [],
     columns,
-    // state: {
-    //   sorting: sortBy,
-    //   pagination: {
-    //     pageIndex: page - 1 || 0,
-    //     pageSize: pageSize || 10,
-    //   },
-    // },
-    // onSortingChange: (updater) => {
-    //   const updatedSortBy =
-    //     typeof updater === "function" ? updater(sortBy) : updater;
-    //   dispatch(setSortBy(updatedSortBy));
-    // },
-    onPaginationChange: (paginationState: any) => {
-      // dispatch(setPage(paginationState.pageIndex + 1));
-      // dispatch(setPageSize(paginationState.pageSize));
-    },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    // pageCount: pagination?.totalPages || 1,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { rowSelection, globalFilter },
+    onRowSelectionChange: setRowSelection,
   });
-  return (
-    <div>
 
-      <div>
-        <div className=" overflow-x-auto px-2 sm:px-4 lg:mt-1  mt-20 md:px-8">
-          <table className="datatable-table w-full table-auto border-collapse text-sm sm:text-base">
-            <thead>
+  return (
+    <div className="p-8">
+      <div className="flex mb-4 w-full">
+        <div className=" mb-4 w-full">
+          <h1 className="text-3xl font-bold">Users</h1>
+          <p className="text-primary text-sm leading-5 font-semibold">Here's list to all users in your organizaiton</p>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center gap-4 mb-4">
+        <div className="flex justify-start items-start gap-4">
+          <Input
+            type="text"
+            placeholder="Filter users..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            error={""}
+            className="border rounded-lg w-[300px]" />
+
+          <Button text={"Role"}
+            icon={<IoMdAddCircleOutline size={20} />}
+            className="flex justify-center items-center gap-2 border border-dashed border-primary font-semibold w-28 h-11 rounded-lg"
+          />
+          <Button text={"Status"}
+            icon={<IoMdAddCircleOutline size={20} />}
+            className="flex justify-center items-center gap-2 border border-dashed border-primary font-semibold w-28 h-11 rounded-lg"
+          />
+        </div>
+        <div className="flex justify-end items-center gap-2">
+          <Button text={"View"}
+            icon={<VscSettings size={20} />}
+            className="flex justify-center items-center gap-2 border border-primary font-semibold px-4 h-11 rounded-lg"
+          />
+          <Button text={'Invite User'}
+            className="bg-background text-lg text-text font-bold py-3 px-5 w-full rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+          />
+        </div>
+
+      </div>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        {table.getRowModel().rows.length > 0 ? (
+          <table className="w-full text-left border-collapse border border-gray-400">
+            <thead className="border border-gray-300">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  <th className="px-2 py-2 border-t border-gray-300 text-center">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-1 w-1 text-blue-600 rounded scale-75"
-                      // onChange={handleHeaderClick}
-                      // checked={selectAll}
-                      />
-                    </div>
-                  </th>
                   {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="px-2 py-2 border-t border-gray-300 text-left text-gray-800 cursor-pointer"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <span className="flex items-center">
-                          {header.column.columnDef.header as ReactNode}
-                          {header.column.columnDef.header !== "Actions" && (
-                            <span className="ml-1 flex flex-col gap-1 justify-center">
-                              <svg
-                                className="fill-current"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 10 5"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M5 0L0 5H10L5 0Z" fill="" />
-                              </svg>
-
-                              <svg
-                                className="fill-current"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 10 5"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M5 5L10 0L0 0L5 5Z" fill="" />
-                              </svg>
-                            </span>
-                          )}
-                        </span>
-                      )}
+                    <th key={header.id} className="py-4 px-4 text-[#444444] font-semibold text-sm">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
-
             <tbody>
-              {table.getRowModel().rows.map((row) => {
-                const isSelected = selectList.includes(
-                  row.original.BillBeeOrderId
-                );
-                return (
-                  <tr
-                    key={row.id}
-                    className={`${isSelected
-                        ? "bg-[#9ab8c1] text-black rounded-sm bottom-2"
-                        : "text-black rounded-sm"
-                      }`}
-                    onClick={() =>
-                      console.log('click')
-                      // handleRowClick(row.original.BillBeeOrderId)
-                    }
-                  >
-                    <td className="px-4 py-2 border-t border-gray-300 text-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                        checked={isSelected}
-                        id={row.id}
-                      />
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="border border-gray-300 hover:bg-gray-100 transition">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="py-4 px-4">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="px-4 py-2 border-t border-gray-300  text-wrap break-words"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-
-              {/* {loading && (
-                  <tr>
-                    <td colSpan={table.getVisibleFlatColumns().length}>
-                      <div className="absolute  top-4 left-0 right-0 bottom-0 flex items-center justify-center backdrop-blur-sm">
-                        <ClipLoader
-                          color={"#000"}
-                          loading={loading}
-                          size={35}
-                          speedMultiplier={1.1}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                )} */}
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
-        </div>
+        ) : (
+          <p className="p-4">No records found.</p>
+        )}
       </div>
+      <Pagination table={table} />
     </div>
-  )
+  );
 }
-
-export default Dashboard

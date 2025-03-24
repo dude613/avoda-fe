@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import * as Constants from "../../constants/ForgotPassword";
+import { PASSWORD_REQUIRED_ERROR } from "@/constants/ForgotPassword";
+import Password from "@/components/form/password";
+import Button from "@/ui/Button";
+import { PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
+     CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
+      RESET_PASSWORD_BUTTON_TEXT,
+     RETURN_TO_SIGNIN_TEXT,RESET_PASSWORD_SUBTITLE,RESET_PASSWORD_TITLE,
+     NEW_PASSWORD_PLACEHOLDER } from "@/constants/ForgotPassword";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,75 +18,36 @@ export default function ResetNewPassword() {
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(location.search);
     const emailFromUrl = searchParams.get("email") || "";
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [confirmPasswordError, setConfirmPasswordError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const validatePassword = (password: string) => {
-        const passwordRegex = /^(?=(.*[A-Z]))(?=(.*\d))(?=(.*[\W_]))[A-Za-z\d\W_]{8,16}$/;
-        return passwordRegex.test(password);
-    };
 
-    const handlePasswordChange = (e: { target: { value: any; }; }) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        if (!newPassword) {
-            setPasswordError(Constants.PASSWORD_REQUIRED_ERROR);
-        } else if (!validatePassword(newPassword)) {
-            setPasswordError(Constants.PASSWORD_VALIDATION_ERROR);
-        } else {
-            setPasswordError("");
-        }
-    };
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm({
+        mode: "onChange",
+    });
 
-    const handleConfirmPasswordChange = (e: { target: { value: any; }; }) => {
-        const newConfirmPassword = e.target.value;
-        setConfirmPassword(newConfirmPassword);
 
-        if (!newConfirmPassword) {
-            setConfirmPasswordError("");
-        } else if (newConfirmPassword !== password) {
-            setConfirmPasswordError(Constants.PASSWORDS_MISMATCH_ERROR);
-        } else {
-            setConfirmPasswordError("");
-        }
-    };
-
-    const handleResetPassword = async () => {
-        if (!password) {
-            setPasswordError(Constants.PASSWORD_REQUIRED_ERROR);
-            return;
-        }
-        if (!validatePassword(password)) {
-            setPasswordError(Constants.PASSWORD_VALIDATION_ERROR);
-            return;
-        }
-        if (password !== confirmPassword) {
-            setConfirmPasswordError(Constants.PASSWORDS_MISMATCH_ERROR);
-            return;
-        }
-        setPasswordError("");
-        setConfirmPasswordError("");
+    const onSubmit = async (data: any) => {
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: emailFromUrl, password }),
+                body: JSON.stringify({ email: emailFromUrl, password: data.password }),
             });
 
-            const data = await response.json();
-            if (data.success) {
-                toast.success(data?.message || Constants.PASSWORD_RESET_SUCCESS_TOAST);
-                navigate("/login")
+            const result = await response.json();
+            if (result.success) {
+                toast.success(result?.message || "Password reset successfully.");
+                navigate("/login");
             } else {
-                toast.error(data.error || Constants.PASSWORD_RESET_FAILED_TOAST);
+                toast.error(result.error || "Failed to reset password.");
             }
         } catch (error) {
-            toast.error(Constants.PASSWORD_RESET_FAILED_TOAST);
+            toast.error("Failed to reset password.");
         }
     };
 
@@ -94,60 +61,64 @@ export default function ResetNewPassword() {
                             <FiLock className="text-4xl" />
                         </div>
                     </div>
-
                     <h2 className="mt-8 text-2xl font-bold text-gray-800 mb-2 text-center">
-                        {Constants.RESET_PASSWORD_TITLE}
+                      {RESET_PASSWORD_TITLE}
                     </h2>
                     <p className="text-sm font-semibold text-gray-500 text-center mb-8">
-                        {Constants.RESET_PASSWORD_SUBTITLE}
+                       {RESET_PASSWORD_SUBTITLE}
                     </p>
 
-                    <div className="relative mb-2">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder={Constants.NEW_PASSWORD_PLACEHOLDER}
-                            className="border text-sm p-3 w-full h-auto rounded focus:outline-none focus:ring-1 focus:ring-gray-200"
-                            value={password}
-                            onChange={handlePasswordChange}
-                        />
-                        <button
-                            type="button"
-                            className="absolute inset-y-0 right-3 flex items-center"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                    </div>
-                    {passwordError && <p className="text-red-500 text-xs mb-2">{passwordError}</p>}
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="relative mb-2">
+                            <Controller
+                                name="password"
+                                control={control}
+                                rules={{
+                                    required: PASSWORD_REQUIRED_ERROR,
+                                    pattern: {
+                                        value: PASSWORD_REGEX,
+                                        message: PASSWORD_VALIDATION_ERROR,
+                                    },
+                                }}
+                                render={({ field }) => (
+                                    <Password
+                                        {...field}
+                                        placeholder={NEW_PASSWORD_PLACEHOLDER}
+                                        showLabel={false}
+                                        error={errors.password?.message?.toString()}
+                                    />
+                                )}
+                            />
+                        </div>
 
-                    <div className="relative mb-2">
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            placeholder={Constants.CONFIRM_PASSWORD_PLACEHOLDER}
-                            className="border text-sm p-3 w-full rounded focus:outline-none focus:ring-1 focus:ring-gray-200"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                        />
-                        <button
-                            type="button"
-                            className="absolute inset-y-0 right-3 flex items-center"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                    </div>
-                    {confirmPasswordError && <p className="text-red-500 text-xs mb-2">{confirmPasswordError}</p>}
+                        <div className="relative mb-2">
+                            <Controller
+                                name="confirmPassword"
+                                control={control}
+                                rules={{
+                                    required: PASSWORD_REQUIRED_ERROR,
+                                    validate: (value) => value === watch("password") || PASSWORDS_MISMATCH_ERROR,
+                                }}
+                                render={({ field }) => (
+                                    <Password
+                                        {...field}
+                                        placeholder={CONFIRM_PASSWORD_PLACEHOLDER}
+                                        showLabel={false}
+                                        error={errors.confirmPassword?.message?.toString()}
+                                    />
 
-                    <button
-                        onClick={handleResetPassword}
-                        className="bg-black text-sm mt-3 text-white font-bold py-3 w-full rounded hover:bg-gray-800 transition cursor-pointer"
-                    >
-                        {Constants.RESET_PASSWORD_BUTTON_TEXT}
-                    </button>
+                                )}
+                            />
+                        </div>
+                        <Button
+                            className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+                            text={RESET_PASSWORD_BUTTON_TEXT}
+                        />
+                    </form>
 
                     <p className="text-gray-800 text-sm text-center mt-5">
                         <Link to={"/login"} className="hover:underline">
-                            {Constants.RETURN_TO_SIGNIN_TEXT}
+                           {RETURN_TO_SIGNIN_TEXT}
                         </Link>
                     </p>
                 </div>

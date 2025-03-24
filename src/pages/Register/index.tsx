@@ -1,57 +1,53 @@
-import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
 import Button from "../../ui/Button";
-import Input from "../../ui/Input";
 import { Link } from "react-router-dom";
-import * as Constants from "../../constants/Register";
+import { useForm, Controller } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
+import Email from "@/components/form/email";
+import {
+  REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE,
+  GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT,
+  DIVIDER_TEXT, INVALID_EMAIL_ERROR,
+  EMAIL_REGEX,
+  REGISTER_SUCCESS_TOAST,
+  USER_EXISTS_TOAST,
+  REGISTER_PAGE_SUBTITLE_SIGN_UP
+} from "@/constants/Register";
+import { SERVER_ERROR_TOAST } from "@/constants/Login";
+import Card from "@/ui/Card";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [emailInput, setEmailInput] = useState("");
-  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger,
+  } = useForm();
 
   const validateEmail = (email: string) => {
-    if (!email) return "Email is required.";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) ? "" : "Please enter a valid email address.";
+    return EMAIL_REGEX.test(email) || INVALID_EMAIL_ERROR;
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const email = e.target.value;
-    setEmailInput(email);
-    if (!validateEmail(email)) {
-      setError(Constants.INVALID_EMAIL_ERROR);
-    } else {
-      setError("");
-    }
+    setValue("email", email);
+    await trigger("email");
   };
 
-  const handleEnter = (e: any) => {
-    if (e.key === "Enter") {
-      handleContinue();
-    }
-  };
-
-  const handleContinue = () => {
-    if (!validateEmail(emailInput)) {
-      setError(Constants.INVALID_EMAIL_ERROR);
-    } else {
-      localStorage.setItem("email", emailInput);
-      navigate("/register/setPassword", {
-        state: { email: emailInput },
-      });
-    }
-    localStorage.setItem("email", emailInput);
+  const onSubmit = (data: any) => {
+    localStorage.setItem("email", data.email);
     navigate("/register/setPassword", {
-      state: { email: emailInput },
+      state: { email: data.email },
     });
   };
 
-  const register = useGoogleLogin({
+  const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const data = JSON.stringify({
         idToken: tokenResponse.access_token,
@@ -68,20 +64,14 @@ const Register: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success(Constants.REGISTER_SUCCESS_TOAST, {
-            position: "bottom-center",
-          });
-          setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-          }, 1000);
+          toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
+          navigate("/dashboard", { replace: true });
         } else if (response.status === 404) {
-          toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
+          toast.error(USER_EXISTS_TOAST, { duration: 2000 });
         } else {
-          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+          toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
         }
-      } catch (error) {
-        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
-      }
+      } catch (error) { }
     },
     onError: (error: any) => console.error("Login Failed:", error),
     scope:
@@ -91,53 +81,58 @@ const Register: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
-            {Constants.REGISTER_PAGE_TITLE}
-          </h2>
-          <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
-            {Constants.REGISTER_PAGE_SUBTITLE}{" "}
-            <Link to={"/login"} className="hover:underline">
-              sign up
-            </Link>
-          </p>
+      <Card>
+        <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
+          {REGISTER_PAGE_TITLE}
+        </h2>
+        <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
+          {REGISTER_PAGE_SUBTITLE}{" "}
+          <Link to={"/login"} className="hover:underline">
+            {REGISTER_PAGE_SUBTITLE_SIGN_UP}
+          </Link>
+        </p>
 
-          <button
-            onClick={() => register()}
-            className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
-          >
-            <FcGoogle className="text-lg" />
-            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
-          </button>
+        <Button
+          onClick={() => registerWithGoogle()}
+          text={GOOGLE_BUTTON_TEXT}
+          icon={<FcGoogle className="text-lg" />}
+          className="flex items-center justify-center border-border border w-full p-2 mb-4 rounded-sm hover:ring-1 hover:ring-ring transition cursor-pointer"
+        />
 
-          <div className="flex items-center my-4">
-            <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
-            <hr className="flex-grow border-gray-300" />
-          </div>
-
-          {/* Email Input */}
-          {/* TODO Make the email input like the password input (components) */}
-          <input
-            type="email"
-            placeholder={Constants.EMAIL_PLACEHOLDER}
-            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={emailInput}
-            onChange={handleEmailChange}
-            onKeyDown={handleEnter}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-
-          {/* Continue with Email */}
-          <button
-            onClick={handleContinue}
-            className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
-          >
-            {Constants.EMAIL_BUTTON_TEXT}
-          </button>
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-gray-300" />
+          <span className="mx-2 text-gray-500 text-sm">{DIVIDER_TEXT}</span>
+          <hr className="flex-grow border-gray-300" />
         </div>
-      </div>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="relative mb-4">
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: INVALID_EMAIL_ERROR,
+                validate: validateEmail,
+              }}
+              render={({ field }) => (
+                <Email
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleEmailChange(e);
+                  }}
+                  error={errors.email?.message?.toString()}
+                />
+              )}
+            />
+          </div>
+          <Button
+            type="submit"
+            className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+            text={EMAIL_BUTTON_TEXT}
+          />
+        </form>
+      </Card>
     </>
   );
 };
