@@ -74,13 +74,13 @@ const Login: React.FC = () => {
     scope: "openid profile email",
   });
 
+
   return (
     <>
       <Toaster />
       <Card>
         <h2 className="text-xl font-bold mb-2 text-center">{LOGIN_PAGE_TITLE}</h2>
         <p className="text-xs text-primary mb-4 text-center">{LOGIN_PAGE_SUBTITLE}</p>
-
         <Button
           onClick={() => login()}
           text={GOOGLE_BUTTON_TEXT}
