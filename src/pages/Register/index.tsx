@@ -65,7 +65,7 @@ const Register: React.FC = () => {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
           toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
-          navigate("/dashboard", { replace: true });
+          navigate("/create-organization", { replace: true });
         } else if (response.status === 404) {
           toast.error(USER_EXISTS_TOAST, { duration: 2000 });
         } else {
@@ -77,6 +77,7 @@ const Register: React.FC = () => {
     scope:
       "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
+  
 
   return (
     <>

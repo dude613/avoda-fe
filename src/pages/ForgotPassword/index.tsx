@@ -18,7 +18,6 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
-
   const {
     control,
     handleSubmit,
@@ -29,7 +28,6 @@ const ForgotPassword: React.FC = () => {
       email: localStorage.getItem("email") || "",
     },
   });
-
   const onSubmit = async (data: { email: string }) => {
     try {
       const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
