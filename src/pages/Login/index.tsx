@@ -71,7 +71,6 @@ const Login: React.FC = () => {
     scope: "openid profile email",
   });
 
-
   return (
     <>
       <Toaster />
@@ -160,7 +159,7 @@ const Login: React.FC = () => {
 
         <p className="text-sm text-center mt-5">
           <Link to="/forgot-password" className="hover:underline text-black">
-            {FORGOT_PASSWORD_LINK_TEXT}
+            {FORGOT_PASSWORD_LINK_TEXT} 
           </Link>
         </p>
       </Card>
