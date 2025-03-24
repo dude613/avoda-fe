@@ -27,6 +27,27 @@ export async function LoginAPI(formData: { email: string; password: string }) {
     }
 }
 
+<<<<<<< HEAD
+=======
+export async function LoginAPI(formData: { email: string; password: string }) {
+    try {
+        const response = await fetch(LOGIN_API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+}
+
+>>>>>>> feat/get-google-ids-for-oauth
 export async function CreateOrganizationAPI(formData: any) {
 
     try {
@@ -50,7 +71,11 @@ export async function CreateOrganizationAPI(formData: any) {
 export async function fetchOrganization() {
     try {
         const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
+<<<<<<< HEAD
             headers: getAuthHeaders(),
+=======
+            headers: header,
+>>>>>>> feat/get-google-ids-for-oauth
         });
         const data = response.data;
         return data;

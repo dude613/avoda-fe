@@ -28,7 +28,11 @@ const Register: React.FC = () => {
     formState: { errors },
     setValue,
     trigger,
+<<<<<<< HEAD
   } = useForm();
+=======
+  } = useForm(); 
+>>>>>>> feat/get-google-ids-for-oauth
 
   const validateEmail = (email: string) => {
     return EMAIL_REGEX.test(email) || INVALID_EMAIL_ERROR;
@@ -46,7 +50,11 @@ const Register: React.FC = () => {
       state: { email: data.email },
     });
   };
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> feat/get-google-ids-for-oauth
   const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const data = JSON.stringify({
@@ -78,6 +86,7 @@ const Register: React.FC = () => {
       "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
   
+
 
   return (
     <>

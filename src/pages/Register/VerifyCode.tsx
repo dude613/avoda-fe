@@ -34,6 +34,7 @@ const VerifyCode: React.FC = () => {
     if (code.length < 6) {
       setError("Please fill in all the fields.");
 <<<<<<< HEAD
+<<<<<<< HEAD
       return;
     }
   
@@ -46,11 +47,14 @@ const VerifyCode: React.FC = () => {
 
     if (!/^\d+$/.test(code)) {
       setError("Please enter a valid numeric code.");
+=======
+>>>>>>> feat/get-google-ids-for-oauth
       return;
     }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
+<<<<<<< HEAD
 <<<<<<< HEAD
       
       if (isNaN(otpNumber)) {
@@ -59,6 +63,8 @@ const VerifyCode: React.FC = () => {
       }
 =======
 >>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
+=======
+>>>>>>> feat/get-google-ids-for-oauth
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

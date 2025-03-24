@@ -12,4 +12,8 @@ export const LIST_TEAMMEMBER = `${url}/admin/list-teammeber`;
 
 //..................Auth API Endpoints....................\\
 export const GET_USER_PROFILE = `${url}/auth/get-profile`;
+<<<<<<< HEAD
 export const LOGIN_API = `${url}/auth/login`;
+=======
+export const LOGIN_API = `${url}/api/auth/login`;
+>>>>>>> feat/get-google-ids-for-oauth

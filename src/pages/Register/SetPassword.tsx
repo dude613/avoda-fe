@@ -57,8 +57,13 @@ const SetPassword: React.FC = () => {
         body: JSON.stringify({
           email: email,
           password: data.password,
+<<<<<<< HEAD
         }),
       });
+=======
+        }), 
+      }); 
+>>>>>>> feat/get-google-ids-for-oauth
       const responseData = await response.json();
 
       if (responseData.success === true) {
@@ -74,7 +79,7 @@ const SetPassword: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }; 
 
   return (
     <>

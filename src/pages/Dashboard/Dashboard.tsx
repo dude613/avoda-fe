@@ -25,9 +25,13 @@ export default function Dashboard() {
   );
  
   useEffect(() => {
+<<<<<<< HEAD
     if(userId){
       dispatch(fetchOrganizations(userId as string));
     }
+=======
+    dispatch(fetchOrganizations(userId as string));
+>>>>>>> feat/get-google-ids-for-oauth
   }, [dispatch, userId]);
 
   const [globalFilter, setGlobalFilter] = useState("");

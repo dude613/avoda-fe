@@ -17,6 +17,7 @@ type FileUploaderProps = {
     onUpload: (data: any) => void;
 };
 
+<<<<<<< HEAD
 
 export default function FileUploader({
     mode,
@@ -64,17 +65,79 @@ export default function FileUploader({
                 msgs.push(`Invalid role (Must be one of: ${validRoles.join(", ")})`);
             }
     
+=======
+export default function FileUploader({
+    mode,
+    allowedTypes,
+    onUpload,
+}: FileUploaderProps) {
+    const [errorRows, setErrorRows] = useState<any[]>([]);
+    const [isFileUploaded, setIsFileUploaded] = useState(false);
+    const [validRowCount, setValidRowCount] = useState(0)
+    const [, startTransition] = useTransition();
+
+    const validateEmail = (email: string) =>
+        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+
+    const validateData = (data: any[]) => {
+        const errors: any[] = [];
+        const emailsSet = new Set<string>();
+
+        data.forEach((row, index) => {
+            const { Name, Email, Role } = row;
+            const msgs: string[] = [];
+
+            const missingFields: string[] = [];
+            if (!Name) missingFields.push("Name");
+            if (!Email) missingFields.push("Email");
+            if (!Role) missingFields.push("Role");
+
+            if (missingFields.length === 3) {
+                msgs.push("Name, Email, and Role required fields");
+            } else if (missingFields.length === 2) {
+                msgs.push(`${missingFields.join(" and ")} required fields`);
+            } else if (missingFields.length === 1) {
+                msgs.push(`${missingFields[0]} required fields`);
+            }
+
+            if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
+                msgs.push("Invalid name");
+            }
+
+            if (Email && !validateEmail(Email)) {
+                msgs.push("Invalid email address");
+            }
+
+            if (Email && emailsSet.has(Email)) {
+                msgs.push("Duplicate email");
+            } else if (Email) {
+                emailsSet.add(Email);
+            }
+
+            if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
+                msgs.push("Invalid role");
+            }
+
+>>>>>>> feat/get-google-ids-for-oauth
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
                     name: Name || "Missing",
                     email: Email || "Missing",
                     role: Role || "Missing",
+<<<<<<< HEAD
                     issue: msgs.join("; "),
                 });
             }
         });
     
+=======
+                    issue: msgs.join(", "),
+                });
+            }
+        });
+
+>>>>>>> feat/get-google-ids-for-oauth
         if (errors.length) {
             setErrorRows(errors);
             setValidRowCount(0);

@@ -34,17 +34,20 @@ function App() {
       <Header />
       <Routes>
         <Route
-          path="/"
-          element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />}
-        />
+          path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
         <Route
+<<<<<<< HEAD
           path="/login"
           element={<Login />}
         /> 
         <Route
           path="/register"
           element={<Register />}
+=======
+          path="/login" element={<Login />}
+>>>>>>> feat/get-google-ids-for-oauth
         />
+        <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/forgot-resend" element={<ResendForgotEmail />} />
         <Route path="/register/setPassword" element={<SetPassword />} />
@@ -53,7 +56,10 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
           <Route path="/add-employee" element={<AddTeamMembers />} />
+<<<<<<< HEAD
 
+=======
+>>>>>>> feat/get-google-ids-for-oauth
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
         <Route path="*" element={<Navigate to="/404" />} />

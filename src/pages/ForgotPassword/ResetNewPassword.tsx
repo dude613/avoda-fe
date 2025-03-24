@@ -21,6 +21,7 @@ export default function ResetNewPassword() {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     const handlePasswordChange = (e: { target: { value: string; }; }) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
@@ -60,6 +61,18 @@ export default function ResetNewPassword() {
 
 
 >>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
+=======
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm({
+        mode: "onChange",
+    });
+
+
+>>>>>>> feat/get-google-ids-for-oauth
     const onSubmit = async (data: any) => {
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {
