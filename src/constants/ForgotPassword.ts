@@ -34,4 +34,4 @@ export const PASSWORD_RESET_FAILED_TOAST = "Failed to reset password.";
 
 //.................Email Regular////////////////
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,}$/;

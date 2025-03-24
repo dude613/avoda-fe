@@ -20,6 +20,7 @@ export default function ResetNewPassword() {
     const emailFromUrl = searchParams.get("email") || "";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     const handlePasswordChange = (e: { target: { value: string; }; }) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
@@ -47,6 +48,18 @@ export default function ResetNewPassword() {
 
 >>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
 
+=======
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm({
+        mode: "onChange",
+    });
+
+
+>>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
     const onSubmit = async (data: any) => {
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {

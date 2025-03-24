@@ -15,6 +15,10 @@ import {
 } from "@/constants/Login";
 import { LoginAPI } from "@/service/api";
 import Email from "@/components/form/email";
+<<<<<<< HEAD
+=======
+// import Password from "@/components/form/password";
+>>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
 import PasswordWithStrength from "@/components/form/PasswordWithStrength";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -126,6 +130,15 @@ const Login: React.FC = () => {
             }}
             render={({ field }) => (
               <>
+<<<<<<< HEAD
+=======
+                {/* <Password
+                  {...field}
+                  placeholder={PASSWORD_PLACEHOLDER}
+                  showLabel={true}
+                  error={errors.password?.message?.toString()}
+                /> */}
+>>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
                 <PasswordWithStrength
                   placeholder={PASSWORD_PLACEHOLDER}
                   value={field.value}

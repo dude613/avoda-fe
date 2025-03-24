@@ -33,21 +33,27 @@ const VerifyCode: React.FC = () => {
   const handleVerify = async () => {
     if (code.length < 6) {
       setError("Please fill in all the fields.");
+<<<<<<< HEAD
       return;
     }
   
     if (!/^\d+$/.test(code)) {
       setError("Please enter a valid numeric code.");
+=======
+>>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
       return;
     }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
+<<<<<<< HEAD
       
       if (isNaN(otpNumber)) {
         setError("Please enter a valid numeric code.");
         return;
       }
+=======
+>>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

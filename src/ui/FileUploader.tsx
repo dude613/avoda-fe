@@ -81,7 +81,7 @@ export default function FileUploader({
             setIsFileUploaded(false);
         } else {
             onUpload(data);
-            setValidRowCount(data.length);
+            setValidRowCount(data?.length);
             setErrorRows([]);
         }
     };
