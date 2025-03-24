@@ -7,6 +7,7 @@ export const CHECK_EMAIL_TITLE = "Please check your email";
 export const CHECK_EMAIL_SUBTITLE = "We sent you a verification link. Please check your email to verify your account.";
 export const RESET_PASSWORD_TITLE = "Reset New Password";
 export const RESET_PASSWORD_SUBTITLE = "Enter your new password below.";
+export const INVALID_PASSWORD_ERROR = "Password must be at least 8 characters, with 1 uppercase letter and 1 special character.";
 
 // Button and link text
 export const RESET_PASSWORD_BUTTON_TEXT = "Reset Password";
@@ -25,8 +26,12 @@ export const EMPTY_EMAIL_ERROR = "Please enter your email.";
 export const PASSWORD_REQUIRED_ERROR = "Password is required.";
 export const PASSWORD_VALIDATION_ERROR = "Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.";
 export const PASSWORDS_MISMATCH_ERROR = "Passwords do not match.";
-
 // Toast messages
 export const RESET_LINK_SENT_TOAST = "Reset link sent to your email.";
 export const PASSWORD_RESET_SUCCESS_TOAST = "Password reset successfully.";
 export const PASSWORD_RESET_FAILED_TOAST = "Failed to reset password.";
+
+
+//.................Email Regular////////////////
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,}$/;

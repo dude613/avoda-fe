@@ -2,7 +2,8 @@
 
 // Page titles and headings
 export const REGISTER_PAGE_TITLE = "Create an account";
-export const REGISTER_PAGE_SUBTITLE = "Choose how you'd like to sign up";
+export const REGISTER_PAGE_SUBTITLE = "Choose how you'd like to";
+export const REGISTER_PAGE_SUBTITLE_SIGN_UP = "sign up"
 export const SET_PASSWORD_TITLE = "Set your password";
 export const SET_PASSWORD_SUBTITLE = "Choose a secure password for your account";
 export const VERIFY_CODE_TITLE = "Enter Verification Code";
@@ -46,7 +47,7 @@ export const USER_ALREADY_VERIFIED_TOAST = "User already verified";
 export const CODE_SENT_TOAST = "Verification code sent successfully";
 
 // Other text
-export const DIDNT_RECEIVE_CODE_TEXT = "Didn't receive the code? ";
+export const NOT_RECEIVE_CODE_TEXT = "Didn't receive the code? ";
 
 // Password strength meter
 export const PASSWORD_VERY_WEAK = "Very Weak";
@@ -55,3 +56,8 @@ export const PASSWORD_MEDIUM = "Medium";
 export const PASSWORD_STRONG = "Strong";
 export const PASSWORD_VERY_STRONG = "Very Strong";
 export const PASSWORD_STRENGTH_TEXT = "Password Strength:";
+
+
+//.............Email Regular expression..............\\
+
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

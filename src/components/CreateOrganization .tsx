@@ -84,14 +84,13 @@ export default function CreateOrganization() {
         try {
             const res = await CreateOrganizationAPI(data);
             if (res.success === true) {
-                console.log(res?.message)
-                toast.success(res?.message || "Organization created successfully!");
+                toast.success(res?.message || "Organization created successfully!", { duration: 2000 });
                 setFormData(null);
-                setTimeout(() => {
-                    navigate("/add-employ")
-                }, 500)
+                // setTimeout(() => {
+                navigate("/add-employe")
+                // }, 500)
             } else {
-                toast.error(res?.error || "Server error please try again!");
+                toast.error(res?.error || "Server error please try again!" , { duration: 2000 });
             }
         } catch (error) {
             console.error("Error creating organization:", error);
@@ -231,8 +230,9 @@ export default function CreateOrganization() {
                                 icon={loading && <CircularLoading />}
                                 iconRight={!loading && <FaArrowRight />}
                                 disabled={loading}
-                                className={`${loading ? "opacity-50" : ""} hover:scale-105`}
+                                className={`bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
                             />
+
                             <p className="text-xs text-textPrimary opacity-70 mb-4 text-center">
                                 By Creating an organization, you agree to our Terms and Service and Privacy Policy.
                             </p>

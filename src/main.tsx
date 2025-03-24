@@ -6,6 +6,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter as Router } from "react-router-dom";
+import store from "./redux/Store.tsx";
+import { Provider } from "react-redux";
 
 Sentry.init({
   dsn: "https://32a372d399967c40e175a081bbb13db9@sen.newhoopla.com/4",
@@ -27,10 +29,12 @@ Sentry.init({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Provider store={store}>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Router>
         <App />
       </Router>
     </GoogleOAuthProvider>
+    </Provider>
   </StrictMode>
 );
