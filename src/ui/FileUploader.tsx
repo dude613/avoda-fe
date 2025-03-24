@@ -17,6 +17,7 @@ type FileUploaderProps = {
     onUpload: (data: any) => void;
 };
 
+
 export default function FileUploader({
     mode,
     allowedTypes,
@@ -31,62 +32,56 @@ export default function FileUploader({
         /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
 
     const validateData = (data: any[]) => {
-        const errors: any[] = [];
+        const errors: Array<{ row: number; name: string; email: string; role: string; issue: string }> = [];
         const emailsSet = new Set<string>();
-
+    
         data.forEach((row, index) => {
             const { Name, Email, Role } = row;
             const msgs: string[] = [];
-
-            const missingFields: string[] = [];
-            if (!Name) missingFields.push("Name");
-            if (!Email) missingFields.push("Email");
-            if (!Role) missingFields.push("Role");
-
-            if (missingFields.length === 3) {
-                msgs.push("Name, Email, and Role required fields");
-            } else if (missingFields.length === 2) {
-                msgs.push(`${missingFields.join(" and ")} required fields`);
-            } else if (missingFields.length === 1) {
-                msgs.push(`${missingFields[0]} required fields`);
+    
+            const missingFields = ["Name", "Email", "Role"].filter((field) => !row[field as keyof any]);
+    
+            if (missingFields.length > 0) {
+                msgs.push(`${missingFields.join(", ")} required`);
             }
-
-            if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
-                msgs.push("Invalid name");
+    
+            if (Name && !/^[A-Za-z\s'-]+$/.test(Name)) {
+                msgs.push("Invalid name (Only letters, spaces, hyphens, and apostrophes allowed)");
             }
-
-            if (Email && !validateEmail(Email)) {
-                msgs.push("Invalid email address");
+    
+            if (Email) {
+                if (!validateEmail(Email)) {
+                    msgs.push("Invalid email address");
+                } else if (emailsSet.has(Email)) {
+                    msgs.push("Duplicate email");
+                } else {
+                    emailsSet.add(Email);
+                }
             }
-
-            if (Email && emailsSet.has(Email)) {
-                msgs.push("Duplicate email");
-            } else if (Email) {
-                emailsSet.add(Email);
+    
+            const validRoles = ["admin", "manager", "employee"];
+            if (Role && !validRoles.includes(Role.toLowerCase())) {
+                msgs.push(`Invalid role (Must be one of: ${validRoles.join(", ")})`);
             }
-
-            if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
-                msgs.push("Invalid role");
-            }
-
+    
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
                     name: Name || "Missing",
                     email: Email || "Missing",
                     role: Role || "Missing",
-                    issue: msgs.join(", "),
+                    issue: msgs.join("; "),
                 });
             }
         });
-
+    
         if (errors.length) {
             setErrorRows(errors);
             setValidRowCount(0);
             setIsFileUploaded(false);
         } else {
             onUpload(data);
-            setValidRowCount(data?.length);
+            setValidRowCount(data.length);
             setErrorRows([]);
         }
     };

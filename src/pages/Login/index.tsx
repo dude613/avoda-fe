@@ -15,7 +15,6 @@ import {
 } from "@/constants/Login";
 import { LoginAPI } from "@/service/api";
 import Email from "@/components/form/email";
-// import Password from "@/components/form/password";
 import PasswordWithStrength from "@/components/form/PasswordWithStrength";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -127,12 +126,6 @@ const Login: React.FC = () => {
             }}
             render={({ field }) => (
               <>
-                {/* <Password
-                  {...field}
-                  placeholder={PASSWORD_PLACEHOLDER}
-                  showLabel={true}
-                  error={errors.password?.message?.toString()}
-                /> */}
                 <PasswordWithStrength
                   placeholder={PASSWORD_PLACEHOLDER}
                   value={field.value}
