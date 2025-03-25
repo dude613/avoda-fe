@@ -16,10 +16,14 @@ export const EMAIL_PLACEHOLDER = "you@example.com";
 export const PASSWORD_LABEL = "Password";
 export const PASSWORD_PLACEHOLDER = "Password";
 <<<<<<< HEAD
+<<<<<<< HEAD
 export const CONFIRM_PASSWORD_PLACEHOLDER = "Confirm Password";
 =======
 export const CONFIRM_PASSWORD_PLACEHOLDER = "Confirm Password"
 >>>>>>> feat/get-google-ids-for-oauth
+=======
+export const CONFIRM_PASSWORD_PLACEHOLDER = "Confirm Password";
+>>>>>>> 7798fb7 (AVO-181, Implement skip onboarding flow functionlity)
 export const PASSWORDS_MISMATCH_ERROR = "Passwords do not match.";
 // Divider text
 export const DIVIDER_TEXT = "OR CONTINUE WITH";

@@ -5,6 +5,7 @@ const url = `${baseUrl}/api`;
 
 //.................Organization API endpoints................\\
 export const CREATE_ORGANIZATION = `${url}/admin/create-Organization`;
+export const SKIP_ORGANIZATION = `${url}/admin/skip-organization`
 export const ORGANIZATION_LIST = `${url}/admin/organization-list`;
 export const ADD_TEAM_MEMBER = `${url}/admin/add-teammeber`;
 export const LIST_TEAMMEMBER = `${url}/admin/list-teammeber`;
