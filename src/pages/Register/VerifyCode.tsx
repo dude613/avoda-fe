@@ -56,7 +56,7 @@ const VerifyCode: React.FC = () => {
       setError("Please enter a valid numeric code.");
       return;
     }
-  
+
     if (!/^\d+$/.test(code)) {
       setError("Please enter a valid numeric code.");
       return;

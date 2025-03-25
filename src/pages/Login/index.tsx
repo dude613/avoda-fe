@@ -15,14 +15,6 @@ import {
 } from "@/constants/Login";
 import { LoginAPI } from "@/service/api";
 import Email from "@/components/form/email";
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-// import Password from "@/components/form/password";
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-=======
-// import Password from "@/components/form/password";
->>>>>>> feat/get-google-ids-for-oauth
 import PasswordWithStrength from "@/components/form/PasswordWithStrength";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -136,21 +128,7 @@ const Login: React.FC = () => {
             }}
             render={({ field }) => (
               <>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feat/get-google-ids-for-oauth
-                {/* <Password
-                  {...field}
-                  placeholder={PASSWORD_PLACEHOLDER}
-                  showLabel={true}
-                  error={errors.password?.message?.toString()}
-                /> */}
-<<<<<<< HEAD
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-=======
->>>>>>> feat/get-google-ids-for-oauth
+
                 <PasswordWithStrength
                   placeholder={PASSWORD_PLACEHOLDER}
                   value={field.value}
@@ -178,15 +156,7 @@ const Login: React.FC = () => {
 
         <p className="text-sm text-center mt-5">
           <Link to="/forgot-password" className="hover:underline text-black">
-<<<<<<< HEAD
-<<<<<<< HEAD
             {FORGOT_PASSWORD_LINK_TEXT}
-=======
-            {FORGOT_PASSWORD_LINK_TEXT} 
->>>>>>> feat/get-google-ids-for-oauth
-=======
-            {FORGOT_PASSWORD_LINK_TEXT}
->>>>>>> 7798fb7 (AVO-181, Implement skip onboarding flow functionlity)
           </Link>
         </p>
       </Card>
