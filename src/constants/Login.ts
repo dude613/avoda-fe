@@ -49,4 +49,4 @@ export const SERVER_ERROR_TOAST = "Server error";
 
 //........Regular expression...\\
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
+export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W)(?=.*\d).{8,}$/;

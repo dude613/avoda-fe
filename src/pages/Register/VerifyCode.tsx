@@ -61,6 +61,11 @@ const VerifyCode: React.FC = () => {
       setError("Please enter a valid numeric code.");
       return;
     }
+
+    if (!/^\d+$/.test(code)) {
+      setError("Please enter a valid numeric code.");
+      return;
+    }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
@@ -82,8 +87,10 @@ const VerifyCode: React.FC = () => {
       });
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem("userId", data.user._id);
-        localStorage.setItem("accessToken", data.accessToken);
+        if (data.user && data.accessToken) {
+          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("accessToken", data.accessToken);
+        }
         toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
         const onboardingSkipped = data?.onboardingSkipped;
         const destination = onboardingSkipped ? "/create-organization" : "/dashboard"

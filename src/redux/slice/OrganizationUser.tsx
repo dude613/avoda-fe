@@ -43,11 +43,7 @@ export const fetchOrganizations = createAsyncThunk(
   'organization/fetchOrganizations',
   async (userId: string) => {
     const response = await axios.get(`${LIST_TEAMMEMBER}/${userId}`, {
-<<<<<<< HEAD
-      headers: getAuthHeaders(),
-=======
       headers: header,
->>>>>>> feat/get-google-ids-for-oauth
     });
     return response.data.teamMembers;
   }
