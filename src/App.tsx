@@ -61,7 +61,7 @@ function App() {
 =======
 >>>>>>> feat/get-google-ids-for-oauth
           <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
+        </Route> 
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
     </>

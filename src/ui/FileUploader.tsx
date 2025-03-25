@@ -257,7 +257,7 @@ export default function FileUploader({
                         </tbody>
                     </table>
                 </div>
-            ) : (
+            ) : ( 
                 <div
                     {...getRootProps()}
                     className={`border-2 w-full border-dashed rounded-md p-6 text-center mb-8 cursor-pointer hover:bg-gray-50 ${errorRows.length === 0 && isFileUploaded ? 'border-green-500' : ''}`}
