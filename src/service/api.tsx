@@ -7,7 +7,6 @@ const getAuthHeaders = () => ({
     "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
 });
 
-
 export async function LoginAPI(formData: { email: string; password: string }) {
     try {
         const response = await fetch(LOGIN_API, {
@@ -23,12 +22,7 @@ export async function LoginAPI(formData: { email: string; password: string }) {
         }
         return data;
     } catch (e) {
-<<<<<<< HEAD
         return {e : true, message : "Failed to server connect"};
-=======
-        console.error(e);
-        return { success: false, error: "Failed to connect to server" };
->>>>>>> 7798fb7 (AVO-181, Implement skip onboarding flow functionlity)
     }
 }
 
