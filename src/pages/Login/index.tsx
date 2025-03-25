@@ -37,7 +37,9 @@ const Login: React.FC = () => {
         localStorage.setItem("userId", response.user._id);
         localStorage.setItem("accessToken", response.accessToken);
         toast.success(response.message || LOGIN_SUCCESS_TOAST, { duration: 2000 });
-        navigate("/create-organization", { replace: true });
+        const onboardingSkipped = response?.onboardingSkipped;
+        const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
+        navigate(destination, { replace: true });
       } else {
         toast.error(response.error || USER_NOT_FOUND_TOAST, { duration: 2000 });
       }
@@ -159,7 +161,7 @@ const Login: React.FC = () => {
 
         <p className="text-sm text-center mt-5">
           <Link to="/forgot-password" className="hover:underline text-black">
-            {FORGOT_PASSWORD_LINK_TEXT} 
+            {FORGOT_PASSWORD_LINK_TEXT}
           </Link>
         </p>
       </Card>

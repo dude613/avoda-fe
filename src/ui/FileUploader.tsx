@@ -16,6 +16,7 @@ import {
     TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
     TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
     TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
+    TEAM_EMAIL_REGEX,
     TEAM_INVALID_EMAIL
 } from "@/constants/AddTeamMembers";
 import { Input } from '../components/ui/input';
@@ -38,7 +39,7 @@ export default function FileUploader({
     const [, startTransition] = useTransition();
 
     const validateEmail = (email: string) =>
-        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+        TEAM_EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
         const errors: any[] = [];

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API } from "../Config"
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION } from "../Config"
 
 const userId = localStorage.getItem("userId");
 
@@ -22,7 +22,7 @@ export async function LoginAPI(formData: { email: string; password: string }) {
         return data;
     } catch (e) {
         console.error(e);
-        return e;
+        return { success: false, error: "Failed to connect to server" };
     }
 }
 
@@ -46,6 +46,20 @@ export async function CreateOrganizationAPI(formData: any) {
     }
 }
 
+export async function SkipOnboardingAPI(organizationId: string) {
+    try {
+        const response = await axios.post(
+            SKIP_ORGANIZATION, { OrgId: organizationId },
+            {
+                headers: getAuthHeaders(),
+            }
+        );
+        const data = response.data;
+        return data;
+    } catch (error) {
+        return { success: false, error: "Failed to connect to server" }
+    }
+}
 export async function fetchOrganization() {
     try {
         const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {

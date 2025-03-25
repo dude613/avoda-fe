@@ -6,8 +6,8 @@ interface UserProfile {
   id: number;
   userName: string;
   email: string;
-  picture : string;
-  verified : string;
+  picture: string;
+  verified: string;
 }
 
 interface UserProfileState {
@@ -25,7 +25,12 @@ const initialState: UserProfileState = {
 export const getUserProfile = createAsyncThunk<UserProfile, void>(
   GET_USER_PROFILE,
   async () => {
-    const response = await axios.get<UserProfile>(GET_USER_PROFILE);
+    const response = await axios.get<UserProfile>(GET_USER_PROFILE, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
+      }
+    });
     return response.data;
   }
 );
@@ -33,7 +38,7 @@ export const getUserProfile = createAsyncThunk<UserProfile, void>(
 const userProfileSlice = createSlice({
   name: 'userProfile',
   initialState,
-  reducers: {}, 
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getUserProfile.pending, (state) => {

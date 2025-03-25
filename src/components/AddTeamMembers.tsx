@@ -7,10 +7,10 @@ import CircularLoading from "./CircularLoading";
 import { SiMinutemailer } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
-import { AddTeamMemberAPI, fetchOrganization } from "../service/api";
+import { AddTeamMemberAPI, fetchOrganization, SkipOnboardingAPI } from "../service/api";
 import FileUploader from "../ui/FileUploader";
 import toast, { Toaster } from "react-hot-toast";
-import { TEAM_ADD_ANOTHER_BTN, TEAM_ADD_MEMBERS, TEAM_BACK_BTN, TEAM_BULK_UPLOAD, TEAM_EMAIL_INVITE, TEAM_EMAIL_REQUIRED, TEAM_FOOTER_TEXT, TEAM_INVALID_EMAIL, TEAM_INVALID_NAME, TEAM_INVITATION_BTN_LOADER, TEAM_NAME_PLACEHOLDER, TEAM_NAME_REGEX, TEAM_REQUIRED, TEAM_ROLE_REQUIRED, TEAM_SELECT_ADMIN, TEAM_SELECT_EMPLOYEE, TEAM_SELECT_MANAGER, TEAM_SELECT_ROLE, TEAM_SEND_INVITATION_BTN, TEAM_SKIP_BTN, TEAM_STEP, TEAM_TEXT, TEAM_TITLE } from "@/constants/AddTeamMembers";
+import { TEAM_ADD_ANOTHER_BTN, TEAM_ADD_MEMBERS, TEAM_BACK_BTN, TEAM_BULK_UPLOAD, TEAM_EMAIL_INVITE, TEAM_EMAIL_REQUIRED, TEAM_FOOTER_TEXT, TEAM_INVALID_EMAIL, TEAM_INVALID_NAME, TEAM_INVITATION_BTN_LOADER, TEAM_NAME_PLACEHOLDER, TEAM_NAME_REGEX, TEAM_REQUIRED, TEAM_ROLE_REQUIRED, TEAM_SELECT_ADMIN, TEAM_SELECT_EMPLOYEE, TEAM_SELECT_MANAGER, TEAM_SELECT_ROLE, TEAM_SEND_INVITATION_BTN, TEAM_SKIP_BTN, TEAM_STEP, TEAM_SUCCESS_MSG, TEAM_TEXT, TEAM_TITLE } from "@/constants/AddTeamMembers";
 import Email from "./form/email";
 import { Label } from "./ui/label";
 
@@ -34,6 +34,7 @@ const AddTeamMembers = () => {
     mode: "onChange",
     defaultValues: { members: [{ name: "", email: "", role: "" }] },
   });
+
   const { fields, append } = useFieldArray({ control, name: "members" });
 
   useEffect(() => {
@@ -62,10 +63,8 @@ const AddTeamMembers = () => {
     try {
       const response = await AddTeamMemberAPI({ members: teamMembersData });
       if (response?.success === true) {
-        toast.success(response?.message || "Team member added successfully");
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
+        toast.success(response?.message || TEAM_SUCCESS_MSG, { duration: 2000 });
+        navigate("/dashboard");
       } else {
         toast.error(response?.error || response?.response?.data?.error);
       }
@@ -95,6 +94,18 @@ const AddTeamMembers = () => {
     setTab(tabName);
   };
 
+  const handleSkipOnBoarding = async () => {
+    try {
+      const res = await SkipOnboardingAPI(organizationId);
+      if (res.success === true) {
+        navigate("/dashboard", { replace: true })
+      } else {
+        toast.error(res?.error || res?.response?.data?.error, { duration: 2000 });
+      }
+    } catch (error) {
+      console.log("error Skip On Boarding", error)
+    }
+  }
   return (
     <>
       <Toaster />
@@ -115,7 +126,7 @@ const AddTeamMembers = () => {
                 <BsArrowLeft className="mr-1 h-4 w-4" />
                 {TEAM_BACK_BTN}
               </Link>
-              <button className="border-none text-sm font-semibold hover:text-gray-700 cursor-pointer" onClick={() => navigate("/dashboard")}>
+              <button className="border-none text-sm font-semibold hover:text-gray-700 cursor-pointer" onClick={handleSkipOnBoarding}>
                 {TEAM_SKIP_BTN}
               </button>
             </div>

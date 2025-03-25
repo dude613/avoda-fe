@@ -35,7 +35,7 @@ const VerifyCode: React.FC = () => {
       setError("Please fill in all the fields.");
       return;
     }
-  
+
     if (!/^\d+$/.test(code)) {
       setError("Please enter a valid numeric code.");
       return;
@@ -53,7 +53,9 @@ const VerifyCode: React.FC = () => {
         localStorage.setItem("userId", data.user._id);
         localStorage.setItem("accessToken", data.accessToken);
         toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
-        navigate("/create-organization", { replace: true });
+        const onboardingSkipped = data?.onboardingSkipped;
+        const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
+        navigate(destination, { replace: true });
       } else {
         toast.error(data?.error || USER_ALREADY_VERIFIED_TOAST, { duration: 2000 });
       }

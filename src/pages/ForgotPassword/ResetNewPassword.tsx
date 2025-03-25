@@ -38,7 +38,9 @@ export default function ResetNewPassword() {
                 },
                 body: JSON.stringify({ email: emailFromUrl, password: data.password }),
             });
-
+            if(!response.ok){
+                throw new Error(`Server responded with status: ${response.status}`);  
+            }
             const result = await response.json();
             if (result.success) {
                 toast.success(result?.message || "Password reset successfully.");
@@ -47,6 +49,7 @@ export default function ResetNewPassword() {
                 toast.error(result.error || "Failed to reset password.");
             }
         } catch (error) {
+            console.error("Password reset error:", error);
             toast.error("Failed to reset password.");
         }
     };
