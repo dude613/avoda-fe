@@ -35,9 +35,19 @@ const VerifyCode: React.FC = () => {
       setError("Please fill in all the fields.");
       return;
     }
+  
+    if (!/^\d+$/.test(code)) {
+      setError("Please enter a valid numeric code.");
+      return;
+    }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
+      
+      if (isNaN(otpNumber)) {
+        setError("Please enter a valid numeric code.");
+        return;
+      }
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

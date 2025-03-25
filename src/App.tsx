@@ -52,7 +52,7 @@ function App() {
         <Route path="/new-password" element={<ResetNewPassword />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
-          <Route path="/add-employe" element={<AddTeamMembers />} />
+          <Route path="/add-employee" element={<AddTeamMembers />} />
 
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>

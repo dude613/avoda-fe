@@ -2,10 +2,11 @@ import axios from "axios";
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API } from "../Config"
 
 const userId = localStorage.getItem("userId");
-const header = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
-}
+const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
+});
+
 
 export async function LoginAPI(formData: { email: string; password: string }) {
     try {
@@ -35,7 +36,7 @@ export async function CreateOrganizationAPI(formData: any) {
         const response = await axios.post(
             CREATE_ORGANIZATION, body,
             {
-                headers: header,
+                headers: getAuthHeaders(),
             }
         );
         const data = response.data;
@@ -49,7 +50,7 @@ export async function CreateOrganizationAPI(formData: any) {
 export async function fetchOrganization() {
     try {
         const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
-            headers: header,
+            headers: getAuthHeaders(),
         });
         const data = response.data;
         return data;
@@ -64,7 +65,7 @@ export async function AddTeamMemberAPI(formData: any) {
         const response = await axios.post(
             ADD_TEAM_MEMBER, formData,
             {
-                headers: header,
+                headers: getAuthHeaders(),
             }
         );
         const data = response.data;

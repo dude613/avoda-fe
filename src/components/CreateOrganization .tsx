@@ -86,9 +86,7 @@ export default function CreateOrganization() {
             if (res.success === true) {
                 toast.success(res?.message || "Organization created successfully!", { duration: 2000 });
                 setFormData(null);
-                // setTimeout(() => {
-                navigate("/add-employe")
-                // }, 500)
+                navigate("/add-employee")
             } else {
                 toast.error(res?.error || "Server error please try again!" , { duration: 2000 });
             }
