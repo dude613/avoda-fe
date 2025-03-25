@@ -25,7 +25,7 @@ const initialState: UserProfileState = {
 export const getUserProfile = createAsyncThunk<UserProfile, void>(
   GET_USER_PROFILE,
   async () => {
-    const response = await axios.get<UserProfile>('https://api.example.com/user/profile');
+    const response = await axios.get<UserProfile>(GET_USER_PROFILE);
     return response.data;
   }
 );

@@ -10,6 +10,16 @@ import {
     flexRender,
     ColumnDef,
 } from "@tanstack/react-table";
+import {
+    TEAM_BULK_DRAG_TEXT, TEAM_BULK_DUPLICATE_EMAIL,
+    TEAM_BULK_FILE_SUCCESS, TEAM_BULK_INVALID_FILE,
+    TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
+    TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
+    TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
+    TEAM_INVALID_EMAIL
+} from "@/constants/AddTeamMembers";
+import { Input } from '../components/ui/input';
+
 
 type FileUploaderProps = {
     mode: "single" | "multiple" | "csv";
@@ -44,7 +54,7 @@ export default function FileUploader({
             if (!Role) missingFields.push("Role");
 
             if (missingFields.length === 3) {
-                msgs.push("Name, Email, and Role required fields");
+                msgs.push(TEAM_BULK_REQUIRED);
             } else if (missingFields.length === 2) {
                 msgs.push(`${missingFields.join(" and ")} required fields`);
             } else if (missingFields.length === 1) {
@@ -52,29 +62,29 @@ export default function FileUploader({
             }
 
             if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
-                msgs.push("Invalid name");
+                msgs.push(TEAM_BULK_INVALID_NAME);
             }
 
             if (Email && !validateEmail(Email)) {
-                msgs.push("Invalid email address");
+                msgs.push(TEAM_INVALID_EMAIL);
             }
 
             if (Email && emailsSet.has(Email)) {
-                msgs.push("Duplicate email");
+                msgs.push(TEAM_BULK_DUPLICATE_EMAIL);
             } else if (Email) {
                 emailsSet.add(Email);
             }
 
             if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
-                msgs.push("Invalid role");
+                msgs.push(TEAM_BULK_INVALID_ROLE);
             }
 
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
-                    name: Name || "Missing",
-                    email: Email || "Missing",
-                    role: Role || "Missing",
+                    name: Name || TEAM_BULK_MISSING_ERROR,
+                    email: Email || TEAM_BULK_MISSING_ERROR,
+                    role: Role || TEAM_BULK_MISSING_ERROR,
                     issue: msgs.join(", "),
                 });
             }
@@ -104,7 +114,7 @@ export default function FileUploader({
             const files = mode === "single" ? acceptedFiles.slice(0, 1) : acceptedFiles;
             const validFiles = files.filter((file) => allowedTypes.includes(file.type));
             if (!validFiles.length)
-                return alert("Invalid file type. Please upload a valid file.");
+                return alert(TEAM_BULK_INVALID_FILE);
             if (mode === "csv") {
                 setIsFileUploaded(true);
                 parseCSV(validFiles[0]);
@@ -192,7 +202,7 @@ export default function FileUploader({
                 <div className="flex flex-col items-start mt-4">
                     <div className="flex justify-between items-center w-full">
                         <h3 className="text-lg font-semibold tracking-tight">
-                            Data Validation Report
+                            {TEAM_BULK_REPORT_TEXT}
                         </h3>
                         <Button
                             className="bg-background px-3 py-2 text-sm font-semibold rounded-lg text-white"
@@ -244,11 +254,11 @@ export default function FileUploader({
                     {...getRootProps()}
                     className={`border-2 w-full border-dashed rounded-md p-6 text-center mb-8 cursor-pointer hover:bg-gray-50 ${errorRows.length === 0 && isFileUploaded ? 'border-green-500' : ''}`}
                 >
-                    <input {...getInputProps()} />
+                    <Input type="file" {...getInputProps()} />
                     {isFileUploaded ? (
                         <div className="flex flex-col items-center   mt-2 relative">
                             <p className="text-sm text-gray-700 font-medium">
-                                File uploaded successfully.
+                                {TEAM_BULK_FILE_SUCCESS}
                             </p>
                             <button
                                 onClick={removeFile}
@@ -260,8 +270,8 @@ export default function FileUploader({
                     ) : (
                         <div className="flex flex-col items-center">
                             <FiUpload className="text-3xl text-gray-500" />
-                            <p className="text-sm font-medium mt-2">Click to upload CSV</p>
-                            <p className="text-xs text-gray-400">or drag and drop</p>
+                            <p className="text-sm font-medium mt-2">{TEAM_BULK_UPLOAD_TEXT}</p>
+                            <p className="text-xs text-gray-400">{TEAM_BULK_DRAG_TEXT}</p>
                         </div>
                     )}
                 </div>

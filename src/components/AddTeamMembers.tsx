@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { LuUserPlus } from "react-icons/lu";
-import Input from "../ui/Input";
+import { Input } from "./ui/input";
 import { Controller, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import CircularLoading from "./CircularLoading";
@@ -10,6 +10,9 @@ import { BsArrowLeft } from "react-icons/bs";
 import { AddTeamMemberAPI, fetchOrganization } from "../service/api";
 import FileUploader from "../ui/FileUploader";
 import toast, { Toaster } from "react-hot-toast";
+import { TEAM_ADD_ANOTHER_BTN, TEAM_ADD_MEMBERS, TEAM_BACK_BTN, TEAM_BULK_UPLOAD, TEAM_EMAIL_INVITE, TEAM_EMAIL_REQUIRED, TEAM_FOOTER_TEXT, TEAM_INVALID_EMAIL, TEAM_INVALID_NAME, TEAM_INVITATION_BTN_LOADER, TEAM_NAME_PLACEHOLDER, TEAM_NAME_REGEX, TEAM_REQUIRED, TEAM_ROLE_REQUIRED, TEAM_SELECT_ADMIN, TEAM_SELECT_EMPLOYEE, TEAM_SELECT_MANAGER, TEAM_SELECT_ROLE, TEAM_SEND_INVITATION_BTN, TEAM_SKIP_BTN, TEAM_STEP, TEAM_TEXT, TEAM_TITLE } from "@/constants/AddTeamMembers";
+import Email from "./form/email";
+import { Label } from "./ui/label";
 
 interface FormData {
   members: { name: string; email: string; role: string }[];
@@ -35,10 +38,14 @@ const AddTeamMembers = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchOrganization();
-      if (data && data.success && data.data.length > 0) {
-        const orgId = data.data[0]._id;
-        setOrganizationId(orgId);
+      try {
+        const data = await fetchOrganization();
+        if (data && data.success && data.data.length > 0) {
+          const orgId = data.data[0]._id;
+          setOrganizationId(orgId);
+        }
+      } catch (error) {
+        console.log("error for fetch Organization data", error)
       }
     };
     fetchData();
@@ -91,13 +98,13 @@ const AddTeamMembers = () => {
   return (
     <>
       <Toaster />
-      <div className="flex flex-col items-center justify-center mt-10 w-full bg-gray-100 p-4">
-        <div className="flex flex-col items-center justify-center bg-gray-100 px-1">
-          <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 lg:w-[600px] lg:min-h-[550px]">
+      <div className="flex items-center justify-center min-h-screen px-4 mt-10 bg-card">
+        <div className="border border-gray-300 rounded-lg shadow-lg p-8 w-full max-w-xl">
+          <div className="border border-border rounded-lg p-8">
             <div className="mb-8">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Step 2 of 2</span>
-                <span className="text-sm text-gray-500 font-semibold">Add Employees</span>
+                <span className="text-sm font-medium">{TEAM_STEP}</span>
+                <span className="text-sm text-gray-500 font-semibold">{TEAM_TITLE}</span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div className="bg-black h-2 rounded-full w-full" />
@@ -106,20 +113,20 @@ const AddTeamMembers = () => {
             <div className="flex items-center justify-between mb-8">
               <Link to="/create-organization" className="flex items-center text-sm font-semibold hover:text-gray-700">
                 <BsArrowLeft className="mr-1 h-4 w-4" />
-                Back to Organization
+                {TEAM_BACK_BTN}
               </Link>
-              <button className="text-black border-none text-sm font-semibold hover:text-gray-700" onClick={() => navigate("/dashboard")}>
-                Skip for now
+              <button className="border-none text-sm font-semibold hover:text-gray-700 cursor-pointer" onClick={() => navigate("/dashboard")}>
+                {TEAM_SKIP_BTN}
               </button>
             </div>
             <div className="box-shadow">
               <div className="mb-6 h-full overflow-auto w-fit">
                 <div className="flex items-center gap-2 mb-1">
                   <LuUserPlus className="text-xl" />
-                  <h2 className="text-xl font-bold text-black">Add team members</h2>
+                  <h2 className="text-xl font-bold">{TEAM_ADD_MEMBERS}</h2>
                 </div>
                 <span className="text-sm font-semibold text-textPrimary opacity-70 mb-4 text-center">
-                  Invite your colleagues to join your organization
+                  {TEAM_TEXT}
                 </span>
               </div>
               <div className="flex overflow-hidden bg-gray-100 mb-8">
@@ -128,98 +135,99 @@ const AddTeamMembers = () => {
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "email" ? "bg-white font-medium rounded-md shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("email")}
                 >
-                  Email Invites
+                  {TEAM_EMAIL_INVITE}
                 </button>
                 <button
                   type="button"
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "bulk" ? "bg-white font-medium shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("bulk")}
                 >
-                  Bulk Upload
+                  {TEAM_BULK_UPLOAD}
                 </button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)}>
                 {tab === "email" ? (
                   <div className="mb-8 space-y-6 w-full">
                     {fields.map((field, index) => (
-                      <div key={field.id} className="flex items-center gap-2">
-                        <div className="w-[33%] relative">
+                      <div key={field.id} className="w-full">
+                        <div className="relative mb-4 w-full">
+                          <Label className="mb-1">Name</Label>
                           <Controller
                             name={`members.${index}.name`}
                             control={control}
                             defaultValue={field.name}
                             rules={{
-                              required: "Name is required",
+                              required: TEAM_REQUIRED,
                               pattern: {
-                                value: /^[A-Za-z ]+$/,
-                                message: "Invalid name"
+                                value: TEAM_NAME_REGEX,
+                                message: TEAM_INVALID_NAME
                               }
                             }}
                             render={({ field: controllerField }) => (
                               <Input
                                 {...controllerField}
-                                placeholder="Full Name"
-                                className={`py-4 text-sm ${errors.members?.[index]?.name ? 'border-red-500' : ''}`}
+                                placeholder={TEAM_NAME_PLACEHOLDER}
+                                className={`py-4 text-sm w-full ${errors.members?.[index]?.name ? 'border-red-400' : ''}`}
                               />
                             )}
                           />
                           {errors.members?.[index]?.name && (
-                            <p className="absolute text-xs text-red-500 bottom-[-16px]">
+                            <p className="absolute text-xs text-destructive mb-2">
                               {errors.members[index].name.message}
                             </p>
                           )}
                         </div>
-                        <div className="w-[33%] relative">
-                          <Controller
-                            name={`members.${index}.email`}
-                            control={control}
-                            defaultValue={field.email}
-                            rules={{
-                              required: "Email is required",
-                              pattern: {
-                                value: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                                message: "Invalid email format"
-                              }
-                            }}
-                            render={({ field: controllerField }) => (
-                              <Input
-                                {...controllerField}
-                                placeholder="Email address"
-                                className={`py-4 text-sm ${errors.members?.[index]?.email ? 'border-red-500' : ''}`}
+
+                        <div className="flex gap-4">
+                          <div className="w-1/2 mb-4">
+                            <Controller
+                              name={`members.${index}.email`}
+                              control={control}
+                              defaultValue=""
+                              rules={{
+                                required: TEAM_EMAIL_REQUIRED,
+                                pattern: {
+                                  value: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                                  message: TEAM_INVALID_EMAIL
+                                }
+                              }}
+                              render={({ field }) => (
+                                <Email
+                                  {...field}
+                                  error={errors?.members?.[index]?.email?.message?.toString()}
+                                />
+                              )}
+                            />
+                          </div>
+
+                          <div className="w-1/2">
+                            <Label>Role</Label>
+                            <div className="mt-2">
+                              <Controller
+                                name={`members.${index}.role`}
+                                control={control}
+                                defaultValue={field.role}
+                                rules={{ required: TEAM_ROLE_REQUIRED }}
+                                render={({ field: controllerField }) => (
+                                  <select {...controllerField} className={`border-input file:text-foreground placeholder:text-muted-foreground/70 flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none mb-2 ${errors.members?.[index]?.role ? 'border-red-400' : ''}`}>
+                                    <option value="">{TEAM_SELECT_ROLE}</option>
+                                    <option value="Employee">{TEAM_SELECT_EMPLOYEE}</option>
+                                    <option value="Admin">{TEAM_SELECT_ADMIN}</option>
+                                    <option value="Manager">{TEAM_SELECT_MANAGER}</option>
+                                  </select>
+                                )}
                               />
-                            )}
-                          />
-                          {errors.members?.[index]?.email && (
-                            <p className="absolute text-xs text-red-500 bottom-[-16px]">
-                              {errors.members[index].email.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="w-[33%] relative">
-                          <Controller
-                            name={`members.${index}.role`}
-                            control={control}
-                            defaultValue={field.role}
-                            rules={{ required: "Role is required" }}
-                            render={({ field: controllerField }) => (
-                              <select {...controllerField} className={`border py-4 text-sm rounded w-full ${errors.members?.[index]?.role ? 'border-red-500' : ''}`}>
-                                <option value="">Select Role</option>
-                                <option value="Employee">Employee</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Manager">Manager</option>
-                              </select>
-                            )}
-                          />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
                     <Button
                       type="button"
                       icon={<LuUserPlus className="text-xl" />}
-                      text={"Add another"}
+                      text={TEAM_ADD_ANOTHER_BTN}
                       disabled={!canAddAnother}
-                      className={`flex rounded-lg w-fit md:px-4 py-4 mt-8 lg:px-8 bg-transparent text-textPrimary border hover:bg-transparent ${!canAddAnother ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
-                        }`}
+                      className={`flex rounded-lg w-fit md:px-4 py-4 mt-8 lg:px-8 bg-transparent text-primary border hover:bg-transparent cursor-pointer ${!canAddAnother ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
                       onClick={handleAddMember}
                     />
                   </div>
@@ -232,18 +240,19 @@ const AddTeamMembers = () => {
                     }}
                   />
                 )}
+
                 <Button
                   type="submit"
-                  text={loading ? "Invitations Sending..." : "Send Invitations"}
+                  text={loading ? TEAM_INVITATION_BTN_LOADER : TEAM_SEND_INVITATION_BTN}
                   icon={loading ? <CircularLoading /> : undefined}
                   iconRight={!loading ? <SiMinutemailer /> : undefined}
                   disabled={loading}
-                  className={`bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : "hover:scale-105"
-                    } mt-5 py-4 text-lg`}
+                  className={`bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
                 />
               </form>
+
               <p className="text-sm text-gray-700 mt-5 text-center">
-                Invitations will be sent via email with instructions to join your organization.
+                {TEAM_FOOTER_TEXT}
               </p>
             </div>
           </div>

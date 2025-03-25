@@ -26,16 +26,16 @@ const initialState: OrganizationState = {
   error: null,
 };
 
-const header = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-};
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
+});
 
 export const fetchOrganizations = createAsyncThunk(
   'organization/fetchOrganizations',
   async (userId: string) => {
     const response = await axios.get(`${LIST_TEAMMEMBER}/${userId}`, {
-      headers: header,
+      headers: getAuthHeaders(),
     });
     return response.data.teamMembers;
   }
