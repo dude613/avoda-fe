@@ -4,12 +4,21 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { LuBuilding } from "react-icons/lu";
-import Input from "../ui/Input";
 import Button from "../ui/Button";
 import CircularLoading from "./CircularLoading";
 import { CreateOrganizationAPI } from "../service/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Input } from "./ui/input";
+import {
+    ORGANIZATION_TITLE, ORGANIZATION_ADD_EMPLOYEE_TEXT, ORGANIZATION_CREATE_ORGANIZATION,
+    ORGANIZATION_TEXT, ORGANIZATION_NAME, ORGANIZATION_PLACEHOLDER, ORGANIZATION_BODY_TEXT,
+    ORGANIZATION_INDUSTRY, ORGANIZATION_SELECT_INDUSTRY, ORGANIZATION_SELECT_TECHNOLOGY, ORGANIZATION_SELECT_HEALTHCARE,
+    ORGANIZATION_SELECT_FINANCE, ORGANIZATION_SELECT_EDUCATION, ORGANIZATION_SELECT_RETAIL, ORGANIZATION_SELECT_MANUFACTURING,
+    ORGANIZATION_SELECT_OTHER, ORGANIZATION_COMPANY_SIZE_TEXT, ORGANIZATION_FOOTER_TEXT,
+    ORGANIZATION_REQUIRED, ORGANIZATION_SELECT_ERROR, ORGANIZATION_COMPANY_REQUIRED, ORGANIZATION_COMPANY_SIZE_EMPLOYEE_TEXT
+    , ORGANIZATION_BUTTON_TEXT, ORGANIZATION_BUTTON_LOADING_TEXT
+} from "@/constants/CreateOrganization";
 
 interface OrganizationFormData {
     organizationName: string;
@@ -88,7 +97,7 @@ export default function CreateOrganization() {
                 setFormData(null);
                 navigate("/add-employee")
             } else {
-                toast.error(res?.error || "Server error please try again!" , { duration: 2000 });
+                toast.error(res?.response?.data?.error || "Server error please try again!", { duration: 2000 });
             }
         } catch (error) {
             console.error("Error creating organization:", error);
@@ -113,82 +122,81 @@ export default function CreateOrganization() {
     return (
         <>
             <Toaster />
-            <div className={`flex flex-col items-center justify-center min-h-screen min-w-fit bg-gray-100 p-4`}>
-                <div className={`flex flex-col items-center justify-center bg-gray-100 px-1`}>
-                    <div className={`bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full`}>
+            <div className="flex items-center justify-center min-h-screen px-4 mt-10 bg-card">
+                <div className="border border-gray-300 rounded-lg shadow-lg p-8 w-full max-w-xl">
+                    <div className={`border border-border rounded-lg p-8`}>
                         <div className="mb-8">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-medium">Step 1 of 2</span>
-                                <span className="text-sm text-gray-500 font-semibold">Add Employees</span>
+                                <span className="text-sm font-medium">{ORGANIZATION_TITLE}</span>
+                                <span className="text-sm text-gray-500 font-semibold">{ORGANIZATION_ADD_EMPLOYEE_TEXT}</span>
                             </div>
                             <div className="w-full bg-muted rounded-full h-2">
-                                <div className="bg-black h-2 rounded-full w-1/2" />
+                                <div className="bg-primary h-2 rounded-full w-1/2" />
                             </div>
                         </div>
                         <div className="mb-4 w-full h-full overflow-y-auto">
                             <div className="flex items-center gap-2 mb-1 ">
                                 <GoOrganization className="text-xl" />
-                                <h2 className="text-xl font-bold text-gray-800">
-                                    Create Your Organization
+                                <h2 className="text-xl font-bold">
+                                    {ORGANIZATION_CREATE_ORGANIZATION}
                                 </h2>
                             </div>
                             <span className="text-xs text-textPrimary opacity-70 mb-4 text-center">
-                                Enter your organization details to get started with Time Tracker
+                                {ORGANIZATION_TEXT}
                             </span>
                         </div>
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div className="mb-8">
                                 <label className="block text-sm font-medium mb-2">
-                                    Organization Name
-                                    <span className="text-red-500">*</span>
+                                    {ORGANIZATION_NAME}
+                                    <span className="text-destructive">*</span>
                                 </label>
                                 <div className="relative">
                                     <Controller
                                         name="organizationName"
                                         control={control}
                                         rules={{
-                                            required: "Organization name must be at least 2 characters long!",
+                                            required: ORGANIZATION_REQUIRED,
                                         }}
                                         render={({ field }) => (
                                             <Input
                                                 type="text"
-                                                placeholder="Enter your organization name"
+                                                placeholder={ORGANIZATION_PLACEHOLDER}
                                                 {...field}
-                                                className={` text-sm min-w-8 border ${errors.organizationName ? 'border-red-500' : 'border-gray-300'}`}
-                                                error={errors.organizationName?.message}
                                             />
                                         )}
                                     />
+                                    {errors.organizationName && <span className="text-destructive text-xs">{errors.organizationName?.message}</span>}
                                 </div>
                                 <p className="text-xs text-textPrimary opacity-70 mb-4 mt-2">
-                                    This will be the name of your organization in the system.
+                                    {ORGANIZATION_BODY_TEXT}
                                 </p>
                             </div>
 
                             <div className="mt-8">
-                                <label className="block text-sm font-medium mb-2">Industry</label>
+                                <label className="block text-sm font-medium mb-2">{ORGANIZATION_INDUSTRY}</label>
                                 <select
                                     {...register("industry", { required: "Industry is required!" })}
-                                    className={`border text-sm p-3 w-full mb-2 rounded focus:outline-none bg-white ${errors.industry ? "border-red-500" : "border-gray-300"}`}
+                                    className={`border-input file:text-foreground placeholder:text-muted-foreground/70 flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none mb-2 ${errors.industry ? "border-red-500" : "border-gray-300"}`}
                                 >
-                                    <option value="">Select industry</option>
-                                    <option value="technology">Technology</option>
-                                    <option value="healthCare">Healthcare</option>
-                                    <option value="finance">Finance</option>
-                                    <option value="education">Education</option>
-                                    <option value="retail">Retail</option>
-                                    <option value="manufacturing">Manufacturing</option>
-                                    <option value="other">Other</option>
+                                    <option value="">{ORGANIZATION_SELECT_INDUSTRY}</option>
+                                    <option value="technology">{ORGANIZATION_SELECT_TECHNOLOGY}</option>
+                                    <option value="healthCare">{ORGANIZATION_SELECT_HEALTHCARE}</option>
+                                    <option value="finance">{ORGANIZATION_SELECT_FINANCE}</option>
+                                    <option value="education">{ORGANIZATION_SELECT_EDUCATION}</option>
+                                    <option value="retail">{ORGANIZATION_SELECT_RETAIL}</option>
+                                    <option value="manufacturing">{ORGANIZATION_SELECT_MANUFACTURING}</option>
+                                    <option value="other">{ORGANIZATION_SELECT_OTHER}</option>
                                 </select>
-                                {errors.industry && <p className="text-red-500 text-xs">{errors.industry.message}</p>}
+                                {errors.industry && <p className="text-destructive text-xs">{errors.industry.message}</p>}
                                 <p className="text-xs text-textPrimary opacity-70 mb-8">
-                                    Select Your organization's Industry (optional).
+                                    {ORGANIZATION_SELECT_ERROR}
                                 </p>
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Company Size</label>
+                                <label className="block text-sm font-medium mb-2">{ORGANIZATION_COMPANY_SIZE_TEXT}</label>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
                                     {companySize.map((size) => (
                                         <label
@@ -204,35 +212,34 @@ export default function CreateOrganization() {
                                                 type="radio"
                                                 value={size.value}
                                                 {...register("companySize", {
-                                                    required: "Company size is required",
+                                                    required: ORGANIZATION_COMPANY_REQUIRED,
                                                 })}
                                                 className="hidden"
                                             />
                                             {size?.icon(selectedCompanySize === size.value)}
                                             <span className="text-sm font-medium">{size.label}</span>
-                                            <span className="text-xs text-gray-500">
-                                                {size.employees} employees
+                                            <span className="text-xs text-gray-500 text-center">
+                                                {size.employees} {ORGANIZATION_COMPANY_SIZE_EMPLOYEE_TEXT}
                                             </span>
                                         </label>
                                     ))}
                                 </div>
-                                {errors.companySize && <p className="text-red-500 text-xs">{errors.companySize.message}</p>}
+                                {errors.companySize && <p className="text-destructive text-xs">{errors.companySize.message}</p>}
                                 <p className="text-xs text-textPrimary opacity-70 mb-8">
-                                    Select the Size of your organization (optional).
+                                    {ORGANIZATION_SELECT_ERROR}
                                 </p>
                             </div>
 
                             <Button
                                 type="submit"
-                                text={`${loading ? "Creating ..." : "Continue to Add Employees"}`}
+                                text={`${loading ? ORGANIZATION_BUTTON_LOADING_TEXT : ORGANIZATION_BUTTON_TEXT}`}
                                 icon={loading && <CircularLoading />}
                                 iconRight={!loading && <FaArrowRight />}
                                 disabled={loading}
-                                className={`bg-background text-sm text-text font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
+                                className={`bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
                             />
-
                             <p className="text-xs text-textPrimary opacity-70 mb-4 text-center">
-                                By Creating an organization, you agree to our Terms and Service and Privacy Policy.
+                                {ORGANIZATION_FOOTER_TEXT}
                             </p>
                         </form>
                     </div>

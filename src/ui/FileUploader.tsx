@@ -10,6 +10,16 @@ import {
     flexRender,
     ColumnDef,
 } from "@tanstack/react-table";
+import {
+    TEAM_BULK_DRAG_TEXT, TEAM_BULK_DUPLICATE_EMAIL,
+    TEAM_BULK_FILE_SUCCESS, TEAM_BULK_INVALID_FILE,
+    TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
+    TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
+    TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
+    TEAM_INVALID_EMAIL
+} from "@/constants/AddTeamMembers";
+import { Input } from '../components/ui/input';
+
 
 type FileUploaderProps = {
     mode: "single" | "multiple" | "csv";
@@ -17,7 +27,6 @@ type FileUploaderProps = {
     onUpload: (data: any) => void;
 };
 
-<<<<<<< HEAD
 
 export default function FileUploader({
     mode,
@@ -65,79 +74,17 @@ export default function FileUploader({
                 msgs.push(`Invalid role (Must be one of: ${validRoles.join(", ")})`);
             }
     
-=======
-export default function FileUploader({
-    mode,
-    allowedTypes,
-    onUpload,
-}: FileUploaderProps) {
-    const [errorRows, setErrorRows] = useState<any[]>([]);
-    const [isFileUploaded, setIsFileUploaded] = useState(false);
-    const [validRowCount, setValidRowCount] = useState(0)
-    const [, startTransition] = useTransition();
-
-    const validateEmail = (email: string) =>
-        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
-
-    const validateData = (data: any[]) => {
-        const errors: any[] = [];
-        const emailsSet = new Set<string>();
-
-        data.forEach((row, index) => {
-            const { Name, Email, Role } = row;
-            const msgs: string[] = [];
-
-            const missingFields: string[] = [];
-            if (!Name) missingFields.push("Name");
-            if (!Email) missingFields.push("Email");
-            if (!Role) missingFields.push("Role");
-
-            if (missingFields.length === 3) {
-                msgs.push("Name, Email, and Role required fields");
-            } else if (missingFields.length === 2) {
-                msgs.push(`${missingFields.join(" and ")} required fields`);
-            } else if (missingFields.length === 1) {
-                msgs.push(`${missingFields[0]} required fields`);
-            }
-
-            if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
-                msgs.push("Invalid name");
-            }
-
-            if (Email && !validateEmail(Email)) {
-                msgs.push("Invalid email address");
-            }
-
-            if (Email && emailsSet.has(Email)) {
-                msgs.push("Duplicate email");
-            } else if (Email) {
-                emailsSet.add(Email);
-            }
-
-            if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
-                msgs.push("Invalid role");
-            }
-
->>>>>>> feat/get-google-ids-for-oauth
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
                     name: Name || "Missing",
                     email: Email || "Missing",
                     role: Role || "Missing",
-<<<<<<< HEAD
                     issue: msgs.join("; "),
                 });
             }
         });
     
-=======
-                    issue: msgs.join(", "),
-                });
-            }
-        });
-
->>>>>>> feat/get-google-ids-for-oauth
         if (errors.length) {
             setErrorRows(errors);
             setValidRowCount(0);
@@ -162,7 +109,7 @@ export default function FileUploader({
             const files = mode === "single" ? acceptedFiles.slice(0, 1) : acceptedFiles;
             const validFiles = files.filter((file) => allowedTypes.includes(file.type));
             if (!validFiles.length)
-                return alert("Invalid file type. Please upload a valid file.");
+                return alert(TEAM_BULK_INVALID_FILE);
             if (mode === "csv") {
                 setIsFileUploaded(true);
                 parseCSV(validFiles[0]);
@@ -250,7 +197,7 @@ export default function FileUploader({
                 <div className="flex flex-col items-start mt-4">
                     <div className="flex justify-between items-center w-full">
                         <h3 className="text-lg font-semibold tracking-tight">
-                            Data Validation Report
+                            {TEAM_BULK_REPORT_TEXT}
                         </h3>
                         <Button
                             className="bg-background px-3 py-2 text-sm font-semibold rounded-lg text-white"
@@ -302,11 +249,11 @@ export default function FileUploader({
                     {...getRootProps()}
                     className={`border-2 w-full border-dashed rounded-md p-6 text-center mb-8 cursor-pointer hover:bg-gray-50 ${errorRows.length === 0 && isFileUploaded ? 'border-green-500' : ''}`}
                 >
-                    <input {...getInputProps()} />
+                    <Input type="file" {...getInputProps()} />
                     {isFileUploaded ? (
                         <div className="flex flex-col items-center   mt-2 relative">
                             <p className="text-sm text-gray-700 font-medium">
-                                File uploaded successfully.
+                                {TEAM_BULK_FILE_SUCCESS}
                             </p>
                             <button
                                 onClick={removeFile}
@@ -318,8 +265,8 @@ export default function FileUploader({
                     ) : (
                         <div className="flex flex-col items-center">
                             <FiUpload className="text-3xl text-gray-500" />
-                            <p className="text-sm font-medium mt-2">Click to upload CSV</p>
-                            <p className="text-xs text-gray-400">or drag and drop</p>
+                            <p className="text-sm font-medium mt-2">{TEAM_BULK_UPLOAD_TEXT}</p>
+                            <p className="text-xs text-gray-400">{TEAM_BULK_DRAG_TEXT}</p>
                         </div>
                     )}
                 </div>

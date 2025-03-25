@@ -51,6 +51,11 @@ const VerifyCode: React.FC = () => {
 >>>>>>> feat/get-google-ids-for-oauth
       return;
     }
+  
+    if (!/^\d+$/.test(code)) {
+      setError("Please enter a valid numeric code.");
+      return;
+    }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
@@ -78,7 +83,6 @@ const VerifyCode: React.FC = () => {
         navigate("/create-organization", { replace: true });
       } else {
         toast.error(data?.error || USER_ALREADY_VERIFIED_TOAST, { duration: 2000 });
-        // navigate("/register", { replace: true });
       }
     } catch (error) {
       toast.error(SERVER_ERROR_TOAST);
