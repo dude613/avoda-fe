@@ -60,7 +60,6 @@ const SetPassword: React.FC = () => {
         }), 
       }); 
       const responseData = await response.json();
-
       if (responseData.success === true) {
         toast.success(responseData?.message || REGISTER_SUCCESS_TOAST);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
