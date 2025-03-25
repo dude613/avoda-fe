@@ -94,7 +94,9 @@ const VerifyCode: React.FC = () => {
         toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
         const onboardingSkipped = data?.onboardingSkipped;
         const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
-        navigate(destination, { replace: true });
+        setTimeout(() => {
+          navigate(destination, { replace: true });
+        }, 1000);
       } else {
         toast.error(data?.error || USER_ALREADY_VERIFIED_TOAST, { duration: 2000 });
       }

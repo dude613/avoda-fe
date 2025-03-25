@@ -79,7 +79,10 @@ const Register: React.FC = () => {
         } else {
           toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
         }
-      } catch (error) { }
+      } catch (error) { 
+        console.error("Google login error:", error);
+        toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+      }
     },
     onError: (error: unknown) => console.error("Login Failed:", error),
     scope:

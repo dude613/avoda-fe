@@ -22,7 +22,8 @@ export async function LoginAPI(formData: { email: string; password: string }) {
         }
         return data;
     } catch (e) {
-        return {e : true, message : "Failed to server connect"};
+        console.error(e);
+        return { success: false, error: `Failed to connect to server: ${e instanceof Error ? e.message : String(e)}` };
     }
 }
 

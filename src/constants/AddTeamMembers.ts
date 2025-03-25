@@ -37,7 +37,7 @@ export const TEAM_INVALID_NAME = "Invalid name";
 export const TEAM_EMAIL_REQUIRED = "Email is required";
 export const TEAM_INVALID_EMAIL = "Invalid email format";
 export const TEAM_ROLE_REQUIRED = "Role is required";
-
+export const TEAM_FAILED_ERROR = "Failed to skip onboarding. Please try again.";
 export const TEAM_BULK_REQUIRED = "Name, Email, and Role required fields"
 export const TEAM_BULK_INVALID_NAME = "Invalid name"
 export const TEAM_BULK_DUPLICATE_EMAIL = "Duplicate email"

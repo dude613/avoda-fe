@@ -30,8 +30,10 @@ export default function Dashboard() {
       dispatch(fetchOrganizations(userId as string));
     }
 =======
-    dispatch(fetchOrganizations(userId as string));
+    if(userId){
+      dispatch(fetchOrganizations(userId as string));
 >>>>>>> feat/get-google-ids-for-oauth
+    }
   }, [dispatch, userId]);
 
   const [globalFilter, setGlobalFilter] = useState("");
