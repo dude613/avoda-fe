@@ -17,7 +17,9 @@ export async function LoginAPI(formData: { email: string; password: string }) {
             },
             body: JSON.stringify(formData)
         });
-
+        if (!response.ok) {
+            return { success: false, error: `Error: ${response.status} ${response.statusText}` };
+        }
         const data = await response.json();
         return data;
     } catch (e) {

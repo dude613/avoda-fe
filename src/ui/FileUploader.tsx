@@ -41,6 +41,10 @@ export default function FileUploader({
     const validateEmail = (email: string) => EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
+        if (!data || !Array.isArray(data)) {
+            console.error("Invalid data provided for validation");
+            return;
+        }
         const errors: any[] = [];
         const emailsSet = new Set<string>();
 
