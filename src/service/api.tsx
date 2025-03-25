@@ -21,8 +21,7 @@ export async function LoginAPI(formData: { email: string; password: string }) {
         const data = await response.json();
         return data;
     } catch (e) {
-        console.error(e);
-        return e;
+        return {e : true, message : "Failed to server connect"};
     }
 }
 
@@ -42,8 +41,7 @@ export async function CreateOrganizationAPI(formData: any) {
         const data = response.data;
         return data;
     } catch (e) {
-        console.log("error message Create Organization", e)
-        return e;
+        return {e : true, message : "Failed to server connect"};
     }
 }
 
