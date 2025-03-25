@@ -109,7 +109,7 @@ const AddTeamMembers = () => {
     if (!organizationId) {
       toast.error("Organization ID is missing.", { duration: 2000 });
       return;
-    } 
+    }
     try {
       const res = await SkipOnboardingAPI(organizationId);
       if (res?.success === true) {
