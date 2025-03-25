@@ -39,8 +39,7 @@ export default function FileUploader({
     const [validRowCount, setValidRowCount] = useState(0)
     const [, startTransition] = useTransition();
 
-    const validateEmail = (email: string) =>
-        TEAM_EMAIL_REGEX.test(email);
+    const validateEmail = (email: string) => TEAM_EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
         const errors: Array<{ row: number; name: string; email: string; role: string; issue: string }> = [];
