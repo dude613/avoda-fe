@@ -43,6 +43,11 @@ const VerifyCode: React.FC = () => {
 >>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
       return;
     }
+
+    if (!/^\d+$/.test(code)) {
+      setError("Please enter a valid numeric code.");
+      return;
+    }
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);

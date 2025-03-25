@@ -25,7 +25,9 @@ export default function Dashboard() {
   );
  
   useEffect(() => {
-    dispatch(fetchOrganizations(userId as string));
+    if(userId){
+      dispatch(fetchOrganizations(userId as string));
+    }
   }, [dispatch, userId]);
 
   const [globalFilter, setGlobalFilter] = useState("");

@@ -15,7 +15,7 @@ export const EMAIL_LABEL = "Email";
 export const EMAIL_PLACEHOLDER = "you@example.com";
 export const PASSWORD_LABEL = "Password";
 export const PASSWORD_PLACEHOLDER = "Password";
-export const CONFIRM_PASSWORD_PLACEHOLDER = "Confirm Password"
+export const CONFIRM_PASSWORD_PLACEHOLDER = "Confirm Password";
 export const PASSWORDS_MISMATCH_ERROR = "Passwords do not match.";
 // Divider text
 export const DIVIDER_TEXT = "OR CONTINUE WITH";

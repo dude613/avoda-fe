@@ -17,8 +17,10 @@ export async function LoginAPI(formData: { email: string; password: string }) {
             },
             body: JSON.stringify(formData)
         });
-
         const data = await response.json();
+        if (!response.ok) {
+            return { success: false, error: data.error || `Error: ${response.status} ${response.statusText}` };
+        }
         return data;
     } catch (e) {
         return {e : true, message : "Failed to server connect"};

@@ -35,10 +35,14 @@ const AddTeamMembers = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchOrganization();
-      if (data && data.success && data.data.length > 0) {
-        const orgId = data.data[0]._id;
-        setOrganizationId(orgId);
+      try {
+        const data = await fetchOrganization();
+        if (data && data.success && data.data.length > 0) {
+          const orgId = data.data[0]._id;
+          setOrganizationId(orgId);
+        }
+      } catch (error) {
+        console.log("error for fetch Organization data", error)
       }
     };
     fetchData();

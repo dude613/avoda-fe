@@ -18,7 +18,7 @@ export default function ResendForgotEmail() {
         if (emailParam) {
             const decodedEmail = decodeURIComponent(emailParam);
             setEmail(decodedEmail);
-            const newUrl = `/forgot-resend?email=${decodedEmail}`;
+            const newUrl = `/forgot-resend?email=${encodeURIComponent(decodedEmail)}`;
             window.history.replaceState(null, "", newUrl);
         }
     }, [searchParams]);
