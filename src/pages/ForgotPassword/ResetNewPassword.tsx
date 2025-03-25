@@ -19,37 +19,6 @@ export default function ResetNewPassword() {
     const searchParams = new URLSearchParams(location.search);
     const emailFromUrl = searchParams.get("email") || "";
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const handlePasswordChange = (e: { target: { value: string; }; }) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        if (!newPassword) {
-            setPasswordError(Constants.PASSWORD_REQUIRED_ERROR);
-        } else if (!validatePassword(newPassword)) {
-            setPasswordError(Constants.PASSWORD_VALIDATION_ERROR);
-        } else {
-            setPasswordError("");
-        }
-    };
-
-    const handleConfirmPasswordChange = (e: { target: { value: string; }; }) => {
-        const newConfirmPassword = e.target.value;
-        setConfirmPassword(newConfirmPassword);
-=======
-    const {
-        control,
-        handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm({
-        mode: "onChange",
-    });
-
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-
-=======
     const {
         control,
         handleSubmit,
@@ -60,19 +29,6 @@ export default function ResetNewPassword() {
     });
 
 
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-=======
-    const {
-        control,
-        handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm({
-        mode: "onChange",
-    });
-
-
->>>>>>> feat/get-google-ids-for-oauth
     const onSubmit = async (data: any) => {
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {
@@ -82,15 +38,13 @@ export default function ResetNewPassword() {
                 },
                 body: JSON.stringify({ email: emailFromUrl, password: data.password }),
             });
-            if(!response.ok){
-                throw new Error(`Server responded with status: ${response.status}`);  
-            }
+            
             const result = await response.json();
-            if (result.success) {
+            if (response.ok && result.success) {
                 toast.success(result?.message || "Password reset successfully.");
                 navigate("/login");
             } else {
-                toast.error(result.error || "Failed to reset password.");
+                toast.error(result.error || `Failed to reset password: ${response.status}`);
             }
         } catch (error) {
             console.error("Password reset error:", error);

@@ -34,8 +34,4 @@ export const PASSWORD_RESET_FAILED_TOAST = "Failed to reset password.";
 
 //.................Email Regular////////////////
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-<<<<<<< HEAD
-export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
-=======
-export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
->>>>>>> feat/get-google-ids-for-oauth
+export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W)(?=.*\d).{8,}$/;

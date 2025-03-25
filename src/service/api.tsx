@@ -2,6 +2,7 @@ import axios from "axios";
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION } from "../Config"
 
 const userId = localStorage.getItem("userId");
+
 const getAuthHeaders = () => ({
     "Content-Type": "application/json",
     "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
@@ -42,7 +43,8 @@ export async function CreateOrganizationAPI(formData: any) {
         const data = response.data;
         return data;
     } catch (e) {
-        return {e : true, message : "Failed to server connect"};
+        console.log("error message Create Organization", e)
+        return e;
     }
 }
 

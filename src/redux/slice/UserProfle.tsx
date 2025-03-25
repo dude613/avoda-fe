@@ -25,20 +25,12 @@ const initialState: UserProfileState = {
 export const getUserProfile = createAsyncThunk<UserProfile, void>(
   GET_USER_PROFILE,
   async () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const response = await axios.get<UserProfile>(GET_USER_PROFILE);
-=======
-    const response = await axios.get<UserProfile>('https://api.example.com/user/profile');
->>>>>>> feat/get-google-ids-for-oauth
-=======
     const response = await axios.get<UserProfile>(GET_USER_PROFILE, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
       }
     });
->>>>>>> 7798fb7 (AVO-181, Implement skip onboarding flow functionlity)
     return response.data;
   }
 );

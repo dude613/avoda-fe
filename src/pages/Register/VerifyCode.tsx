@@ -33,32 +33,6 @@ const VerifyCode: React.FC = () => {
   const handleVerify = async () => {
     if (code.length < 6) {
       setError("Please fill in all the fields.");
-<<<<<<< HEAD
-<<<<<<< HEAD
-      return;
-    }
-  
-    if (!/^\d+$/.test(code)) {
-      setError("Please enter a valid numeric code.");
-=======
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-      return;
-    }
-
-    if (!/^\d+$/.test(code)) {
-      setError("Please enter a valid numeric code.");
-=======
->>>>>>> feat/get-google-ids-for-oauth
-      return;
-    }
-
-    if (!/^\d+$/.test(code)) {
-      setError("Please enter a valid numeric code.");
-      return;
-    }
-
-    if (!/^\d+$/.test(code)) {
-      setError("Please enter a valid numeric code.");
       return;
     }
 
@@ -69,17 +43,6 @@ const VerifyCode: React.FC = () => {
     setLoading(true);
     try {
       const otpNumber = parseInt(code, 10);
-<<<<<<< HEAD
-<<<<<<< HEAD
-      
-      if (isNaN(otpNumber)) {
-        setError("Please enter a valid numeric code.");
-        return;
-      }
-=======
->>>>>>> c0f7333 (AVO-172, Implement forgot password and token sending via email functionality)
-=======
->>>>>>> feat/get-google-ids-for-oauth
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,13 +53,11 @@ const VerifyCode: React.FC = () => {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user._id);
           localStorage.setItem("accessToken", data.accessToken);
+          toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
+          setTimeout(() => {
+            navigate("/create-organization", { replace: true });
+          }, 1000);
         }
-        toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
-        const onboardingSkipped = data?.onboardingSkipped;
-        const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
-        setTimeout(() => {
-          navigate(destination, { replace: true });
-        }, 1000);
       } else {
         toast.error(data?.error || USER_ALREADY_VERIFIED_TOAST, { duration: 2000 });
       }
@@ -109,6 +70,7 @@ const VerifyCode: React.FC = () => {
 
   const handleResend = async () => {
     setResending(true);
+    setCode("");
     try {
       const response = await fetch(`${baseUrl}/api/auth/resend-otp`, {
         method: "POST",

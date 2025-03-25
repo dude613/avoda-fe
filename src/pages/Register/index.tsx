@@ -28,14 +28,10 @@ const Register: React.FC = () => {
     formState: { errors },
     setValue,
     trigger,
-<<<<<<< HEAD
-  } = useForm();
-=======
   } = useForm(); 
->>>>>>> feat/get-google-ids-for-oauth
 
   const validateEmail = (email: string) => {
-    return EMAIL_REGEX.test(email) || INVALID_EMAIL_ERROR;
+    return EMAIL_REGEX.test(email) ? true : INVALID_EMAIL_ERROR;
   };
 
   const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,11 +46,7 @@ const Register: React.FC = () => {
       state: { email: data.email },
     });
   };
-<<<<<<< HEAD
-
-=======
  
->>>>>>> feat/get-google-ids-for-oauth
   const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const data = JSON.stringify({
@@ -84,11 +76,10 @@ const Register: React.FC = () => {
         toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
       }
     },
-    onError: (error: unknown) => console.error("Login Failed:", error),
+    onError: (error: any) => console.error("Login Failed:", error),
     scope:
       "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
-  
 
 
   return (

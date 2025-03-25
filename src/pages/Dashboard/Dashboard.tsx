@@ -12,7 +12,7 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Pagination from "../../util/Pagination";
 import Button from "../../ui/Button";
 import { VscSettings } from "react-icons/vsc";
-import Input from "../../ui/Input";
+import { Input } from "../../components/ui/input";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
@@ -23,16 +23,10 @@ export default function Dashboard() {
   const { teamMembers } = useSelector(
     (state: RootState) => state.organization
   );
- 
+
   useEffect(() => {
-<<<<<<< HEAD
-    if(userId){
+    if (userId) {
       dispatch(fetchOrganizations(userId as string));
-    }
-=======
-    if(userId){
-      dispatch(fetchOrganizations(userId as string));
->>>>>>> feat/get-google-ids-for-oauth
     }
   }, [dispatch, userId]);
 
@@ -75,7 +69,7 @@ export default function Dashboard() {
 
           return (
             <span
-              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active" ? "bg-background text-text" : "text-background border border-gray-300"
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active" ? "bg-primary text-white" : "text-primary border border-gray-300"
                 }`}
             >
               {formattedStatus}
@@ -107,36 +101,35 @@ export default function Dashboard() {
       <div className="flex mb-4 w-full">
         <div className=" mb-4 w-full">
           <h1 className="text-3xl font-bold">Users</h1>
-          <p className="text-primary text-sm leading-5 font-semibold">Here's list to all users in your organizaiton</p>
+          <p className="text-primary text-sm leading-5 font-semibold">Here's list to all users in your organization</p>
         </div>
       </div>
 
       <div className="flex justify-between items-center gap-4 mb-4">
         <div className="flex justify-start items-start gap-4">
           <Input
-            type="text"
+            type="search"
             placeholder="Filter users..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            error={""}
-            className="border rounded-lg w-[300px]" />
+          />
 
           <Button text={"Role"}
             icon={<IoMdAddCircleOutline size={20} />}
-            className="flex justify-center items-center gap-2 border border-dashed border-primary font-semibold w-28 h-11 rounded-lg"
+            className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold w-36 h-9 rounded-lg"
           />
           <Button text={"Status"}
             icon={<IoMdAddCircleOutline size={20} />}
-            className="flex justify-center items-center gap-2 border border-dashed border-primary font-semibold w-28 h-11 rounded-lg"
+            className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold  w-40 h-9 rounded-lg"
           />
         </div>
         <div className="flex justify-end items-center gap-2">
           <Button text={"View"}
             icon={<VscSettings size={20} />}
-            className="flex justify-center items-center gap-2 border border-primary font-semibold px-4 h-11 rounded-lg"
+            className="flex justify-center items-center gap-2 border border-primary font-semibold px-4 h-9 rounded-lg"
           />
           <Button text={'Invite User'}
-            className="bg-background text-lg text-text font-bold py-3 px-5 w-full rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+            className="bg-primary text-lg text-white font-bold py-2 px-4 w-full rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
           />
         </div>
 

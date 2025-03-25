@@ -27,7 +27,6 @@ type FileUploaderProps = {
     onUpload: (data: any) => void;
 };
 
-
 export default function FileUploader({
     mode,
     allowedTypes,
@@ -40,17 +39,31 @@ export default function FileUploader({
     const validateEmail = (email: string) => EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
-        const errors: Array<{ row: number; name: string; email: string; role: string; issue: string }> = [];
+        if (!data || !Array.isArray(data)) {
+            console.error("Invalid data provided for validation");
+            setErrorRows([]);
+            setValidRowCount(0);
+            setIsFileUploaded(false);
+            return;
+        }
+        const errors: any[] = [];
         const emailsSet = new Set<string>();
     
-        data.forEach((row, index) => {
-            const { Name, Email, Role } = row;
+        const normalizedData = data.map(row => ({
+            name: row.Name ? row.Name.trim().toLowerCase() : "",
+            email: row.Email ? row.Email.trim().toLowerCase() : "",
+            role: row.Role ? row.Role.trim().toLowerCase() : ""
+        }));
+    
+        normalizedData.forEach((row, index) => {
+            const { name, email, role } = row;
             const msgs: string[] = [];
-
+    
             const missingFields: string[] = [];
-            if (!Name) missingFields.push("Name");
-            if (!Email) missingFields.push("Email");
-            if (!Role) missingFields.push("Role");
+            if (!name) missingFields.push("Name");
+            if (!email) missingFields.push("Email");
+            if (!role) missingFields.push("Role");
+    
             if (missingFields.length === 3) {
                 msgs.push(TEAM_BULK_REQUIRED);
             } else if (missingFields.length === 2) {
@@ -58,27 +71,29 @@ export default function FileUploader({
             } else if (missingFields.length === 1) {
                 msgs.push(`${missingFields[0]} required fields`);
             }
-            if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
+    
+            if (name && !/^[a-z\s]+$/.test(name)) {
                 msgs.push(TEAM_BULK_INVALID_NAME);
             }
-            if (Email && !validateEmail(Email)) {
+            if (email && !validateEmail(email)) {
                 msgs.push(TEAM_INVALID_EMAIL);
             }
-            if (Email && emailsSet.has(Email)) {
+            if (email && emailsSet.has(email)) {
                 msgs.push(TEAM_BULK_DUPLICATE_EMAIL);
-            } else if (Email) {
-                emailsSet.add(Email);
+            } else if (email) {
+                emailsSet.add(email);
             }
-            if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
+            if (role && !["admin", "manager", "employee"].includes(role)) {
                 msgs.push(TEAM_BULK_INVALID_ROLE);
             }
+    
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
-                    name: Name || "Missing",
-                    email: Email || "Missing",
-                    role: Role || "Missing",
-                    issue: msgs.join("; "),
+                    name: name || TEAM_BULK_MISSING_ERROR,
+                    email: email || TEAM_BULK_MISSING_ERROR,
+                    role: role || TEAM_BULK_MISSING_ERROR,
+                    issue: msgs.join(", "),
                 });
             }
         });
@@ -88,12 +103,12 @@ export default function FileUploader({
             setValidRowCount(0);
             setIsFileUploaded(false);
         } else {
-            onUpload(data);
-            setValidRowCount(data?.length);
+            onUpload(normalizedData);
+            setValidRowCount(normalizedData.length);
             setErrorRows([]);
         }
     };
-
+    
     const parseCSV = (file: File) => {
         Papa.parse(file, {
             header: true,
@@ -141,7 +156,7 @@ export default function FileUploader({
                 accessorKey: "name",
                 header: "Name",
                 cell: (info) => (
-                    <span className={info.getValue() === "Missing" ? "text-red-500 text-xs font-semibold px-2 py-1" : ""}>
+                    <span className={info.getValue() === "Missing" ? "text-destructive text-xs font-semibold px-2 py-1" : ""}>
                         {info.getValue() as string}
                     </span>
                 ),
@@ -150,7 +165,7 @@ export default function FileUploader({
                 accessorKey: "email",
                 header: "Email",
                 cell: (info) => (
-                    <span className={info.getValue() === "Missing" ? "text-red-500 text-xs font-semibold px-2 py-1" : ""}>
+                    <span className={info.getValue() === "Missing" ? "text-destructive text-xs font-semibold px-2 py-1" : ""}>
                         {info.getValue() as string}
                     </span>
                 ),
@@ -159,7 +174,7 @@ export default function FileUploader({
                 accessorKey: "role",
                 header: "Role",
                 cell: (info) => (
-                    <span className={info.getValue() === "Missing" ? "text-red-500 text-xs font-semibold px-2 py-1" : ""}>
+                    <span className={info.getValue() === "Missing" ? "text-destructive text-xs font-semibold px-2 py-1" : ""}>
                         {info.getValue() as string}
                     </span>
                 ),
@@ -168,7 +183,7 @@ export default function FileUploader({
                 accessorKey: "issue",
                 header: "Issue",
                 cell: (info) => (
-                    <span className={info.getValue() ? "text-red-500 text-xs font-semibold p-1 bg-red-200 rounded-lg" : ""}>
+                    <span className={info.getValue() ? "flex text-center justify-center text-destructive text-xs font-semibold p-1 rounded-lg" : ""}>
                         {info.getValue() as string}
                     </span>
                 ),
@@ -192,13 +207,13 @@ export default function FileUploader({
             )}
 
             {errorRows.length ? (
-                <div className="flex flex-col items-start mt-4">
+                <div className="flex flex-col items-start mt-4 mb-8">
                     <div className="flex justify-between items-center w-full">
                         <h3 className="text-lg font-semibold tracking-tight">
                             {TEAM_BULK_REPORT_TEXT}
                         </h3>
                         <Button
-                            className="bg-background px-3 py-2 text-sm font-semibold rounded-lg text-white"
+                            className="bg-primary px-3 py-2 text-sm font-semibold rounded-lg text-white"
                             text="Cancel"
                             onClick={removeFile}
                         />
@@ -249,17 +264,15 @@ export default function FileUploader({
                 >
                     <Input type="file" {...getInputProps()} />
                     {isFileUploaded ? (
-                        <div className="flex flex-col items-center   mt-2 relative">
+                        <div className="flex items-center justify-center mt-2 relative">
                             <p className="text-sm text-gray-700 font-medium">
                                 {TEAM_BULK_FILE_SUCCESS}
                             </p>
-                            <button
-                                onClick={removeFile}
-                                className="absolute bottom-3 right-36 text-xl"
-                            >
+                            <button onClick={removeFile} className="mb-4 text-xl">
                                 <IoCloseCircle size={24} />
                             </button>
                         </div>
+
                     ) : (
                         <div className="flex flex-col items-center">
                             <FiUpload className="text-3xl text-gray-500" />

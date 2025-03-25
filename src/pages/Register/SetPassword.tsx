@@ -57,28 +57,25 @@ const SetPassword: React.FC = () => {
         body: JSON.stringify({
           email: email,
           password: data.password,
-<<<<<<< HEAD
         }),
       });
-=======
-        }), 
-      }); 
->>>>>>> feat/get-google-ids-for-oauth
       const responseData = await response.json();
-      if (responseData.success === true) {
+      if (response.ok && responseData.success === true) {
         toast.success(responseData?.message || REGISTER_SUCCESS_TOAST);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
+      } else if (response.status === 400) {
+        toast.error(responseData?.error || "User already exists");
       } else {
-        toast.error(responseData?.error || "Error occurred");
+        toast.error(responseData?.error || SERVER_ERROR_TOAST);
       }
     } catch (error) {
       toast.error(SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
-  }; 
+  };
 
   return (
     <>
@@ -136,13 +133,6 @@ const SetPassword: React.FC = () => {
                   showLabel={false}
                   error={errors.confirmPassword?.message?.toString()}
                 />
-                {/* <Input
-                    {...field}
-                    type={"password"}
-                    placeholder={CONFIRM_PASSWORD_PLACEHOLDER}
-                    className="border-input file:text-foreground placeholder:text-muted-foreground/70 flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm"
-                    error={errors.confirmPassword?.message || ""}
-                  /> */}
               </div>
             )}
           />
