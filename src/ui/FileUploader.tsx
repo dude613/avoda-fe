@@ -21,7 +21,6 @@ import {
 } from "@/constants/AddTeamMembers";
 import { Input } from '../components/ui/input';
 
-
 type FileUploaderProps = {
     mode: "single" | "multiple" | "csv";
     allowedTypes: string[];
@@ -38,7 +37,6 @@ export default function FileUploader({
     const [isFileUploaded, setIsFileUploaded] = useState(false);
     const [validRowCount, setValidRowCount] = useState(0)
     const [, startTransition] = useTransition();
-
     const validateEmail = (email: string) => EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
@@ -48,32 +46,32 @@ export default function FileUploader({
         data.forEach((row, index) => {
             const { Name, Email, Role } = row;
             const msgs: string[] = [];
-    
-            const missingFields = ["Name", "Email", "Role"].filter((field) => !row[field as keyof any]);
-    
-            if (missingFields.length > 0) {
-                msgs.push(`${missingFields.join(", ")} required`);
+
+            const missingFields: string[] = [];
+            if (!Name) missingFields.push("Name");
+            if (!Email) missingFields.push("Email");
+            if (!Role) missingFields.push("Role");
+            if (missingFields.length === 3) {
+                msgs.push(TEAM_BULK_REQUIRED);
+            } else if (missingFields.length === 2) {
+                msgs.push(`${missingFields.join(" and ")} required fields`);
+            } else if (missingFields.length === 1) {
+                msgs.push(`${missingFields[0]} required fields`);
             }
-    
-            if (Name && !/^[A-Za-z\s'-]+$/.test(Name)) {
-                msgs.push("Invalid name (Only letters, spaces, hyphens, and apostrophes allowed)");
+            if (Name && !/^[A-Za-z\s]+$/.test(Name)) {
+                msgs.push(TEAM_BULK_INVALID_NAME);
             }
-    
-            if (Email) {
-                if (!validateEmail(Email)) {
-                    msgs.push("Invalid email address");
-                } else if (emailsSet.has(Email)) {
-                    msgs.push("Duplicate email");
-                } else {
-                    emailsSet.add(Email);
-                }
+            if (Email && !validateEmail(Email)) {
+                msgs.push(TEAM_INVALID_EMAIL);
             }
-    
-            const validRoles = ["admin", "manager", "employee"];
-            if (Role && !validRoles.includes(Role.toLowerCase())) {
-                msgs.push(`Invalid role (Must be one of: ${validRoles.join(", ")})`);
+            if (Email && emailsSet.has(Email)) {
+                msgs.push(TEAM_BULK_DUPLICATE_EMAIL);
+            } else if (Email) {
+                emailsSet.add(Email);
             }
-    
+            if (Role && !["admin", "manager", "employee"].includes(Role.toLowerCase())) {
+                msgs.push(TEAM_BULK_INVALID_ROLE);
+            }
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
