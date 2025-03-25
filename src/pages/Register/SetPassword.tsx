@@ -65,7 +65,6 @@ const SetPassword: React.FC = () => {
       }); 
 >>>>>>> feat/get-google-ids-for-oauth
       const responseData = await response.json();
-
       if (responseData.success === true) {
         toast.success(responseData?.message || REGISTER_SUCCESS_TOAST);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {

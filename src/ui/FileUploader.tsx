@@ -16,7 +16,7 @@ import {
     TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
     TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
     TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
-    TEAM_EMAIL_REGEX,
+    EMAIL_REGEX,
     TEAM_INVALID_EMAIL
 } from "@/constants/AddTeamMembers";
 import { Input } from '../components/ui/input';
@@ -39,7 +39,7 @@ export default function FileUploader({
     const [validRowCount, setValidRowCount] = useState(0)
     const [, startTransition] = useTransition();
 
-    const validateEmail = (email: string) => TEAM_EMAIL_REGEX.test(email);
+    const validateEmail = (email: string) => EMAIL_REGEX.test(email);
 
     const validateData = (data: any[]) => {
         const errors: Array<{ row: number; name: string; email: string; role: string; issue: string }> = [];
