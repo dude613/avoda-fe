@@ -96,7 +96,7 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: REQUIRED_EMAIL_ERROR,
+              required: {value : true , message : REQUIRED_EMAIL_ERROR},
               pattern: {
                 value: EMAIL_REGEX,
                 message: INVALID_EMAIL_ERROR,
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: REQUIRED_PASSWORD_ERROR,
+              required: {value : true , message : REQUIRED_PASSWORD_ERROR},
               pattern: {
                 value: PASSWORD_REGEX,
                 message: INVALID_PASSWORD_ERROR,
