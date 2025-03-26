@@ -2,7 +2,8 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Login from '../pages/Login';
-import * as Constants from '../constants/Login';
+import { titles } from '../constants/auth';
+import { describe, it } from 'node:test';
 
 describe('Login component', () => {
   it('should render login form with title and subtitle from Constants', () => {
@@ -14,7 +15,7 @@ describe('Login component', () => {
       </GoogleOAuthProvider>
     );
 
-    expect(getByText(Constants.LOGIN_PAGE_TITLE)).toBeInTheDocument();
-    expect(getByText(Constants.LOGIN_PAGE_SUBTITLE)).toBeInTheDocument();
+    expect(getByText(titles.LOGIN_PAGE_TITLE)).toBeInTheDocument();
+    expect(getByText(titles.LOGIN_PAGE_SUBTITLE)).toBeInTheDocument();
   });
 });

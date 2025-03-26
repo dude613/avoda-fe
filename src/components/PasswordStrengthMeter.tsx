@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import * as Constants from "@/constants/Register";
+import * as Constants from "@/constants/auth";
 
 interface PasswordStrengthMeterProps {
   password: string;
@@ -90,9 +90,10 @@ const levels = [
   return (
     <div className="mt-1 mb-3">
       <div className="flex items-center justify-between mb-1">
+        {/* TODO Add Text Below
         <span className="text-xs text-gray-600">
-          {Constants.PASSWORD_STRENGTH_TEXT}
         </span>
+        */}
         <span className="text-xs font-medium" style={{ color: strengthLevel > 0 ? strengthColor.replace('bg-', 'text-') : 'text-gray-600' }}>
           {strengthText}
         </span>

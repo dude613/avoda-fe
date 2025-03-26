@@ -8,11 +8,8 @@ import { useForm, Controller } from "react-hook-form";
 import Button from "../../ui/Button";
 import Card from "@/ui/Card";
 import {
-  LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE, GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT,
-  PASSWORD_PLACEHOLDER, DIVIDER_TEXT, NO_ACCOUNT_TEXT,
-  INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, LOADING_TEXT, LOGIN_SUCCESS_TOAST,
-  USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST, INVALID_PASSWORD_ERROR, EMAIL_REGEX, PASSWORD_REGEX
-} from "@/constants/Login";
+  titles, buttons, messages, placeholders, TOAST_MESSAGES,EMAIL_REGEX,PASSWORD_REGEX
+} from "@/constants/auth";
 import { LoginAPI } from "@/service/api";
 import Email from "@/components/form/email";
 // import Password from "@/components/form/password";
@@ -36,15 +33,15 @@ const Login: React.FC = () => {
       if (response.success) {
         localStorage.setItem("userId", response.user._id);
         localStorage.setItem("accessToken", response.accessToken);
-        toast.success(response.message || LOGIN_SUCCESS_TOAST, { duration: 2000 });
+        toast.success(response.message || TOAST_MESSAGES.LOGIN_SUCCESS_TOAST, { duration: 2000 });
         const onboardingSkipped = response?.onboardingSkipped;
         const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
         navigate(destination, { replace: true });
       } else {
-        toast.error(response.error || USER_NOT_FOUND_TOAST, { duration: 2000 });
+        toast.error(response.error || TOAST_MESSAGES.USER_NOT_FOUND_TOAST, { duration: 2000 });
       }
     } catch {
-      toast.error(SERVER_ERROR_TOAST);
+      toast.error(TOAST_MESSAGES.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
@@ -62,10 +59,10 @@ const Login: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", data.user._id);
           localStorage.setItem("accessToken", data.accessToken);
-          toast.success(LOGIN_SUCCESS_TOAST, { position: "bottom-center" });
+          toast.success(TOAST_MESSAGES.LOGIN_SUCCESS_TOAST, { position: "bottom-center" });
           setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
         } else {
-          toast.error(response.status === 400 ? USER_NOT_FOUND_TOAST : SERVER_ERROR_TOAST, { position: "bottom-center" });
+          toast.error(response.status === 400 ? TOAST_MESSAGES.USER_NOT_FOUND_TOAST : TOAST_MESSAGES.SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
       } catch { }
     },
@@ -77,17 +74,17 @@ const Login: React.FC = () => {
     <>
       <Toaster />
       <Card>
-        <h2 className="text-xl font-bold mb-2 text-center">{LOGIN_PAGE_TITLE}</h2>
-        <p className="text-xs text-primary mb-4 text-center">{LOGIN_PAGE_SUBTITLE}</p>
+        <h2 className="text-xl font-bold mb-2 text-center">{titles.LOGIN_PAGE_TITLE}</h2>
+        <p className="text-xs text-primary mb-4 text-center">{titles.LOGIN_PAGE_SUBTITLE}</p>
         <Button
           onClick={() => login()}
-          text={GOOGLE_BUTTON_TEXT}
+          text={buttons.GOOGLE_BUTTON_TEXT}
           icon={<FcGoogle className="text-lg" />}
           className="flex items-center justify-center border-border border w-full p-2 mb-4 rounded-sm hover:ring-1 hover:ring-ring transition cursor-pointer"
         />
         <div className="flex items-center my-4">
           <hr className="flex-grow border border-border" />
-          <span className="mx-2 text-primary text-xs">{DIVIDER_TEXT}</span>
+          <span className="mx-2 text-primary text-xs">{messages.DIVIDER_TEXT}</span>
           <hr className="flex-grow border border-border" />
         </div>
 
@@ -97,10 +94,10 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: REQUIRED_EMAIL_ERROR,
+              required: errors.REQUIRED_EMAIL_ERROR?.type?.toString() as string,
               pattern: {
                 value: EMAIL_REGEX,
-                message: INVALID_EMAIL_ERROR,
+                message: errors.INVALID_EMAIL_ERROR?.type?.toString() as string,
               },
             }}
             render={({ field }) => (
@@ -120,22 +117,22 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: REQUIRED_PASSWORD_ERROR,
+              required: errors.EMPTY_PASSWORD_ERROR?.type?.toString() as string,
               pattern: {
                 value: PASSWORD_REGEX,
-                message: INVALID_PASSWORD_ERROR,
+                message: errors.INVALID_PASSWORD_ERROR?.type?.toString() as string,
               },
             }}
             render={({ field }) => (
               <>
                 {/* <Password
                   {...field}
-                  placeholder={PASSWORD_PLACEHOLDER}
+                  placeholder={placeholders.PASSWORD_PLACEHOLDER}
                   showLabel={true}
                   error={errors.password?.message?.toString()}
                 /> */}
                 <PasswordWithStrength
-                  placeholder={PASSWORD_PLACEHOLDER}
+                  placeholder={placeholders.PASSWORD_PLACEHOLDER}
                   value={field.value}
                   showLabel={true}
                   onChange={field.onChange}
@@ -148,20 +145,20 @@ const Login: React.FC = () => {
 
         <Button
           onClick={handleSubmit(onSubmit)}
-          text={loading ? LOADING_TEXT : EMAIL_BUTTON_TEXT}
+          text={loading ? messages.LOADING_TEXT : buttons.EMAIL_BUTTON_TEXT}
           className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
         />
 
         <p className="text-gray-500 text-sm text-center mt-3">
-          {NO_ACCOUNT_TEXT}{" "}
+          {messages.NO_ACCOUNT_TEXT}{" "}
           <span className="text-sm text-black hover:underline">
-            <Link to="/register">{SIGNUP_LINK_TEXT}</Link>
+            <Link to="/register">{buttons.SIGNUP_LINK_TEXT}</Link>
           </span>
         </p>
 
         <p className="text-sm text-center mt-5">
           <Link to="/forgot-password" className="hover:underline text-black">
-            {FORGOT_PASSWORD_LINK_TEXT}
+            {buttons.FORGOT_PASSWORD_LINK_TEXT}
           </Link>
         </p>
       </Card>
