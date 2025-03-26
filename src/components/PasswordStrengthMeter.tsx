@@ -49,7 +49,7 @@ const levels = [
 
     let text;
     let color;
-
+    
     switch (strength) {
       case 0:
         text = PASSWORD_VERY_WEAK;
