@@ -19,6 +19,7 @@
     "@sentry/react": "^9.5.0",
     "@tailwindcss/vite": "^4.0.15",
     "@tanstack/react-table": "^8.21.2",
+    "@testing-library/react": "^16.2.0",
     "axios": "^1.8.2",
     "better-auth": "^1.2.3",
     "class-variance-authority": "^0.7.1",
