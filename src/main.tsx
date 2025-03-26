@@ -7,7 +7,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter as Router } from "react-router-dom";
 
-const env = import.meta.env.ENVIRONMENT
+const env = import.meta.env.ENVIRONMENT || "development"
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
