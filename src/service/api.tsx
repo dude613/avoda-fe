@@ -1,7 +1,7 @@
 import axios from "axios";
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION } from "../Config"
 
-const userId = localStorage.getItem("userId");
+
 
 const getAuthHeaders = () => ({
     "Content-Type": "application/json",
@@ -30,6 +30,7 @@ export async function LoginAPI(formData: { email: string; password: string }) {
 
 export async function CreateOrganizationAPI(formData: any) {
     try {
+        const userId = localStorage.getItem("userId");
         const body = {
             ...formData,
             userId: userId,
@@ -64,6 +65,7 @@ export async function SkipOnboardingAPI(organizationId: string) {
 }
 export async function fetchOrganization() {
     try {
+        const userId = localStorage.getItem("userId");
         const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
             headers: getAuthHeaders(),
         });

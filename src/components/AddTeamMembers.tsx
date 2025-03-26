@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { LuUserPlus } from "react-icons/lu";
 import { Input } from "./ui/input";
-import { Controller, set, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import CircularLoading from "./CircularLoading";
 import { SiMinutemailer } from "react-icons/si";
@@ -10,15 +10,8 @@ import { BsArrowLeft } from "react-icons/bs";
 import { AddTeamMemberAPI, fetchOrganization, SkipOnboardingAPI } from "../service/api";
 import FileUploader from "../ui/FileUploader";
 import toast, { Toaster } from "react-hot-toast";
-import {
-  TEAM_ADD_ANOTHER_BTN, TEAM_ADD_MEMBERS,
-  TEAM_BACK_BTN, TEAM_BULK_UPLOAD, TEAM_EMAIL_INVITE,
-  TEAM_EMAIL_REQUIRED, TEAM_FAILED_ERROR, TEAM_FOOTER_TEXT, TEAM_INVALID_EMAIL,
-  TEAM_INVALID_NAME, TEAM_INVITATION_BTN_LOADER, TEAM_NAME_PLACEHOLDER,
-  TEAM_NAME_REGEX, TEAM_REQUIRED, TEAM_ROLE_REQUIRED, TEAM_SELECT_ADMIN,
-  TEAM_SELECT_EMPLOYEE, TEAM_SELECT_MANAGER, TEAM_SELECT_ROLE, TEAM_SEND_INVITATION_BTN,
-  TEAM_SKIP_BTN, TEAM_STEP, TEAM_SUCCESS_MSG, TEAM_TEXT, TEAM_TITLE
-} from "@/constants/AddTeamMembers";
+import { teamContent } from "@/constants/AddTeamMembers";
+
 import Email from "./form/email";
 import { Label } from "./ui/label";
 
@@ -27,6 +20,16 @@ interface FormData {
 }
 
 const AddTeamMembers = () => {
+  const {
+    TEAM_ADD_ANOTHER_BTN, TEAM_ADD_MEMBERS,
+    TEAM_BACK_BTN, TEAM_BULK_UPLOAD, TEAM_EMAIL_INVITE,
+    TEAM_EMAIL_REQUIRED, TEAM_FAILED_ERROR, TEAM_FOOTER_TEXT, TEAM_INVALID_EMAIL,
+    TEAM_INVALID_NAME, TEAM_INVITATION_BTN_LOADER, TEAM_NAME_PLACEHOLDER,
+    TEAM_NAME_REGEX, TEAM_REQUIRED, TEAM_ROLE_REQUIRED, TEAM_SELECT_ADMIN,
+    TEAM_SELECT_EMPLOYEE, TEAM_SELECT_MANAGER, TEAM_SELECT_ROLE, TEAM_SEND_INVITATION_BTN,
+    TEAM_SKIP_BTN, TEAM_STEP, TEAM_SUCCESS_MSG, TEAM_TEXT, TEAM_TITLE
+  } = teamContent;
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [tab, setTab] = useState("email");

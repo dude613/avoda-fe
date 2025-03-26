@@ -7,17 +7,20 @@ import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import Button from "../../ui/Button";
 import Card from "@/ui/Card";
-import {
-  titles, buttons, messages, placeholders, TOAST_MESSAGES,EMAIL_REGEX,PASSWORD_REGEX
-} from "@/constants/auth";
+import { loginContent } from "@/constants/Login";
 import { LoginAPI } from "@/service/api";
 import Email from "@/components/form/email";
-// import Password from "@/components/form/password";
 import PasswordWithStrength from "@/components/form/PasswordWithStrength";
-
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Login: React.FC = () => {
+  const {
+    LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE, GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT,
+    PASSWORD_PLACEHOLDER, DIVIDER_TEXT, NO_ACCOUNT_TEXT,
+    INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, LOADING_TEXT, LOGIN_SUCCESS_TOAST,
+    USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST, INVALID_PASSWORD_ERROR, EMAIL_REGEX, PASSWORD_REGEX
+  } = loginContent;
+
   const navigate = useNavigate();
   const { control, handleSubmit, formState: { errors } } = useForm({
     mode: "onChange",
@@ -87,7 +90,6 @@ const Login: React.FC = () => {
           <span className="mx-2 text-primary text-xs">{messages.DIVIDER_TEXT}</span>
           <hr className="flex-grow border border-border" />
         </div>
-
         <div className="relative mb-4">
           <Controller
             name="email"
@@ -125,12 +127,6 @@ const Login: React.FC = () => {
             }}
             render={({ field }) => (
               <>
-                {/* <Password
-                  {...field}
-                  placeholder={placeholders.PASSWORD_PLACEHOLDER}
-                  showLabel={true}
-                  error={errors.password?.message?.toString()}
-                /> */}
                 <PasswordWithStrength
                   placeholder={placeholders.PASSWORD_PLACEHOLDER}
                   value={field.value}

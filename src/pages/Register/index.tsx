@@ -6,21 +6,21 @@ import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import Email from "@/components/form/email";
-import {
-  REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE,
-  GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT,
-  DIVIDER_TEXT, INVALID_EMAIL_ERROR,
-  EMAIL_REGEX,
-  REGISTER_SUCCESS_TOAST,
-  USER_EXISTS_TOAST,
-  REGISTER_PAGE_SUBTITLE_SIGN_UP
-} from "@/constants/Register";
-import { SERVER_ERROR_TOAST } from "@/constants/Login";
+import { registerContent } from "@/constants/Register";
 import Card from "@/ui/Card";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
 const Register: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE,
+    GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT,
+    DIVIDER_TEXT, INVALID_EMAIL_ERROR,
+    EMAIL_REGEX,
+    REGISTER_SUCCESS_TOAST,
+    USER_EXISTS_TOAST,
+    REGISTER_PAGE_SUBTITLE_SIGN_UP, SERVER_ERROR_TOAST
+  } = registerContent;
+
   const navigate = useNavigate();
   const {
     control,
@@ -28,7 +28,7 @@ const Register: React.FC = () => {
     formState: { errors },
     setValue,
     trigger,
-  } = useForm(); 
+  } = useForm();
 
   const validateEmail = (email: string) => {
     return EMAIL_REGEX.test(email) ? true : INVALID_EMAIL_ERROR;
@@ -46,7 +46,7 @@ const Register: React.FC = () => {
       state: { email: data.email },
     });
   };
- 
+
   const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const data = JSON.stringify({
@@ -71,7 +71,7 @@ const Register: React.FC = () => {
         } else {
           toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
         }
-      } catch (error) { 
+      } catch (error) {
         console.error("Google login error:", error);
         toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
       }

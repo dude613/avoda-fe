@@ -1,13 +1,18 @@
 import OTP from "@/components/form/otp";
-import { SERVER_ERROR_TOAST } from "@/constants/Login";
-import { CODE_SENT_TOAST, NOT_RECEIVE_CODE_TEXT, RESEND_CODE_TEXT, RESENDING_CODE_TEXT, USER_ALREADY_VERIFIED_TOAST, USER_EXISTS_TOAST, USER_VERIFIED_TOAST, VERIFY_CODE_SUBTITLE, VERIFY_CODE_TITLE, VERIFYING_CODE_TEXT } from "@/constants/Register";
+import { registerContent } from "@/constants/Register";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
 const VerifyCode: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    CODE_SENT_TOAST, SERVER_ERROR_TOAST, NOT_RECEIVE_CODE_TEXT,
+    RESEND_CODE_TEXT, RESENDING_CODE_TEXT, USER_ALREADY_VERIFIED_TOAST,
+    USER_EXISTS_TOAST, USER_VERIFIED_TOAST, VERIFY_CODE_SUBTITLE,
+    VERIFY_CODE_TITLE, VERIFYING_CODE_TEXT
+  } = registerContent;
+
   const [code, setCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();

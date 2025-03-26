@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
-import * as Constants from "@/constants/auth";
+import { registerContent } from "@/constants/Register";
 
+const { PASSWORD_VERY_WEAK, PASSWORD_WEAK, PASSWORD_MEDIUM,
+  PASSWORD_STRONG, PASSWORD_VERY_STRONG, PASSWORD_STRENGTH_TEXT
+} = registerContent;
 interface PasswordStrengthMeterProps {
   password: string;
 }
@@ -12,10 +15,10 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     if (!password) return 0;
 
     let score = 0;
-    
+
     // Length check
     if (password.length >= 8) score += 1;
-    
+
     // Character type checks
     if (/[A-Z]/.test(password)) score += 0.5;
     if (/[a-z]/.test(password)) score += 0.5;
@@ -27,7 +30,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     if (password.toLowerCase().includes("password")) score -= 1;
     if (password.toLowerCase().includes("1234")) score -= 1;
 
-    
+
     // Cap the score at 5
     return Math.min(5, Math.max(0, score));
   };
@@ -43,40 +46,40 @@ const levels = [
 
   const { strengthLevel, strengthText, strengthColor } = useMemo(() => {
     const strength = calculateStrength(password);
-    
+
     let text;
     let color;
-    
+
     switch (strength) {
       case 0:
-        text = levels[0].text;
-        color = levels[0].color;
+        text = PASSWORD_VERY_WEAK;
+        color = "bg-red-400";
         break;
       case 1:
-        text = levels[1].text;
-        color = levels[1].color;
+        text = PASSWORD_VERY_WEAK;
+        color = "bg-red-300";
         break;
       case 2:
-        text = levels[2].text;
-        color = levels[2].color;
+        text = PASSWORD_WEAK;
+        color = "bg-orange-500";
         break;
       case 3:
-        text = levels[3].text;
-        color = levels[3].color;
+        text = PASSWORD_MEDIUM;
+        color = "bg-yellow-500";
         break;
       case 4:
-        text = levels[4].text;
-        color = levels[4].color;
+        text = PASSWORD_STRONG;
+        color = "bg-green-200";
         break;
       case 5:
-        text = levels[5].text;
-        color = levels[5].color;
+        text = PASSWORD_VERY_STRONG;
+        color = "bg-green-400";
         break;
       default:
-        text = levels[0].text;
-        color = levels[0].color;
+        text = PASSWORD_VERY_WEAK;
+        color = "bg-red-400";
     }
-    
+
     return {
       strengthLevel: strength,
       strengthText: text,
@@ -92,6 +95,7 @@ const levels = [
       <div className="flex items-center justify-between mb-1">
         {/* TODO Add Text Below
         <span className="text-xs text-gray-600">
+          {PASSWORD_STRENGTH_TEXT}
         </span>
         */}
         <span className="text-xs font-medium" style={{ color: strengthLevel > 0 ? strengthColor.replace('bg-', 'text-') : 'text-gray-600' }}>
@@ -102,11 +106,10 @@ const levels = [
         {segments.map((_, index) => (
           <div
             key={index}
-            className={`h-1 flex-1 rounded-full ${
-              index < strengthLevel
+            className={`h-1 flex-1 rounded-full ${index < strengthLevel
                 ? strengthColor
                 : "bg-gray-200 border border-dashed border-gray-300"
-            }`}
+              }`}
           ></div>
         ))}
       </div>

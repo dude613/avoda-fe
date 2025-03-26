@@ -2,29 +2,26 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-// import PasswordWithStrength from "@/components/form/PasswordWithStrength";
 import Button from "../../ui/Button";
-// import Input from "@/ui/Input";
-import {
-  SET_PASSWORD_TITLE, SERVER_ERROR_TOAST, SET_PASSWORD_SUBTITLE,
-  CREATING_ACCOUNT_TEXT, CREATE_ACCOUNT_BUTTON_TEXT, REGISTER_SUCCESS_TOAST,
-  CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR
-} from "@/constants/Register";
+import { registerContent } from "@/constants/Register";
 import Password from "@/components/form/password";
-import { INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX } from "@/constants/Login";
 import Card from "@/ui/Card";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
 const SetPassword: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    SET_PASSWORD_TITLE, SERVER_ERROR_TOAST, SET_PASSWORD_SUBTITLE,
+    CREATING_ACCOUNT_TEXT, CREATE_ACCOUNT_BUTTON_TEXT, REGISTER_SUCCESS_TOAST,
+    CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR,
+    INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX
+  } = registerContent;
+
   const navigate = useNavigate();
   const location = useLocation();
-
   const queryParams = new URLSearchParams(location.search);
   const emailFromQuery = queryParams.get("email");
   const emailFromState = location.state?.email;
   const email = emailFromQuery || emailFromState || localStorage.getItem("email");
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -101,11 +98,6 @@ const SetPassword: React.FC = () => {
             }}
             render={({ field }) => (
               <div className="relative">
-                {/* <PasswordWithStrength
-                    value={field.value}
-                    showLabel={false}
-                    onChange={field.onChange}
-                  /> */}
                 <Password
                   {...field}
                   placeholder={PASSWORD_PLACEHOLDER}

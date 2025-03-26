@@ -5,18 +5,19 @@ import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import Email from "@/components/form/email";
 import Button from "@/ui/Button";
-import {
-  FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, CHECK_EMAIL_TITLE
-  , RESET_PASSWORD_BUTTON_TEXT,
-  INVALID_EMAIL_ERROR,
-  BACK_TO_LOGIN_TEXT,
-  EMAIL_REGEX
-} from "@/constants/ForgotPassword";
+import { forgotContent } from "@/constants/ForgotPassword";
 import Card from "@/ui/Card";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
 const ForgotPassword: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, CHECK_EMAIL_TITLE,
+    RESET_PASSWORD_BUTTON_TEXT,
+    INVALID_EMAIL_ERROR,
+    BACK_TO_LOGIN_TEXT,
+    EMAIL_REGEX
+  } = forgotContent;
+
   const navigate = useNavigate();
   const {
     control,

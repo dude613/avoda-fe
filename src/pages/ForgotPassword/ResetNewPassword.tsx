@@ -2,18 +2,22 @@ import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
-import { PASSWORD_REQUIRED_ERROR } from "@/constants/ForgotPassword";
 import Password from "@/components/form/password";
 import Button from "@/ui/Button";
-import { PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
-     CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
-      RESET_PASSWORD_BUTTON_TEXT,
-     RETURN_TO_SIGNIN_TEXT,RESET_PASSWORD_SUBTITLE,RESET_PASSWORD_TITLE,
-     NEW_PASSWORD_PLACEHOLDER } from "@/constants/ForgotPassword";
+import { forgotContent } from "@/constants/ForgotPassword";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function ResetNewPassword() {
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
+    const {
+        PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
+        CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
+        RESET_PASSWORD_BUTTON_TEXT,
+        RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
+        NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
+        PASSWORD_RESET_FAILED_TOAST
+    } = forgotContent
+
     const location = useLocation();
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(location.search);
@@ -38,17 +42,17 @@ export default function ResetNewPassword() {
                 },
                 body: JSON.stringify({ email: emailFromUrl, password: data.password }),
             });
-            
+
             const result = await response.json();
             if (response.ok && result.success) {
-                toast.success(result?.message || "Password reset successfully.");
+                toast.success(result?.message || PASSWORD_RESET_SUCCESS_TOAST);
                 navigate("/login");
             } else {
                 toast.error(result.error || `Failed to reset password: ${response.status}`);
             }
         } catch (error) {
             console.error("Password reset error:", error);
-            toast.error("Failed to reset password.");
+            toast.error(PASSWORD_RESET_FAILED_TOAST);
         }
     };
 
@@ -63,10 +67,10 @@ export default function ResetNewPassword() {
                         </div>
                     </div>
                     <h2 className="mt-8 text-2xl font-bold text-gray-800 mb-2 text-center">
-                      {RESET_PASSWORD_TITLE}
+                        {RESET_PASSWORD_TITLE}
                     </h2>
                     <p className="text-sm font-semibold text-gray-500 text-center mb-8">
-                       {RESET_PASSWORD_SUBTITLE}
+                        {RESET_PASSWORD_SUBTITLE}
                     </p>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -119,7 +123,7 @@ export default function ResetNewPassword() {
 
                     <p className="text-gray-800 text-sm text-center mt-5">
                         <Link to={"/login"} className="hover:underline">
-                           {RETURN_TO_SIGNIN_TEXT}
+                            {RETURN_TO_SIGNIN_TEXT}
                         </Link>
                     </p>
                 </div>

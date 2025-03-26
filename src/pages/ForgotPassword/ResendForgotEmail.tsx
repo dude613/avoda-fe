@@ -3,13 +3,13 @@ import { LuPlane } from "react-icons/lu";
 import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import Card from "@/ui/Card";
-import { CHECK_EMAIL_TITLE, CHECK_EMAIL_SUBTITLE, RESEND_EMAIL_BUTTON_TEXT } from "@/constants/ForgotPassword";
+import { forgotContent } from "@/constants/ForgotPassword";
 import Button from "@/ui/Button";
 
-
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
 export default function ResendForgotEmail() {
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
+    const { CHECK_EMAIL_TITLE, CHECK_EMAIL_SUBTITLE, RESEND_EMAIL_BUTTON_TEXT } = forgotContent;
+
     const [searchParams] = useSearchParams();
     const [email, setEmail] = useState("");
 

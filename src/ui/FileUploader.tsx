@@ -10,15 +10,7 @@ import {
     flexRender,
     ColumnDef,
 } from "@tanstack/react-table";
-import {
-    TEAM_BULK_DRAG_TEXT, TEAM_BULK_DUPLICATE_EMAIL,
-    TEAM_BULK_FILE_SUCCESS, TEAM_BULK_INVALID_FILE,
-    TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
-    TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
-    TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
-    EMAIL_REGEX,
-    TEAM_INVALID_EMAIL
-} from "@/constants/AddTeamMembers";
+import { teamContent } from "@/constants/AddTeamMembers";
 import { Input } from '../components/ui/input';
 
 type FileUploaderProps = {
@@ -32,6 +24,17 @@ export default function FileUploader({
     allowedTypes,
     onUpload,
 }: FileUploaderProps) {
+
+    const {
+        TEAM_BULK_DRAG_TEXT, TEAM_BULK_DUPLICATE_EMAIL,
+        TEAM_BULK_FILE_SUCCESS, TEAM_BULK_INVALID_FILE,
+        TEAM_BULK_INVALID_NAME, TEAM_BULK_INVALID_ROLE,
+        TEAM_BULK_MISSING_ERROR, TEAM_BULK_REPORT_TEXT,
+        TEAM_BULK_REQUIRED, TEAM_BULK_UPLOAD_TEXT,
+        EMAIL_REGEX,
+        TEAM_INVALID_EMAIL
+    } = teamContent;
+
     const [errorRows, setErrorRows] = useState<any[]>([]);
     const [isFileUploaded, setIsFileUploaded] = useState(false);
     const [validRowCount, setValidRowCount] = useState(0)
@@ -48,22 +51,22 @@ export default function FileUploader({
         }
         const errors: any[] = [];
         const emailsSet = new Set<string>();
-    
+
         const normalizedData = data.map(row => ({
             name: row.Name ? row.Name.trim().toLowerCase() : "",
             email: row.Email ? row.Email.trim().toLowerCase() : "",
             role: row.Role ? row.Role.trim().toLowerCase() : ""
         }));
-    
+
         normalizedData.forEach((row, index) => {
             const { name, email, role } = row;
             const msgs: string[] = [];
-    
+
             const missingFields: string[] = [];
             if (!name) missingFields.push("Name");
             if (!email) missingFields.push("Email");
             if (!role) missingFields.push("Role");
-    
+
             if (missingFields.length === 3) {
                 msgs.push(TEAM_BULK_REQUIRED);
             } else if (missingFields.length === 2) {
@@ -71,7 +74,7 @@ export default function FileUploader({
             } else if (missingFields.length === 1) {
                 msgs.push(`${missingFields[0]} required fields`);
             }
-    
+
             if (name && !/^[a-z\s]+$/.test(name)) {
                 msgs.push(TEAM_BULK_INVALID_NAME);
             }
@@ -86,7 +89,7 @@ export default function FileUploader({
             if (role && !["admin", "manager", "employee"].includes(role)) {
                 msgs.push(TEAM_BULK_INVALID_ROLE);
             }
-    
+
             if (msgs.length) {
                 errors.push({
                     row: index + 1,
@@ -97,7 +100,7 @@ export default function FileUploader({
                 });
             }
         });
-    
+
         if (errors.length) {
             setErrorRows(errors);
             setValidRowCount(0);
@@ -108,7 +111,7 @@ export default function FileUploader({
             setErrorRows([]);
         }
     };
-    
+
     const parseCSV = (file: File) => {
         Papa.parse(file, {
             header: true,

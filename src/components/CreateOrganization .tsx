@@ -10,15 +10,7 @@ import { CreateOrganizationAPI } from "../service/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Input } from "./ui/input";
-import {
-    ORGANIZATION_TITLE, ORGANIZATION_ADD_EMPLOYEE_TEXT, ORGANIZATION_CREATE_ORGANIZATION,
-    ORGANIZATION_TEXT, ORGANIZATION_NAME, ORGANIZATION_PLACEHOLDER, ORGANIZATION_BODY_TEXT,
-    ORGANIZATION_INDUSTRY, ORGANIZATION_SELECT_INDUSTRY, ORGANIZATION_SELECT_TECHNOLOGY, ORGANIZATION_SELECT_HEALTHCARE,
-    ORGANIZATION_SELECT_FINANCE, ORGANIZATION_SELECT_EDUCATION, ORGANIZATION_SELECT_RETAIL, ORGANIZATION_SELECT_MANUFACTURING,
-    ORGANIZATION_SELECT_OTHER, ORGANIZATION_COMPANY_SIZE_TEXT, ORGANIZATION_FOOTER_TEXT,
-    ORGANIZATION_REQUIRED, ORGANIZATION_SELECT_ERROR, ORGANIZATION_COMPANY_REQUIRED, ORGANIZATION_COMPANY_SIZE_EMPLOYEE_TEXT
-    , ORGANIZATION_BUTTON_TEXT, ORGANIZATION_BUTTON_LOADING_TEXT
-} from "@/constants/CreateOrganization";
+import { organizationContent } from "@/constants/CreateOrganization";
 
 interface OrganizationFormData {
     organizationName: string;
@@ -27,6 +19,17 @@ interface OrganizationFormData {
 }
 
 export default function CreateOrganization() {
+
+    const {
+        ORGANIZATION_TITLE, ORGANIZATION_ADD_EMPLOYEE_TEXT, ORGANIZATION_CREATE_ORGANIZATION,
+        ORGANIZATION_TEXT, ORGANIZATION_NAME, ORGANIZATION_PLACEHOLDER, ORGANIZATION_BODY_TEXT,
+        ORGANIZATION_INDUSTRY, ORGANIZATION_SELECT_INDUSTRY, ORGANIZATION_SELECT_TECHNOLOGY, ORGANIZATION_SELECT_HEALTHCARE,
+        ORGANIZATION_SELECT_FINANCE, ORGANIZATION_SELECT_EDUCATION, ORGANIZATION_SELECT_RETAIL, ORGANIZATION_SELECT_MANUFACTURING,
+        ORGANIZATION_SELECT_OTHER, ORGANIZATION_COMPANY_SIZE_TEXT, ORGANIZATION_FOOTER_TEXT,
+        ORGANIZATION_REQUIRED, ORGANIZATION_SELECT_ERROR, ORGANIZATION_COMPANY_REQUIRED, ORGANIZATION_COMPANY_SIZE_EMPLOYEE_TEXT
+        , ORGANIZATION_BUTTON_TEXT, ORGANIZATION_BUTTON_LOADING_TEXT
+    } = organizationContent;
+
     const navigate = useNavigate();
     const [formData, setFormData] = useState<OrganizationFormData | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -93,9 +96,11 @@ export default function CreateOrganization() {
         try {
             const res = await CreateOrganizationAPI(data);
             if (res.success === true) {
-                toast.success(res?.message || "Organization created successfully!", { duration: 2000 });
                 setFormData(null);
-                navigate("/add-employee")
+                toast.success(res?.message || "Organization created successfully!", { duration: 2000 });
+                setTimeout(() => {
+                    navigate("/add-employee");
+                }, 2100);
             } else {
                 toast.error(res?.response?.data?.error || "Server error please try again!", { duration: 2000 });
             }
