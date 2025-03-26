@@ -43,7 +43,6 @@ function App() {
           path="/register"
           element={<Register />}
         />
-        <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/forgot-resend" element={<ResendForgotEmail />} />
         <Route path="/register/setPassword" element={<SetPassword />} />
@@ -55,20 +54,6 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Route> 
         <Route path="*" element={<Navigate to="/404" />} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Register Routes */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/register/setPassword" element={<SetPassword />} />
-        <Route path="/register/verifyCode" element={<VerifyCode />} />
-
-        {/* Protected Route for Dashboard */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
       </Routes>
     </>
   );
