@@ -32,6 +32,15 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     return Math.min(5, Math.max(0, score));
   };
 
+const levels = [
+  { level: 0, text: "Very Weak", color: "bg-red-400" },
+  { level: 1, text: "Weak", color: "bg-red-300" },
+  { level: 2, text: "Weak", color: "bg-orange-500" },
+  { level: 3, text: "Medium", color: "bg-yellow-500" },
+  { level: 4, text: "Strong", color: "bg-green-200" },
+  { level: 5, text: "Very Strong", color: "bg-green-400" },
+];
+
   const { strengthLevel, strengthText, strengthColor } = useMemo(() => {
     const strength = calculateStrength(password);
     
@@ -40,32 +49,32 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     
     switch (strength) {
       case 0:
-        text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-red-400";
+        text = levels[0].text;
+        color = levels[0].color;
         break;
       case 1:
-        text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-red-300";
+        text = levels[1].text;
+        color = levels[1].color;
         break;
       case 2:
-        text = Constants.PASSWORD_WEAK;
-        color = "bg-orange-500";
+        text = levels[2].text;
+        color = levels[2].color;
         break;
       case 3:
-        text = Constants.PASSWORD_MEDIUM;
-        color = "bg-yellow-500";
+        text = levels[3].text;
+        color = levels[3].color;
         break;
       case 4:
-        text = Constants.PASSWORD_STRONG;
-        color = "bg-green-200";
+        text = levels[4].text;
+        color = levels[4].color;
         break;
       case 5:
-        text = Constants.PASSWORD_VERY_STRONG;
-        color = "bg-green-400";
+        text = levels[5].text;
+        color = levels[5].color;
         break;
       default:
-        text = Constants.PASSWORD_VERY_WEAK;
-        color = "bg-red-400";
+        text = levels[0].text;
+        color = levels[0].color;
     }
     
     return {
