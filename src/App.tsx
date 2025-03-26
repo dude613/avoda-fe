@@ -55,7 +55,6 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Route> 
         <Route path="*" element={<Navigate to="/404" />} />
-      <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
