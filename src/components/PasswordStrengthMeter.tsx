@@ -35,15 +35,6 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
     return Math.min(5, Math.max(0, score));
   };
 
-const levels = [
-  { level: 0, text: "Very Weak", color: "bg-red-400" },
-  { level: 1, text: "Weak", color: "bg-red-300" },
-  { level: 2, text: "Weak", color: "bg-orange-500" },
-  { level: 3, text: "Medium", color: "bg-yellow-500" },
-  { level: 4, text: "Strong", color: "bg-green-200" },
-  { level: 5, text: "Very Strong", color: "bg-green-400" },
-];
-
   const { strengthLevel, strengthText, strengthColor } = useMemo(() => {
     const strength = calculateStrength(password);
 
@@ -93,11 +84,9 @@ const levels = [
   return (
     <div className="mt-1 mb-3">
       <div className="flex items-center justify-between mb-1">
-        {/* TODO Add Text Below
         <span className="text-xs text-gray-600">
           {PASSWORD_STRENGTH_TEXT}
         </span>
-        */}
         <span className="text-xs font-medium" style={{ color: strengthLevel > 0 ? strengthColor.replace('bg-', 'text-') : 'text-gray-600' }}>
           {strengthText}
         </span>

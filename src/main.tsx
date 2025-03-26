@@ -9,23 +9,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import store from "./redux/Store.tsx";
 import { Provider } from "react-redux";
 
-Sentry.init({
-  dsn: "https://32a372d399967c40e175a081bbb13db9@sen.newhoopla.com/4",
-  integrations: [
-    browserTracingIntegration(),
-    replayIntegration({
-      maskAllText: false,
-      blockAllMedia: false,
-    })
-  ],
-  // Tracing
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-  // Session Replay
-  replaysSessionSampleRate: 1.0, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0 // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-});
 
 const env = import.meta.env.ENVIRONMENT || "development"
 
@@ -39,10 +22,8 @@ Sentry.init({
     })
   ],
   // Tracing
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+  tracesSampleRate: 1.0,
   tracePropagationTargets: ["localhost", /^https:\/\/avoda-fe\.vercel\.app\//],
-  // Session Replay
 
   replaysSessionSampleRate: env === "development" ? 1.0 : 0.25,
   replaysOnErrorSampleRate: 1.0, //  Capture 100% of the errors
