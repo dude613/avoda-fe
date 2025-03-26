@@ -36,16 +36,12 @@ function App() {
         <Route
           path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
         <Route
-<<<<<<< HEAD
           path="/login"
           element={<Login />}
         /> 
         <Route
           path="/register"
           element={<Register />}
-=======
-          path="/login" element={<Login />}
->>>>>>> feat/get-google-ids-for-oauth
         />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -56,13 +52,23 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
           <Route path="/add-employee" element={<AddTeamMembers />} />
-<<<<<<< HEAD
-
-=======
->>>>>>> feat/get-google-ids-for-oauth
           <Route path="/dashboard" element={<Dashboard />} />
         </Route> 
         <Route path="*" element={<Navigate to="/404" />} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* Register Routes */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/register/setPassword" element={<SetPassword />} />
+        <Route path="/register/verifyCode" element={<VerifyCode />} />
+
+        {/* Protected Route for Dashboard */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </>
   );
