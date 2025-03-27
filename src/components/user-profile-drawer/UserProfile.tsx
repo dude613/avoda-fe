@@ -69,7 +69,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setShowProfile }
                 await new Promise((resolve) => setTimeout(resolve, 2200));
                 setShowProfile(false)
             } else {
-                toast.success(updateResponse?.error || "Something went wrong", { duration: 2000 });
+                toast.error(updateResponse?.error || "Something went wrong", { duration: 2000 });
             }
         } catch (error) {
             console.error("Error updating profile", error);

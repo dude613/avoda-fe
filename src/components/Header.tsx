@@ -50,7 +50,7 @@ const Header: React.FC = () => {
             {showProfile && (
               <div
                 className={`fixed bottom-0 left-0 right-0 bg-white text-black border-t-2 border-gray-300 shadow-lg transition-all ease-in-out duration-1000 transform z-20 ${showProfile
-                  ? "translate-y-0 opacity-100 h-3/4 touch-action-none will-change-transform animation-[popupAnimation] animation-duration-[0.10s] animation-timing-function-[cubic-bezier(0.32,0.72,0,1)]"
+                  ? "translate-y-0 opacity-100 h-3/4 touch-none will-change-transform animation-[popupAnimation] animation-duration-[0.10s] animation-timing-function-[cubic-bezier(0.32,0.72,0,1)]"
                   : "translate-y-full opacity-0 h-0"
                   }`}
               >
