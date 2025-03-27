@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION } from "../Config"
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE } from "../Config"
 
 
 
@@ -90,5 +90,19 @@ export async function AddTeamMemberAPI(formData: any) {
     } catch (e) {
         console.log("error message Create Organization", e)
         return e;
+    }
+}
+
+
+export async function UpdateProfile(formData: any) {
+    try {
+        const response = await axios.put(UPDATE_USER_PROFILE, formData, {
+            headers: getAuthHeaders(),
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log("error message Create Organization", error)
+        return error;
     }
 }

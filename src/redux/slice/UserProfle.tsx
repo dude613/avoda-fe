@@ -1,14 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { GET_USER_PROFILE } from '../../Config';
-
-interface UserProfile {
-  id: number;
-  userName: string;
-  email: string;
-  picture: string;
-  verified: string;
-}
+import { UserProfile } from '@/type';
 
 interface UserProfileState {
   userProfile: UserProfile | null;
@@ -16,20 +9,21 @@ interface UserProfileState {
   error: string | null;
 }
 
+
 const initialState: UserProfileState = {
   userProfile: null,
   loading: false,
   error: null,
 };
 
-export const getUserProfile = createAsyncThunk<UserProfile, void>(
+export const getUserProfile = createAsyncThunk<UserProfile, string>(
   GET_USER_PROFILE,
-  async () => {
-    const response = await axios.get<UserProfile>(GET_USER_PROFILE, {
+  async (userId: string) => {
+    const response = await axios.get<UserProfile>(`${GET_USER_PROFILE}/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
-      }
+      },
     });
     return response.data;
   }
