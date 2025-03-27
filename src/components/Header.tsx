@@ -23,7 +23,7 @@ const Header: React.FC = () => {
   }, [dispatch, userId]);
   console.log(userProfile)
 
- 
+
 
   const handleProfileClick = () => {
     setShowProfile(!showProfile);
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
                   : "translate-y-full opacity-0 h-0"
                   }`}
               >
-                <UserProfile userProfile={userProfile} setShowProfile={setShowProfile}/>
+                <UserProfile userProfile={userProfile} setShowProfile={setShowProfile} />
               </div>
             )}
           </>
