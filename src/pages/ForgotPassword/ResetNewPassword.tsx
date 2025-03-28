@@ -16,7 +16,7 @@ export default function ResetNewPassword() {
         RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
         NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
         PASSWORD_RESET_FAILED_TOAST,NOT_EMAIL_EXIST
-    } = forgotContent
+    } = forgotContent;
 
     const location = useLocation();
     const navigate = useNavigate();

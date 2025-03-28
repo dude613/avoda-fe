@@ -27,7 +27,6 @@ const Login: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
-
   const onSubmit = async (data: any) => {
     const { email, password } = data;
     setLoading(true);

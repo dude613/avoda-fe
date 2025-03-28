@@ -74,7 +74,6 @@ export default function FileUploader({
             } else if (missingFields.length === 1) {
                 msgs.push(`${missingFields[0]} required fields`);
             }
-
             if (name && !/^[a-z\s]+$/.test(name)) {
                 msgs.push(TEAM_BULK_INVALID_NAME);
             }
