@@ -12,7 +12,6 @@ const Header: React.FC = () => {
   const { APP_NAME, LOGIN_LINK_TEXT, REGISTER_LINK_TEXT } = headerContent
   const accessToken = localStorage.getItem("accessToken")
   const [showProfile, setShowProfile] = useState<boolean>(false)
-
   const dispatch = useDispatch<AppDispatch>()
   const userId = localStorage.getItem("userId")
   const { userProfile } = useSelector((state: RootState) => state.userProfile)
@@ -21,7 +20,7 @@ const Header: React.FC = () => {
     if (userId) {
       dispatch(getUserProfile(userId as string))
     }
-  }, [])
+  }, [dispatch , userId]);
 
   const handleProfileClick = () => {
     setShowProfile(!showProfile)

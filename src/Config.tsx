@@ -16,4 +16,4 @@ export const USER_ARCHIVED = `${url}/admin/user-archived`;
 export const GET_USER_PROFILE = `${url}/auth/get-profile`;
 export const LOGIN_API = `${url}/auth/login`;
 export const UPDATE_USER_PROFILE = `${url}/auth/update-profile`;
-export const UPDATE_USER_PROFILE_PICTURE = `${url}/auth//upload-image`;
+export const UPDATE_USER_PROFILE_PICTURE = `${url}/auth/upload-image`;

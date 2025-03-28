@@ -1,5 +1,4 @@
 "use client"
-
 import type React from "react"
 import { type Dispatch, type SetStateAction, useEffect, useState, useTransition } from "react"
 import { useForm, Controller } from "react-hook-form"
@@ -27,11 +26,11 @@ interface ProfilePageProps {
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     const {
-        PROFILE_HEADING , PROFILE_HEADING_TEXT , UPLOAD_PHOTO_TEXT , FULL_NAME_LABEL,
-        FULL_NAME_PLACEHOLDER,ROLE_LABEL,SELECT_ROLE,SELECT_USER_VALUE,SELECT_ADMIN_VALUE,
-        SELECT_EMPLOYEE_VALUE, SELECT_MANAGER_VALUE,LOADING_BUTTON_TEXT,BUTTON_TEXT,CANCEL_BUTTON_TEXT,
-        REQUIRED_NAME,INVALID_NAME,EMAIL_REQUIRED,VALID_EMAIL,INVALID_IMAGE,FAILED_UPLOAD_ERROR,
-        SERVER_ERROR,SOMETHING_SERVER_ERROR,FAILED_UPLOAD_PROFILE,SUCCESS_IMAGE_UPLOAD,PROFILE_UPDATE_SUCCESS
+        PROFILE_HEADING, PROFILE_HEADING_TEXT, UPLOAD_PHOTO_TEXT, FULL_NAME_LABEL,
+        FULL_NAME_PLACEHOLDER, ROLE_LABEL, SELECT_ROLE, SELECT_USER_VALUE, SELECT_ADMIN_VALUE,
+        SELECT_EMPLOYEE_VALUE, SELECT_MANAGER_VALUE, LOADING_BUTTON_TEXT, BUTTON_TEXT, CANCEL_BUTTON_TEXT,
+        REQUIRED_NAME, INVALID_NAME, EMAIL_REQUIRED, VALID_EMAIL, INVALID_IMAGE, FAILED_UPLOAD_ERROR,
+        SERVER_ERROR, SOMETHING_SERVER_ERROR, FAILED_UPLOAD_PROFILE, SUCCESS_IMAGE_UPLOAD, PROFILE_UPDATE_SUCCESS
     } = userProfileContent;
     const dispatch = useDispatch<AppDispatch>()
     const userId = localStorage.getItem("userId")
@@ -44,7 +43,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
         formState: { errors, isDirty },
     } = useForm<ProfileFormData>({
         defaultValues: { name: "", email: "", role: "" },
-    })
+    });
+
+    
     const [image, setImage] = useState<string | React.ReactNode>(null)
     const [imageError, setImageError] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -242,7 +243,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
                         <div className="space-y-2">
                             <Label htmlFor="role" className="text-sm font-medium flex items-center gap-2">
                                 <Shield className="w-4 h-4 text-gray-500" />
-                               {ROLE_LABEL}
+                                {ROLE_LABEL}
                             </Label>
                             <Controller
                                 name="role"
@@ -271,13 +272,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
                                 icon={<Save className="w-4 h-4" />}
                                 disabled={isSubmitting || !isDirty}
                             />
-                            <button
+                            <Button
                                 type="button"
+                                text={CANCEL_BUTTON_TEXT}
                                 onClick={() => setShowProfile(false)}
-                                className="flex-1 sm:flex-none px-6 py-2.5 border border-border font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                            >
-                                {CANCEL_BUTTON_TEXT}
-                            </button>
+                                className="flex-1 sm:flex-none px-6 py-3 border border-border font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            />
                         </div>
                     </form>
                 </div>

@@ -123,7 +123,7 @@ export default function Dashboard() {
                 onClick={() => setOpenDropdown(openDropdown === id ? null : id)}
               />
               {openDropdown === id && (
-                <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden"
+                <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5"
                   role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
                   <button
                     className="block px-4 py-2 text-left w-full hover:bg-gray-100"
