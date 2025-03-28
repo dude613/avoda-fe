@@ -10,6 +10,12 @@ export const titles = {
   SET_PASSWORD_SUBTITLE: "Choose a secure password for your account",
   VERIFY_CODE_TITLE: "Enter Verification Code",
   VERIFY_CODE_SUBTITLE: "We've sent a 6-digit code to ",
+  FORGOT_PASSWORD_TITLE: "Forgot your password?",
+  FORGOT_PASSWORD_SUBTITLE: "No worries, we'll send you reset instructions",
+  CHECK_EMAIL_TITLE: "Please check your email",
+  CHECK_EMAIL_SUBTITLE: "We sent you a verification link. Please check your email to verify your account.",
+  RESET_PASSWORD_TITLE: "Reset New Password",
+  RESET_PASSWORD_SUBTITLE: "Enter your new password below.",
 };
 
 
@@ -21,6 +27,7 @@ export const buttons = {
   CREATE_ACCOUNT_BUTTON_TEXT: "Create Account",
   VERIFY_CODE_BUTTON_TEXT: "Verify Code",
   RESEND_CODE_TEXT: "Resend Code",
+  RESET_PASSWORD_BUTTON_TEXT: "Reset Password",
 };
 
 
@@ -41,6 +48,9 @@ export const messages = {
   VERIFYING_CODE_TEXT: "Verifying",
   RESENDING_CODE_TEXT: "Resending",
   NOT_RECEIVE_CODE_TEXT: "Didn't receive the code? ",
+  BACK_TO_LOGIN_TEXT: "Back to Login",
+  RESEND_EMAIL_BUTTON_TEXT: "Resend Email",
+  RETURN_TO_SIGNIN_TEXT: "Return to Sign in",
 };
 
 export const errors = {
@@ -66,6 +76,9 @@ export const toasts = {
   USER_EXISTS_TOAST: "User already exists",
   USER_ALREADY_VERIFIED_TOAST: "User already verified",
   CODE_SENT_TOAST: "Verification code sent successfully",
+  PASSWORD_RESET_SUCCESS_TOAST: "Password reset successfully.",
+  PASSWORD_RESET_FAILED_TOAST: "Failed to reset password.",
+  RESET_LINK_SENT_TOAST: "Reset link sent to your email.",
 };
 
 // Regular expression
@@ -78,4 +91,5 @@ export const placeholders = {
   EMAIL_PLACEHOLDER: "name@example.com",
   PASSWORD_PLACEHOLDER: "Password",
   CONFIRM_PASSWORD_PLACEHOLDER: "Confirm Password",
+  NEW_PASSWORD_PLACEHOLDER: "New Password",
 };

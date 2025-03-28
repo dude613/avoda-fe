@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
-import {Button} from "../../ui/Button";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
@@ -12,7 +12,7 @@ import Card from "@/ui/Card";
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
   const {
-    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE,REGISTER_PAGE_SUBTITLE_SIGN_UP },
+    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE, REGISTER_PAGE_SUBTITLE_SIGN_UP },
     buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT },
     messages: { DIVIDER_TEXT },
     errors: { INVALID_EMAIL_ERROR },
@@ -85,10 +85,10 @@ const Register: React.FC = () => {
     <>
       <Toaster />
       <Card>
-      <h2 className="text-xl font-bold mb-2 text-center">
+        <h2 className="text-xl font-bold mb-2 text-center">
           {REGISTER_PAGE_TITLE}
         </h2>
-        <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
+        <p className="text-xs text-primary mb-4 text-center">
           {REGISTER_PAGE_SUBTITLE}{" "}
           <Link to={"/login"} className="hover:underline">
             {REGISTER_PAGE_SUBTITLE_SIGN_UP}
@@ -97,7 +97,7 @@ const Register: React.FC = () => {
 
         <Button
           onClick={() => registerWithGoogle()}
-        >{GOOGLE_BUTTON_TEXT}<FcGoogle/></Button>
+        >{GOOGLE_BUTTON_TEXT}<FcGoogle /></Button>
 
         <div className="flex items-center my-4">
           <hr className="flex-grow border-gray-300" />

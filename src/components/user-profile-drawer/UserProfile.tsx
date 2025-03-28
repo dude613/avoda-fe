@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {Button} from "@/ui/Button";
+import {Button} from "@/components/ui/button";
 import { UserProfile } from "@/type";
 import Email from "../form/email";
 import { UpdateProfile } from "@/service/api";
@@ -90,12 +90,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setShowProfile }
                         <h2 className="text-2xl font-semibold text-start">User Information</h2>
                         <p className="text-gray-600 text-sm">View and edit user details. Click save when you're done.</p>
                     </div>
-                    <button
+                    <Button
                         className="text-gray-600 text-lg cursor-pointer"
                         onClick={() => setShowProfile(false)}
                     >
                         X
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="flex justify-center items-center mb-6">
@@ -171,7 +171,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setShowProfile }
                     <div className="flex justify-center">
                         <Button
                             type="submit"
-                            className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer"
                         >{"Save Profile"}</Button>
                     </div>
                 </form>

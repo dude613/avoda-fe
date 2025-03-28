@@ -4,19 +4,19 @@ import { Toaster, toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import Email from "@/components/form/email";
-import {Button} from "@/ui/Button";
-import { forgotContent } from "@/constants/ForgotPassword";
+import {Button} from "@/components/ui/button";
+import * as constants from "@/constants/Auth";
 import Card from "@/ui/Card";
 
 const ForgotPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
   const {
-    FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, CHECK_EMAIL_TITLE,
-    RESET_PASSWORD_BUTTON_TEXT,
-    INVALID_EMAIL_ERROR,
-    BACK_TO_LOGIN_TEXT,
-    EMAIL_REGEX
-  } = forgotContent;
+    titles: { FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, CHECK_EMAIL_TITLE },
+    buttons: { RESET_PASSWORD_BUTTON_TEXT },
+    messages: { BACK_TO_LOGIN_TEXT },
+    errors: { INVALID_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+  } = constants;
 
   const navigate = useNavigate();
   const {

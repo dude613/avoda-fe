@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import {Button} from "../../ui/Button";
+import {Button} from "../../components/ui/button";
 import Password from "@/components/form/password";
 import Card from "@/ui/Card";
 import * as constants from "@/constants/Auth";
@@ -77,6 +77,7 @@ const SetPassword: React.FC = () => {
     }
   };
 
+  //TODO Update the field components to be like the auth. 
   return (
     <>
       <Toaster />

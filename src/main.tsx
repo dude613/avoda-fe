@@ -10,7 +10,7 @@ import store from "./redux/Store.tsx";
 import { Provider } from "react-redux";
 
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
+  dsn: import.meta.env.VITE_SENTRY_DSN || "",
   integrations: [
     browserTracingIntegration(),
     replayIntegration({

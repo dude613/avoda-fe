@@ -4,7 +4,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { LuBuilding } from "react-icons/lu";
-import {Button} from "../ui/Button";
+import {Button} from "./ui/button";
 import CircularLoading from "./CircularLoading";
 import { CreateOrganizationAPI } from "../service/api";
 import toast, { Toaster } from "react-hot-toast";

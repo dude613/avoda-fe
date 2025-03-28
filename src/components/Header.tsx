@@ -5,6 +5,7 @@ import UserProfile from './user-profile-drawer/UserProfile';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/Store";
 import { getUserProfile } from "@/redux/slice/UserProfle";
+import { Button } from "@/components/ui/button";
 
 const Header: React.FC = () => {
 
@@ -37,7 +38,7 @@ const Header: React.FC = () => {
       <nav className="flex items-center">
         {accessToken ? (
           <>
-            <button
+            <Button
               onClick={handleProfileClick}
               className="relative hover:underline"
             >
@@ -46,7 +47,7 @@ const Header: React.FC = () => {
                 src="/path/to/default-profile.png"
                 alt="Profile"
               />
-            </button>
+            </Button>
             {showProfile && (
               <div
                 className={`fixed bottom-0 left-0 right-0 bg-white text-black border-t-2 border-border shadow-xl transition-all ease-in-out duration-1000 transform z-20 ${showProfile

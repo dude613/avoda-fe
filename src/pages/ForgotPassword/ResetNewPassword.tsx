@@ -2,21 +2,24 @@ import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
+//TODO Update this to be the standard fields like login/register
 import Password from "@/components/form/password";
-import { Button } from "@/ui/Button";
-import { forgotContent } from "@/constants/ForgotPassword";
-
+import { Button } from "@/components/ui/button";
+import * as constants from "@/constants/Auth";
 
 export default function ResetNewPassword() {
     const baseUrl = import.meta.env.VITE_BACKEND_URL;
-    const {
-        PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
-        CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
-        RESET_PASSWORD_BUTTON_TEXT,
-        RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
-        NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
-        PASSWORD_RESET_FAILED_TOAST
-    } = forgotContent
+    const { RETURN_TO_SIGNIN_TEXT } = constants.messages;
+
+    const { RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE } = constants.titles;
+
+    const { PASSWORDS_MISMATCH_ERROR, REQUIRED_PASSWORD_ERROR, INVALID_PASSWORD_ERROR } = constants.errors;
+
+    const { PASSWORD_RESET_SUCCESS_TOAST, PASSWORD_RESET_FAILED_TOAST } = constants.toasts;
+
+    const { NEW_PASSWORD_PLACEHOLDER, CONFIRM_PASSWORD_PLACEHOLDER } = constants.placeholders;
+
+    const { RESET_PASSWORD_BUTTON_TEXT } = constants.buttons;
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -59,7 +62,7 @@ export default function ResetNewPassword() {
     return (
         <>
             <Toaster />
-            <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+            <div className="flex items-center justify-center min-h-screen px-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
                     <div className="flex items-center justify-center">
                         <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
@@ -79,10 +82,10 @@ export default function ResetNewPassword() {
                                 name="password"
                                 control={control}
                                 rules={{
-                                    required: PASSWORD_REQUIRED_ERROR,
+                                    required: REQUIRED_PASSWORD_ERROR,
                                     pattern: {
-                                        value: PASSWORD_REGEX,
-                                        message: PASSWORD_VALIDATION_ERROR,
+                                        value: constants.regex.PASSWORD_REGEX,
+                                        message: INVALID_PASSWORD_ERROR,
                                     },
                                 }}
                                 render={({ field }) => (
@@ -101,7 +104,7 @@ export default function ResetNewPassword() {
                                 name="confirmPassword"
                                 control={control}
                                 rules={{
-                                    required: PASSWORD_REQUIRED_ERROR,
+                                    required: REQUIRED_PASSWORD_ERROR,
                                     validate: (value) => value === watch("password") || PASSWORDS_MISMATCH_ERROR,
                                 }}
                                 render={({ field }) => (

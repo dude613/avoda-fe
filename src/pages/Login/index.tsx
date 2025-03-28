@@ -6,24 +6,22 @@ import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { Button } from "../../ui/Button"; // Corrected import path if needed
 import Card from "@/ui/Card";
 import { LoginAPI } from "@/service/api";
 import AuthInput from "@/ui/AuthInput";
-// Removed PasswordWithStrength import if AuthInput handles it
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
-import * as loginContent from "@/constants/Auth";
-
+import * as constants from "@/constants/Auth";
+import { Button } from "@/components/ui/button";
 const Login: React.FC = () => {
   const {
     titles: { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE },
     buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT },
     messages: { DIVIDER_TEXT, NO_ACCOUNT_TEXT, LOADING_TEXT },
     placeholders: {PASSWORD_PLACEHOLDER},
-    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, INVALID_PASSWORD_ERROR },
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR },
     toasts: { LOGIN_SUCCESS_TOAST, USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST },
-    regex: { EMAIL_REGEX, PASSWORD_REGEX }
-  } = loginContent;
+    regex: { EMAIL_REGEX}
+  } = constants;
 
   const navigate = useNavigate();
   const { control, handleSubmit, formState: { errors } } = useForm({
@@ -34,6 +32,7 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     const { email, password } = data;
+    setLoading(true);
     try {
       const response = await LoginAPI({ email, password });
       if (response.success) {
@@ -106,8 +105,9 @@ const Login: React.FC = () => {
               <AuthInput
                 {...field}
                 type="email"
-                label="Email" // Use label prop for animation
+                label="Email"
                 error={errors.email?.message?.toString()}
+                showStrengthIndicator={false}
               />
             )}
           />
@@ -120,18 +120,14 @@ const Login: React.FC = () => {
             defaultValue=""
             rules={{
               required: {value : true , message : REQUIRED_PASSWORD_ERROR},
-              pattern: {
-                value: PASSWORD_REGEX,
-                message: INVALID_PASSWORD_ERROR,
-              },
             }}
             render={({ field }) => (
               <AuthInput
                 {...field}
                 type="password"
-                label={PASSWORD_PLACEHOLDER} // Use placeholder constant as label
+                label={PASSWORD_PLACEHOLDER}
                 error={errors.password?.message?.toString()}
-                showStrengthIndicator={true} // Enable the strength indicator on focus
+                showStrengthIndicator={false}
               />
             )}
           />

@@ -1,4 +1,5 @@
 import OTP from "@/components/form/otp";
+import { Button } from "@/components/ui/button";
 import * as constants from "@/constants/Auth";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -102,7 +103,7 @@ const VerifyCode: React.FC = () => {
       <Toaster />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-xl font-semibld text-gray-800 mb-2">
             {VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -115,7 +116,7 @@ const VerifyCode: React.FC = () => {
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
 
-          <button
+          <Button
             onClick={handleVerify}
             className="bg-black text-white py-2 w-full rounded flex items-center justify-center gap-2"
             disabled={loading}
@@ -130,7 +131,7 @@ const VerifyCode: React.FC = () => {
             ) : (
               "Verify Code"
             )}
-          </button>
+          </Button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
             {NOT_RECEIVE_CODE_TEXT}{" "}
