@@ -3,7 +3,7 @@ name: PR Review
   with:
     name: pr-review-summary
     path: pr_review_summary.txt
-    
+
 on:
   pull_request:
     types: [opened, synchronize]
