@@ -1,8 +1,12 @@
-name: PR Analysis with Mistral
+name: PR Analysis with OpenAI
 
 on:
   pull_request:
     types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   analyze:
@@ -26,6 +30,7 @@ jobs:
       - name: Review each changed file (excluding certain file types)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           # Loop over changed files from the previous step
           files=$(echo '${{ steps.get_files.outputs.result }}' | jq -r '.[].filename')
@@ -33,70 +38,70 @@ jobs:
             # Skip files ending with .json, .lock, or exactly matching .gitignore or .env
             if [[ "$file" == *.json || "$file" == *.lock || "$file" == ".gitignore" || "$file" == ".env" ]]; then
               echo "Skipping $file"
-            continue
-          fi
+              continue
+            fi
 
-          echo "Reviewing $file"
-          # Extract the diff for the specific file (using the base branch)
-          git fetch origin staging --depth=1
-          git diff origin/staging -- "$file" > file.diff
+            echo "Reviewing $file"
+            # Extract the diff for the specific file (using the base branch)
+            git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+            git diff origin/${{ github.event.pull_request.base.ref }} -- "$file" > file.diff
 
-          # If there's no diff (e.g., a binary file), skip
-          if [ ! -s file.diff ]; then
-            echo "No diff found for $file. Skipping..."
-            continue
-          fi
+            # If there's no diff (e.g., a binary file), skip
+            if [ ! -s file.diff ]; then
+              echo "No diff found for $file. Skipping..."
+              continue
+            fi
 
-          # Escape diff content using jq
-          ESCAPED_DIFF=$(jq -R -s . < file.diff)
+            # Escape diff content using jq
+            ESCAPED_DIFF=$(jq -R -s . < file.diff)
 
-          # Build a valid JSON payload using jq without extra parentheses
-          PAYLOAD=$(jq -n --arg model "o3-mini" --arg diff "$ESCAPED_DIFF" '
-            {
-              "model": $model,
-              "messages": [
-                {
-                  "role": "user",
-                  "content": "You are a seasoned code reviewer. Please analyze the following code diff and provide a detailed review for the file. Format your response in Markdown with the following structure:\n\n" +
-                            "## Code Review Analysis\n\n" +
-                            "Summary:\n" +
-                            "Provide a concise overview of the changes introduced in the diff. Just output the response, no additional comments.\n\n" +
-                            "Detailed Observations:\n" +
-                            "List key issues and high level potential bugs in bullet points.\n\n" +
-                            "Suggestions for Improvement:\n" +
-                            "Provide actionable recommendations to improve the code quality, including fixes and best practices.\n\n" +
-                            $diff
-                }
-              ],
-              "max_tokens": 600,
-              "temperature": 0.3
-            }
-          ')
+            # Build a valid JSON payload using jq without extra parentheses
+            PAYLOAD=$(jq -n --arg model "o3-mini" --arg diff "$ESCAPED_DIFF" '
+              {
+                "model": $model,
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "You are a seasoned code reviewer. Please analyze the following code diff and provide a detailed review for the file. Format your response in Markdown with the following structure:\n\n" +
+                              "## Code Review Analysis\n\n" +
+                              "Summary:\n" +
+                              "Provide a concise overview of the changes introduced in the diff. Just output the response, no additional comments.\n\n" +
+                              "Detailed Observations:\n" +
+                              "List key issues and high level potential bugs in bullet points.\n\n" +
+                              "Suggestions for Improvement:\n" +
+                              "Provide actionable recommendations to improve the code quality, including fixes and best practices.\n\n" +
+                              $diff
+                  }
+                ],
+                "max_tokens": 600,
+                "temperature": 0.3
+              }
+            ')
 
-          echo "$PAYLOAD" | jq .
+            echo "$PAYLOAD" | jq .
 
-          # Call the OpenAI API
-          RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $OPENAI_API_KEY" \
-            -d "$PAYLOAD")
-          echo "$RESPONSE" > openai_response.json
+            # Call the OpenAI API
+            RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $OPENAI_API_KEY" \
+              -d "$PAYLOAD")
+            echo "$RESPONSE" > openai_response.json
 
-          # Extract analysis from the API response
-          analysis=$(jq -r '.choices[0].message.content' openai_response.json)
-          echo "Analysis for $file:"
-          echo "$analysis"
+            # Extract analysis from the API response
+            analysis=$(jq -r '.choices[0].message.content' openai_response.json)
+            echo "Analysis for $file:"
+            echo "$analysis"
 
-          # Post a review comment for the file using GitHub CLI (gh)
-          gh api \
-            -X POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
-            -f body="Review comment for \`$file\`:\n\n$analysis" \
-            -f commit_id="${{ github.event.pull_request.head.sha }}" \
-            -f path="$file" \
-            -f position=1
-        done
+            # Post a review comment for the file using GitHub CLI (gh)
+            gh api \
+              -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+              -f body="Review comment for \`$file\`:\n\n$analysis" \
+              -f commit_id="${{ github.event.pull_request.head.sha }}" \
+              -f path="$file" \
+              -f position=1
+          done
 
       - name: Cleanup
         run: rm -f file.diff openai_response.json

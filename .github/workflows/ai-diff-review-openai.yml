@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -41,7 +45,7 @@ jobs:
             git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
             git diff origin/${{ github.event.pull_request.base.ref }} -- "$file" > file.diff
 
-            # If there's no diff (e.g. a binary file), skip
+            # If there's no diff, skip
             if [ ! -s file.diff ]; then
               echo "No diff found for $file. Skipping..."
               continue
@@ -50,29 +54,28 @@ jobs:
             # Escape diff content using jq
             ESCAPED_DIFF=$(jq -R -s . < file.diff)
 
-            # Build a valid JSON payload using jq without extra parentheses
+            # Build a valid JSON payload (heredoc with NO indentation on EOF)
             PAYLOAD=$(jq -n --arg model "o3-mini" --arg diff "$ESCAPED_DIFF" <<'EOF'
-            {
-              "model": $model,
-              "messages": [
-                {
-                  "role": "user",
-                  "content": "You are a seasoned code reviewer. Please analyze the following code diff and provide a detailed review for the file. Format your response in Markdown with the following structure:\n\n" +
-                            "## Code Review Analysis\n\n" +
-                            "Summary:\n" +
-                            "Provide a concise overview of the changes introduced in the diff. Just output the response, no additional comments.\n\n" +
-                            "Detailed Observations:\n" +
-                            "List key issues and high level potential bugs in bullet points.\n\n" +
-                            "Suggestions for Improvement:\n" +
-                            "Provide actionable recommendations to improve the code quality, including fixes and best practices.\n\n" +
-                            $diff
-                }
-              ],
-              "max_tokens": 600,
-              "temperature": 0.3
-            }
+{
+  "model": $model,
+  "messages": [
+    {
+      "role": "user",
+      "content": "You are a seasoned code reviewer. Please analyze the following code diff and provide a detailed review for the file. Format your response in Markdown with the following structure:\n\n" +
+                 "## Code Review Analysis\n\n" + "Summary:\n" +
+                 "Provide a concise overview of the changes introduced in the diff. Just output the response, no additional comments.\n\n" +
+                 "Detailed Observations:\n" +
+                 "List key issues and high level potential bugs in bullet points.\n\n" +
+                 "Suggestions for Improvement:\n" +
+                 "Provide actionable recommendations to improve the code quality, including fixes and best practices.\n\n" +
+                 $diff
+    }
+  ],
+  "max_tokens": 600,
+  "temperature": 0.3
+}
 EOF
-            )
+)
 
             echo "$PAYLOAD" | jq .
 
@@ -97,7 +100,6 @@ EOF
               -f commit_id="${{ github.event.pull_request.head.sha }}" \
               -f path="$file" \
               -f position=1
-          done
 
       - name: Cleanup
         run: rm -f file.diff openai_response.json
