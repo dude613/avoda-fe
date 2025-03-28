@@ -1,4 +1,4 @@
-name: Enhanced PR Analysis with Mistral
+name: Enhanced PR Analysis with OpenAI
 
 on:
   pull_request:
@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests gitpython
+          pip install requests
 
       - name: Get changed files
         id: get_files
@@ -37,13 +37,15 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
-            return data.filter(file => 
+            const filteredFiles = data.filter(file => 
               !file.filename.endsWith('.json') &&
               !file.filename.endsWith('.lock') &&
               file.filename !== '.gitignore' &&
               file.filename !== '.env' &&
               file.status !== 'removed'  # Skip deleted files
             );
+            core.setOutput('changed_files', JSON.stringify(filteredFiles));
+            return filteredFiles;
 
       - name: Analyze Changes
         env:
@@ -54,8 +56,7 @@ jobs:
           import os
           import json
           import requests
-          import re
-          import git
+          import sys
 
           def sanitize_diff(diff):
               """Sanitize and truncate diff to prevent API overload"""
@@ -109,9 +110,22 @@ jobs:
               except Exception as e:
                   print(f"GitHub comment error for {filename}: {e}")
 
-          # Get changed files from previous step
+          # Read changed files from GitHub script output
           with open(os.environ['GITHUB_OUTPUT'], 'r') as f:
-              changed_files = json.load(f)
+              for line in f:
+                  if line.startswith('changed_files='):
+                      changed_files_json = line.split('=', 1)[1].strip()
+                      break
+              else:
+                  print("No changed files found")
+                  sys.exit(0)
+
+          # Parse changed files
+          try:
+              changed_files = json.loads(changed_files_json)
+          except json.JSONDecodeError as e:
+              print(f"Error parsing changed files: {e}")
+              sys.exit(1)
 
           # Analyze each changed file
           for file_info in changed_files:
