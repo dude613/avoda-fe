@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import Button from "../../ui/Button";
-import { registerContent } from "@/constants/Register";
+import {Button} from "../../ui/Button";
 import Password from "@/components/form/password";
 import Card from "@/ui/Card";
+import * as constants from "@/constants/Auth";
 
 const SetPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
   const {
-    SET_PASSWORD_TITLE, SERVER_ERROR_TOAST, SET_PASSWORD_SUBTITLE,
-    CREATING_ACCOUNT_TEXT, CREATE_ACCOUNT_BUTTON_TEXT, REGISTER_SUCCESS_TOAST,
-    CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR,
-    INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX
-  } = registerContent;
+    titles: { SET_PASSWORD_TITLE, SET_PASSWORD_SUBTITLE },
+    toasts: { SERVER_ERROR_TOAST, REGISTER_SUCCESS_TOAST },
+    messages: { CREATING_ACCOUNT_TEXT},
+    buttons: { CREATE_ACCOUNT_BUTTON_TEXT },
+    placeholders: { CONFIRM_PASSWORD_PLACEHOLDER, PASSWORD_PLACEHOLDER },
+    errors: { PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR, INVALID_PASSWORD_ERROR },
+    regex: { PASSWORD_REGEX }
+  } = constants;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -130,11 +133,7 @@ const SetPassword: React.FC = () => {
           />
         </div>
 
-        <Button
-          onClick={handleSubmit(handleCreateAccount)}
-          className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-          text={loading ? CREATING_ACCOUNT_TEXT : CREATE_ACCOUNT_BUTTON_TEXT}
-        />
+        <Button onClick={handleSubmit(handleCreateAccount)}>{loading ? CREATING_ACCOUNT_TEXT : CREATE_ACCOUNT_BUTTON_TEXT}</Button>
       </Card>
     </>
   );

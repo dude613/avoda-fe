@@ -2,9 +2,10 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Login from '../pages/Login';
-import { loginContent } from '@/constants/Login';
+import { titles } from '@/constants/Auth';
+import { describe } from 'node:test';
 
-const { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE } = loginContent;
+const { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE } = titles;
 
 describe('Login component', () => {
   it('should render login form with title and subtitle from Constants', () => {

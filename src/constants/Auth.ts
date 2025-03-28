@@ -3,7 +3,7 @@
 export const titles = {
   LOGIN_PAGE_TITLE: "Login",
   LOGIN_PAGE_SUBTITLE: "Enter your credentials to access your account",
-  REGISTER_PAGE_TITLE: "Create an account",
+  REGISTER_PAGE_TITLE: "Create an Account",
   REGISTER_PAGE_SUBTITLE: "Choose how you'd like to",
   REGISTER_PAGE_SUBTITLE_SIGN_UP: "sign up",
   SET_PASSWORD_TITLE: "Set your password",
@@ -57,7 +57,7 @@ export const errors = {
   INVALID_PASSWORD_ERROR: "Password must be at least 8 characters, with 1 uppercase letter and 1 special character.",
 };
 
-export const TOAST_MESSAGES = {
+export const toasts = {
   LOGIN_SUCCESS_TOAST: "User login successfully",
   USER_NOT_FOUND_TOAST: "User not found",
   SERVER_ERROR_TOAST: "Server error",
@@ -69,8 +69,10 @@ export const TOAST_MESSAGES = {
 };
 
 // Regular expression
-export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\W)(?=.*\d).{8,}$/;
+export const regex = {
+  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  PASSWORD_REGEX: /^(?=.*[A-Z])(?=.*\W)(?=.*\d).{8,}$/,
+};
 
 export const placeholders = {
   EMAIL_PLACEHOLDER: "name@example.com",

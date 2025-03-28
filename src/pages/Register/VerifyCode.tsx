@@ -1,5 +1,5 @@
 import OTP from "@/components/form/otp";
-import { registerContent } from "@/constants/Register";
+import * as constants from "@/constants/Auth";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,11 +7,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 const VerifyCode: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
   const {
-    CODE_SENT_TOAST, SERVER_ERROR_TOAST, NOT_RECEIVE_CODE_TEXT,
-    RESEND_CODE_TEXT, RESENDING_CODE_TEXT, USER_ALREADY_VERIFIED_TOAST,
-    USER_EXISTS_TOAST, USER_VERIFIED_TOAST, VERIFY_CODE_SUBTITLE,
-    VERIFY_CODE_TITLE, VERIFYING_CODE_TEXT
-  } = registerContent;
+    toasts: { CODE_SENT_TOAST, SERVER_ERROR_TOAST, USER_ALREADY_VERIFIED_TOAST, USER_EXISTS_TOAST, USER_VERIFIED_TOAST },
+    buttons: { RESEND_CODE_TEXT},
+    messages: { VERIFYING_CODE_TEXT, NOT_RECEIVE_CODE_TEXT, RESENDING_CODE_TEXT, },
+    titles: { VERIFY_CODE_SUBTITLE, VERIFY_CODE_TITLE },
+  } = constants;
 
   const [code, setCode] = useState("");
   const navigate = useNavigate();

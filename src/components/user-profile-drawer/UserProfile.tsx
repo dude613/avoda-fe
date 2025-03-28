@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import Button from "@/ui/Button";
+import {Button} from "@/ui/Button";
 import { UserProfile } from "@/type";
 import Email from "../form/email";
 import { UpdateProfile } from "@/service/api";
@@ -172,8 +172,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setShowProfile }
                         <Button
                             type="submit"
                             className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer"
-                            text={"Save Profile"}
-                        />
+                        >{"Save Profile"}</Button>
                     </div>
                 </form>
             </div>

@@ -4,7 +4,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import Email from "@/components/form/email";
-import Button from "@/ui/Button";
+import {Button} from "@/ui/Button";
 import { forgotContent } from "@/constants/ForgotPassword";
 import Card from "@/ui/Card";
 
@@ -90,8 +90,7 @@ const ForgotPassword: React.FC = () => {
           <Button
             type="submit"
             className="bg-primary text-sm text-white font-bold py-3 mt-2 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-            text={RESET_PASSWORD_BUTTON_TEXT}
-          />
+          >{RESET_PASSWORD_BUTTON_TEXT}</Button>
         </form>
 
         <p className="text-black text-sm text-center mt-5">

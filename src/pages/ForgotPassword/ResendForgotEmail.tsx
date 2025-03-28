@@ -4,7 +4,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import Card from "@/ui/Card";
 import { forgotContent } from "@/constants/ForgotPassword";
-import Button from "@/ui/Button";
+import {Button} from "@/ui/Button";
 
 export default function ResendForgotEmail() {
     const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -63,8 +63,7 @@ export default function ResendForgotEmail() {
                     type="submit"
                     onClick={handleSubmit}
                     className="bg-primary text-sm text-white font-bold py-3 mt-2 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-                    text={RESEND_EMAIL_BUTTON_TEXT}
-                />
+                >{RESEND_EMAIL_BUTTON_TEXT}</Button>
             </Card>
         </>
     );

@@ -10,7 +10,7 @@ import {
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Pagination from "../../util/Pagination";
-import Button from "../../ui/Button";
+import {Button} from "../../ui/Button";
 import { VscSettings } from "react-icons/vsc";
 import { Input } from "../../components/ui/input";
 import { useDispatch, useSelector } from 'react-redux';
@@ -114,23 +114,20 @@ export default function Dashboard() {
             onChange={(e) => setGlobalFilter(e.target.value)}
           />
 
-          <Button text={"Role"}
-            icon={<IoMdAddCircleOutline size={20} />}
+          <Button
             className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold w-36 h-9 rounded-lg"
-          />
-          <Button text={"Status"}
-            icon={<IoMdAddCircleOutline size={20} />}
+          >{"Role"}<IoMdAddCircleOutline/></Button>
+          <Button
             className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold  w-40 h-9 rounded-lg"
-          />
+          >{"Status"}<IoMdAddCircleOutline/></Button>
         </div>
         <div className="flex justify-end items-center gap-2">
-          <Button text={"View"}
-            icon={<VscSettings size={20} />}
+          <Button
             className="flex justify-center items-center gap-2 border border-primary font-semibold px-4 h-9 rounded-lg"
-          />
-          <Button text={'Invite User'}
+          >{"View"}<VscSettings/></Button>
+          <Button
             className="bg-primary text-lg text-white font-bold py-2 px-4 w-full rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-          />
+          >{"Invite User"}</Button>
         </div>
 
       </div>

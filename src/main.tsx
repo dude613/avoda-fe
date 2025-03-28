@@ -9,11 +9,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import store from "./redux/Store.tsx";
 import { Provider } from "react-redux";
 
-
-const ENVIRONMENT = import.meta.env.ENVIRONMENT || "development"
-
 Sentry.init({
-  dsn: ENVIRONMENT,
+  dsn: import.meta.env.VITE_SENTRY_DSN,
   integrations: [
     browserTracingIntegration(),
     replayIntegration({
@@ -25,7 +22,7 @@ Sentry.init({
   tracesSampleRate: 1.0,
   tracePropagationTargets: ["localhost", /^https:\/\/avoda-fe\.vercel\.app\//],
 
-  replaysSessionSampleRate: ENVIRONMENT === "development" ? 1.0 : 0.25,
+  replaysSessionSampleRate: import.meta.env.VITE_ENVIRONMENT === "development" ? 1.0 : 0.25,
   replaysOnErrorSampleRate: 1.0, //  Capture 100% of the errors
 });
 

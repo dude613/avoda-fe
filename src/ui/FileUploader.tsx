@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { FiUpload } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
 import Papa from "papaparse";
-import Button from "./Button";
+import { Button } from "./Button";
 import {
     useReactTable,
     getCoreRowModel,
@@ -215,11 +215,7 @@ export default function FileUploader({
                         <h3 className="text-lg font-semibold tracking-tight">
                             {TEAM_BULK_REPORT_TEXT}
                         </h3>
-                        <Button
-                            className="bg-primary px-3 py-2 text-sm font-semibold rounded-lg text-white"
-                            text="Cancel"
-                            onClick={removeFile}
-                        />
+                        <Button onClick={removeFile}>Cancel</Button>
                     </div>
                     <table className="min-w-full border-collapse border border-gray-300 mt-2">
                         <thead>
