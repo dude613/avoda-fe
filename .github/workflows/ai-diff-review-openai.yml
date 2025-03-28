@@ -51,7 +51,7 @@ jobs:
             ESCAPED_DIFF=$(jq -R -s . < file.diff)
 
             # Build a valid JSON payload using jq without extra parentheses
-            PAYLOAD=$(jq -n --arg model "o3-mini" --arg diff "$ESCAPED_DIFF" '
+            PAYLOAD=$(jq -n --arg model "o3-mini" --arg diff "$ESCAPED_DIFF" <<'EOF'
               {
                 "model": $model,
                 "messages": [
@@ -71,7 +71,8 @@ jobs:
                 "max_tokens": 600,
                 "temperature": 0.3
               }
-            ')
+            EOF
+            )
 
 
             echo "$PAYLOAD" | jq .
