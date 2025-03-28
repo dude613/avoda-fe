@@ -12,15 +12,16 @@ import AuthInput from "@/ui/AuthInput";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 import * as constants from "@/constants/Auth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 const Login: React.FC = () => {
   const {
     titles: { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE },
     buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT },
     messages: { DIVIDER_TEXT, NO_ACCOUNT_TEXT, LOADING_TEXT },
     placeholders: {PASSWORD_PLACEHOLDER},
-    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR },
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, INVALID_PASSWORD_ERROR },
     toasts: { LOGIN_SUCCESS_TOAST, USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST },
-    regex: { EMAIL_REGEX}
+    regex: { EMAIL_REGEX, PASSWORD_REGEX }
   } = constants;
 
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ const Login: React.FC = () => {
               required: { value: true, message: REQUIRED_PASSWORD_ERROR },
               pattern: {
                 value: PASSWORD_REGEX,
-                message: INVALID_PASSWORD_ERROR,
+                message: PASSWORD_VALIDATION_ERROR,
               },
             }}
             render={({ field }) => (

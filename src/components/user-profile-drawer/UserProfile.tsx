@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import Button from "@/ui/Button"
+import { Button } from "@/components/ui/button"
 import Email from "../form/email"
 import { UpdateProfile, UploadUserPicture } from "@/service/api"
 import { Toaster, toast } from "react-hot-toast"
@@ -266,18 +266,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
 
                         <div className="flex flex-col sm:flex-row gap-3 pt-4">
                             <Button
-                                type="submit"
-                                className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-                                text={isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
-                                icon={<Save className="w-4 h-4" />}
                                 disabled={isSubmitting || !isDirty}
-                            />
+                            ><Save className="w-4 h-4" />{isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}</Button>
                             <Button
-                                type="button"
-                                text={CANCEL_BUTTON_TEXT}
+                                variant="outline"
                                 onClick={() => setShowProfile(false)}
-                                className="flex-1 sm:flex-none px-6 py-3 border border-border font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                            />
+                            >{CANCEL_BUTTON_TEXT}</Button>
                         </div>
                     </form>
                 </div>
