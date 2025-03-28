@@ -1,182 +1,290 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import {Button} from "@/components/ui/button";
-import { UserProfile } from "@/type";
-import Email from "../form/email";
-import { UpdateProfile } from "@/service/api";
-import { Toaster, toast } from "react-hot-toast";
+"use client"
+import type React from "react"
+import { type Dispatch, type SetStateAction, useEffect, useState, useTransition } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { useDispatch, useSelector } from "react-redux"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+import Button from "@/ui/Button"
+import Email from "../form/email"
+import { UpdateProfile, UploadUserPicture } from "@/service/api"
+import { Toaster, toast } from "react-hot-toast"
+import { getUserProfile } from "@/redux/slice/UserProfile"
+import type { AppDispatch, RootState } from "@/redux/Store"
+import { X, Upload, Save, User, Shield } from "lucide-react"
+import { userProfileContent } from "@/constants/UserProfile";
 
 interface ProfileFormData {
-    name: string;
-    email: string;
-    role: string;
+    name: string
+    email: string
+    role: string
 }
 
 interface ProfilePageProps {
-    userProfile: UserProfile | null;
-    setShowProfile: Dispatch<SetStateAction<boolean>>;
+    setShowProfile: Dispatch<SetStateAction<boolean>>
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ userProfile, setShowProfile }) => {
-    const profileData = userProfile?.data;
+const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
+    const {
+        PROFILE_HEADING, PROFILE_HEADING_TEXT, UPLOAD_PHOTO_TEXT, FULL_NAME_LABEL,
+        FULL_NAME_PLACEHOLDER, ROLE_LABEL, SELECT_ROLE, SELECT_USER_VALUE, SELECT_ADMIN_VALUE,
+        SELECT_EMPLOYEE_VALUE, SELECT_MANAGER_VALUE, LOADING_BUTTON_TEXT, BUTTON_TEXT, CANCEL_BUTTON_TEXT,
+        REQUIRED_NAME, INVALID_NAME, EMAIL_REQUIRED, VALID_EMAIL, INVALID_IMAGE, FAILED_UPLOAD_ERROR,
+        SERVER_ERROR, SOMETHING_SERVER_ERROR, FAILED_UPLOAD_PROFILE, SUCCESS_IMAGE_UPLOAD, PROFILE_UPDATE_SUCCESS
+    } = userProfileContent;
+    const dispatch = useDispatch<AppDispatch>()
     const userId = localStorage.getItem("userId")
-    const { control, handleSubmit, setValue, formState: { errors } } = useForm<ProfileFormData>({
-        defaultValues: {
-            name: profileData?.userName || '',
-            email: profileData?.email || '',
-            role: profileData?.verified === "true" ? "admin" : "user",
-        }
+    const { userProfile } = useSelector((state: RootState) => state.userProfile)
+    const [, startTransition] = useTransition()
+    const {
+        control,
+        handleSubmit,
+        setValue,
+        formState: { errors, isDirty },
+    } = useForm<ProfileFormData>({
+        defaultValues: { name: "", email: "", role: "" },
     });
 
-    const [image, setImage] = useState(profileData?.picture || "/path/to/default-profile.png");
+    
+    const [image, setImage] = useState<string | React.ReactNode>(null)
+    const [imageError, setImageError] = useState<string | null>(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    useEffect(() => {
+        if (userId) {
+            startTransition(() => {
+                void dispatch(getUserProfile(userId))
+            })
+        }
+    }, [userId, dispatch, startTransition])
+
+    const profileData = userProfile?.data
 
     useEffect(() => {
         if (profileData) {
-            console.log('UserProfile:', profileData);
-
-            setValue("name", profileData.userName);
-            setValue("email", profileData.email);
-            setValue("role", profileData.verified === "true" ? "admin" : "user");
+            setValue("name", profileData.userName)
+            setValue("email", profileData.email)
+            setValue("role", profileData.role)
+            setImage(
+                profileData.picture || (
+                    <div className="flex items-center justify-center w-full h-full bg-gray-300 text-white text-xl rounded-full">
+                        {profileData.userName?.[0]?.toUpperCase() || ""}
+                    </div>
+                ),
+            )
         }
-    }, [profileData, setValue]);
+    }, [profileData, setValue])
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                if (reader.result) {
-                    setImage(reader.result as string);
-                }
-            };
-            reader.readAsDataURL(file);
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const validTypes = ["image/jpeg", "image/png", "image/gif"]
+        if (!validTypes.includes(file.type)) {
+            setImageError(INVALID_IMAGE)
+            return
         }
-    };
-
-    const onSubmit = async (data: ProfileFormData) => {
+        setImageError(null)
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            if (reader.result) setImage(reader.result as string)
+        }
+        reader.readAsDataURL(file)
         try {
-            const formData = new FormData();
-            formData.append("name", data.name);
-            formData.append("email", data.email);
-            formData.append("role", data.role);
-            formData.append("userId", userId || "");
-            const updateResponse = await UpdateProfile(formData);
-            console.log(updateResponse)
-            if (updateResponse?.success === true) {
-                toast.success(updateResponse?.message || "User profile updated successfully", { duration: 2000 });
-                await new Promise((resolve) => setTimeout(resolve, 2200));
-                setShowProfile(false)
+            const formData = new FormData()
+            formData.append("images", file)
+            formData.append("userId", userId || "")
+            const response = await UploadUserPicture(formData)
+            if (response?.success) {
+                toast.success(SUCCESS_IMAGE_UPLOAD, { duration: 2000 })
             } else {
-                toast.error(updateResponse?.error || "Something went wrong", { duration: 2000 });
+                toast.error(response?.error || SERVER_ERROR, { duration: 2000 })
             }
+            e.target.value = ""
         } catch (error) {
-            console.error("Error updating profile", error);
+            console.error("Error uploading image:", error)
+            toast.error(SOMETHING_SERVER_ERROR, { duration: 2000 })
         }
-    };
-
-    if (!profileData) {
-        return <div>Loading...</div>;
     }
 
+    const onSubmit = async (data: ProfileFormData) => {
+        setIsSubmitting(true)
+        try {
+            const formData = new FormData()
+            Object.entries({ ...data, userId: userId || "" }).forEach(([key, value]) => {
+                formData.append(key, value)
+            })
+
+            const updateResponse = await UpdateProfile(formData)
+            if (updateResponse?.success) {
+                toast.success(updateResponse?.message || PROFILE_UPDATE_SUCCESS, { duration: 2000 })
+                void dispatch(getUserProfile(userId || ""))
+                await new Promise((resolve) => setTimeout(resolve, 2200))
+                startTransition(() => setShowProfile(false))
+            } else {
+                toast.error(updateResponse?.error || FAILED_UPLOAD_ERROR, { duration: 2000 })
+            }
+        } catch (error) {
+            console.error("Error updating profile", error)
+            toast.error(FAILED_UPLOAD_PROFILE, { duration: 2000 })
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    if (!profileData) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="animate-pulse flex flex-col items-center p-8">
+                    <div className="w-24 h-24 bg-gray-200 rounded-full mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <>
-            <Toaster />
-            <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 className="text-2xl font-semibold text-start">User Information</h2>
-                        <p className="text-gray-600 text-sm">View and edit user details. Click save when you're done.</p>
+            <Toaster position="top-center" />
+            <div className="max-h-full overflow-y-auto">
+                <div className="max-w-3xl mx-auto p-6 bg-white">
+                    <div className="flex justify-between items-center mb-6 pb-4 border-b">
+                        <div>
+                            <h2 className="text-2xl font-bold">{PROFILE_HEADING}</h2>
+                            <p className="text-sm mt-1">{PROFILE_HEADING_TEXT}</p>
+                        </div>
+                        <button
+                            className="hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+                            onClick={() => setShowProfile(false)}
+                            aria-label="Close profile"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
-                    <Button
-                        className="text-gray-600 text-lg cursor-pointer"
-                        onClick={() => setShowProfile(false)}
-                    >
-                        X
-                    </Button>
-                </div>
 
-                <div className="flex justify-center items-center mb-6">
-                    <div className="relative w-32 h-32 rounded-full overflow-hidden">
-                        <img
-                            src={image}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                        />
-                        <label className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-sm py-1 text-center cursor-pointer">
-                            Upload
-                            <Input
-                                type="file"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                        </label>
-                    </div>
-                </div>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="mb-4">
-                        <Label htmlFor="name">Name</Label>
-                        <Controller
-                            name="name"
-                            control={control}
-                            rules={{ required: "Name is required" }}
-                            render={({ field }) => (
+                    <div className="flex justify-center mb-8 relative">
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden border border-border shadow-md group">
+                            {typeof image === "string" ? (
+                                <img
+                                    src={image || "/placeholder.svg"}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null
+                                        e.currentTarget.src = "/placeholder.svg"
+                                    }}
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center w-full h-full bg-primary-foreground text-primary text-xl rounded-full">
+                                    {profileData.userName?.[0]?.toUpperCase() || "A"}
+                                </div>
+                            )}
+                            <label className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center transition-all duration-200 cursor-pointer">
+                                <div className="opacity-0 group-hover:opacity-100 text-primary flex flex-col items-center transition-opacity">
+                                    <Upload className="w-6 h-6 mb-1" />
+                                    <span className="text-xs font-medium">{UPLOAD_PHOTO_TEXT}</span>
+                                </div>
                                 <Input
-                                    {...field}
-                                    type="text"
-                                    id="name"
+                                    type="file"
+                                    onChange={handleImageUpload}
+                                    className="hidden"
+                                    accept="image/jpeg,image/png,image/gif"
                                 />
-                            )}
-                        />
-                        {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+                            </label>
+                        </div>
+                        {imageError && <p className="absolute -bottom-6 text-destructive text-sm">{imageError}</p>}
                     </div>
 
-                    <div className="mb-4">
-                        <Controller
-                            name="email"
-                            control={control}
-                            rules={{
-                                required: "Email is required",
-                                pattern: {
-                                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                                    message: "Please enter a valid email address"
-                                }
-                            }}
-                            render={({ field }) => (
-                                <Email
-                                    {...field}
-                                    error={errors.email?.message?.toString()}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-3">
+                                <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
+                                    <User className="w-4 h-4" />
+                                    {FULL_NAME_LABEL}
+                                </Label>
+                                <Controller
+                                    name="name"
+                                    control={control}
+                                    rules={{
+                                        required: REQUIRED_NAME,
+                                        pattern: {
+                                            value: /^[A-Za-z]+(?: [A-Za-z]+)*$/,
+                                            message: INVALID_NAME,
+                                        },
+                                    }}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            type="text"
+                                            placeholder={FULL_NAME_PLACEHOLDER}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    </div>
+                                {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
+                            </div>
 
-                    <div className="mb-4">
-                        <Label htmlFor="role">Role</Label>
-                        <Controller
-                            name="role"
-                            control={control}
-                            render={({ field }) => (
-                                <select {...field} id="role" className="border-input flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            )}
-                        />
-                    </div>
+                            <div className="space-y-0">
+                                <Controller
+                                    name="email"
+                                    control={control}
+                                    rules={{
+                                        required: EMAIL_REQUIRED,
+                                        pattern: {
+                                            value: /^[^@]+@[^@]+\.[A-Za-z]{2,}$/,
+                                            message: VALID_EMAIL,
+                                        },
+                                    }}
+                                    render={({ field }) => <Email {...field} disabled error={errors.email?.message?.toString()} />}
+                                />
+                            </div>
+                        </div>
 
-                    <div className="flex justify-center">
-                        <Button
-                            type="submit"
-                        >{"Save Profile"}</Button>
-                    </div>
-                </form>
+                        <div className="space-y-2">
+                            <Label htmlFor="role" className="text-sm font-medium flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-gray-500" />
+                                {ROLE_LABEL}
+                            </Label>
+                            <Controller
+                                name="role"
+                                control={control}
+                                render={({ field }) => (
+                                    <select
+                                        {...field}
+                                        id="role"
+                                        className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                    >
+                                        <option value="">{SELECT_ROLE}</option>
+                                        <option value="user">{SELECT_USER_VALUE}</option>
+                                        <option value="admin">{SELECT_ADMIN_VALUE}</option>
+                                        <option value="employee">{SELECT_EMPLOYEE_VALUE}</option>
+                                        <option value="manager">{SELECT_MANAGER_VALUE}</option>
+                                    </select>
+                                )}
+                            />
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                            <Button
+                                type="submit"
+                                className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+                                text={isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
+                                icon={<Save className="w-4 h-4" />}
+                                disabled={isSubmitting || !isDirty}
+                            />
+                            <Button
+                                type="button"
+                                text={CANCEL_BUTTON_TEXT}
+                                onClick={() => setShowProfile(false)}
+                                className="flex-1 sm:flex-none px-6 py-3 border border-border font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            />
+                        </div>
+                    </form>
+                </div>
             </div>
         </>
-    );
-};
+    )
+}
 
-export default ProfilePage;
+export default ProfilePage
+

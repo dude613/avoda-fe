@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import orgReducer from "./slice/OrganizationUser"
-import userProfileReducer from './slice/UserProfle';
+import userProfileReducer from './slice/UserProfile';
 
 const store = configureStore({
   reducer: {

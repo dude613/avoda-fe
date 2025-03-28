@@ -4,6 +4,7 @@ export interface UserProfile {
       email: string;
       verified: string;
       picture: string;
+      role : string;
     };
   }
   

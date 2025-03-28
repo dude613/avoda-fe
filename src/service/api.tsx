@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE } from "../Config"
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE, UPDATE_USER_PROFILE_PICTURE, USER_ARCHIVED } from "../Config"
 
 
 
@@ -104,5 +104,38 @@ export async function UpdateProfile(formData: any) {
     } catch (error) {
         console.log("error message Create Organization", error)
         return error;
+    }
+}
+
+export async function UploadUserPicture(formData: any) {
+    try {
+        const response = await axios.post(UPDATE_USER_PROFILE_PICTURE, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
+            }
+        })
+        const data = response.data;
+        return data
+    } catch (error) {
+        console.error("Error during API call:", error);
+        return error;
+    }
+}   
+
+export async function ArchivedUser(userId: string) {
+    try {
+        const response = await axios.post(
+            USER_ARCHIVED, 
+            { userId },
+            {
+                headers: getAuthHeaders(),
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Error during API call:", error);
+        return null; 
     }
 }

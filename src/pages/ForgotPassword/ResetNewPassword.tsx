@@ -4,22 +4,20 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 //TODO Update this to be the standard fields like login/register
 import Password from "@/components/form/password";
-import { Button } from "@/components/ui/button";
-import * as constants from "@/constants/Auth";
+import Button from "@/ui/Button";
+import { forgotContent } from "@/constants/ForgotPassword";
+
 
 export default function ResetNewPassword() {
     const baseUrl = import.meta.env.VITE_BACKEND_URL;
-    const { RETURN_TO_SIGNIN_TEXT } = constants.messages;
-
-    const { RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE } = constants.titles;
-
-    const { PASSWORDS_MISMATCH_ERROR, REQUIRED_PASSWORD_ERROR, INVALID_PASSWORD_ERROR } = constants.errors;
-
-    const { PASSWORD_RESET_SUCCESS_TOAST, PASSWORD_RESET_FAILED_TOAST } = constants.toasts;
-
-    const { NEW_PASSWORD_PLACEHOLDER, CONFIRM_PASSWORD_PLACEHOLDER } = constants.placeholders;
-
-    const { RESET_PASSWORD_BUTTON_TEXT } = constants.buttons;
+    const {
+        PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
+        CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
+        RESET_PASSWORD_BUTTON_TEXT,
+        RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
+        NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
+        PASSWORD_RESET_FAILED_TOAST,NOT_EMAIL_EXIST
+    } = forgotContent;
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -37,6 +35,11 @@ export default function ResetNewPassword() {
 
 
     const onSubmit = async (data: any) => {
+        if (!emailFromUrl) {
+            toast.error(NOT_EMAIL_EXIST, { duration: 2000 });
+            navigate("/forgot-password");
+            return;
+        }
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {
                 method: "POST",
@@ -82,10 +85,10 @@ export default function ResetNewPassword() {
                                 name="password"
                                 control={control}
                                 rules={{
-                                    required: REQUIRED_PASSWORD_ERROR,
+                                    required: PASSWORD_REQUIRED_ERROR,
                                     pattern: {
-                                        value: constants.regex.PASSWORD_REGEX,
-                                        message: INVALID_PASSWORD_ERROR,
+                                        value: PASSWORD_REGEX,
+                                        message: PASSWORD_VALIDATION_ERROR,
                                     },
                                 }}
                                 render={({ field }) => (
@@ -104,7 +107,7 @@ export default function ResetNewPassword() {
                                 name="confirmPassword"
                                 control={control}
                                 rules={{
-                                    required: REQUIRED_PASSWORD_ERROR,
+                                    required: PASSWORD_REQUIRED_ERROR,
                                     validate: (value) => value === watch("password") || PASSWORDS_MISMATCH_ERROR,
                                 }}
                                 render={({ field }) => (
@@ -120,7 +123,8 @@ export default function ResetNewPassword() {
                         </div>
                         <Button
                             className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-                        >{RESET_PASSWORD_BUTTON_TEXT}</Button>
+                            text={RESET_PASSWORD_BUTTON_TEXT}
+                        />
                     </form>
 
                     <p className="text-gray-800 text-sm text-center mt-5">
