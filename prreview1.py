@@ -8,13 +8,13 @@ MODEL_NAME = "o3-mini"
 
 # Our base prompt without the diff.
 BASE_PROMPT = (
-    "You are a seasoned code reviewer. Please analyze the following cumulative code diff and provide a strong review for the PR. Format your response in Markdown with the following structure:\n\n ## Code Review Analysis\n\n Summary:\n Provide a concise overview of the changes introduced in the diff. Just output the response, no additional comments.\n\n ##Changes: To the point bullet point of all the (focus on functional) changes in the diff, don't say anything about code formatting. Detailed Observations:\n List key issues and high level potential bugs in bullet points.\n\n Only very important and value add suggestions for improvements.(Not things like verify..or review..). Ignore and don't focus or mention anything about testing. We are focused on functionality 110%:\n Provide actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node backend.\n\n"
+    "You are a seasoned code reviewer. Please analyze the following cumulative code diff and provide a strong but to the point review for the PR. Only comment on changes directly introduced in the diff — ignore unrelated assumptions or suggestions or hallucinations. Format your response in Markdown with the following structure:\n\n # PR Code Review Analysis\n\n ## Summary:\n Consicely summarize the changes introduced in the diff. No additional comments.\n\n ## Changes:\n To the point bullet points listing only functional code changes. Ignore formatting, styling, test updates, or unrelated improvements.\n\n ## Detailed Observations:\n Bullet points listing only functional issues or potential bugs directly introduced in the diff. No generic suggestions (like check accessibility or verify behavior). \n\n ## Recommendations:\n Bullet points listing actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node backend. Only include specific, value-adding improvements or corrections related to core functionalities that appear in the diff. Do not mention testing, accessibility, or behavioral verification unless clearly broken in the code diff itself."
 )
 
 # Retrieve configuration from environment variables or hardcoded for local testing
-OWNER = "dude613"
-REPO = "avoda-fe"
-PR_NUMBER = 23
+OWNER = os.getenv("OWNER")
+REPO = os.getenv("REPO")
+PR_NUMBER = os.getenv("PR_NUMBER")
 
 # Retrieve tokens from environment variables or hardcoded for local testing
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -22,11 +22,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # --- Helper Functions ---
 
-def get_changed_files(owner: str, repo: str, pr_number: int, github_token: str):
+def get_changed_files(OWNER: str, repo: str, pr_number: int, github_token: str):
     """
     Retrieve the list of changed files (with patch/diff data) in a PR.
     """
-    url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/pulls/{pr_number}/files"
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/pulls/{int(PR_NUMBER)}/files"
     headers = {
         "Authorization": f"Bearer {github_token}",
         "Accept": "application/vnd.github.v3+json",
