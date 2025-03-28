@@ -27,4 +27,4 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           PR_NUMBER: ${{ github.event.number }}
-        run: python prreview.py
+        run: python prreview1.py
