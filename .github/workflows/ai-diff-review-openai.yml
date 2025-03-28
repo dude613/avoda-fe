@@ -1,8 +1,4 @@
 name: PR Review
-  uses: actions/upload-artifact@v3
-  with:
-    name: pr-review-summary
-    path: pr_review_summary.txt
 
 on:
   pull_request:
@@ -32,3 +28,7 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           PR_NUMBER: ${{ github.event.number }}
         run: python prreview1.py
+
+      - name: Log PR Review Summary
+        run: cat pr_review_summary.txt
+
