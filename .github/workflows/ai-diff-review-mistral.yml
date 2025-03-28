@@ -1,4 +1,4 @@
-name: Enhanced PR Analysis with OpenAI
+name: Enhanced PR Analysis with Mistral
 
 on:
   pull_request:
