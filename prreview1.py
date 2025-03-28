@@ -36,6 +36,15 @@ def get_changed_files(OWNER: str, repo: str, pr_number: int, github_token: str):
     response.raise_for_status()
     return response.json()
 
+def post_comment(review):
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
+    comment = {"body": review}
+    response = requests.post(url, headers={
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }, json=comment)
+    response.raise_for_status()
+
 def call_openai_api(prompt: str, openai_api_key: str):
     """
     Call OpenAI's API with the provided prompt and return the response text.
@@ -108,6 +117,9 @@ def main():
 
     output_filename = "pr_review_summary.txt"
     save_review_to_file(output_filename, review_response)
+
+    print("Posting review comment...")
+    post_comment(review_response)
 
 if __name__ == "__main__":
     main()
