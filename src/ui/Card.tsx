@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils"; // Assuming this path is correct
 
+//TODO Put all in the correct components folder
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   // Inherit standard div attributes
   children: React.ReactNode;
