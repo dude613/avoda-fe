@@ -29,8 +29,8 @@ jobs:
 
       - name: Review each changed file (excluding certain file types)
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
+          GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
         run: |
           # Loop over changed files from the previous step
           files=$(echo '${{ steps.get_files.outputs.result }}' | jq -r '.[].filename')
