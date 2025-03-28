@@ -1,25 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
-import Button from "../../ui/Button";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import Email from "@/components/form/email";
-import { registerContent } from "@/constants/Register";
+import * as constants from "@/constants/Auth";
 import Card from "@/ui/Card";
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
   const {
-    REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE,
-    GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT,
-    DIVIDER_TEXT, INVALID_EMAIL_ERROR,
-    EMAIL_REGEX,
-    REGISTER_SUCCESS_TOAST,
-    USER_EXISTS_TOAST,
-    REGISTER_PAGE_SUBTITLE_SIGN_UP, SERVER_ERROR_TOAST
-  } = registerContent;
+    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE, REGISTER_PAGE_SUBTITLE_SIGN_UP },
+    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT },
+    messages: { DIVIDER_TEXT },
+    errors: { INVALID_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+    toasts: { REGISTER_SUCCESS_TOAST, USER_EXISTS_TOAST, SERVER_ERROR_TOAST },
+  } = constants;
 
   const navigate = useNavigate();
   const {
@@ -86,10 +85,10 @@ const Register: React.FC = () => {
     <>
       <Toaster />
       <Card>
-        <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
+        <h2 className="text-xl font-bold mb-2 text-center">
           {REGISTER_PAGE_TITLE}
         </h2>
-        <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
+        <p className="text-xs text-primary mb-4 text-center">
           {REGISTER_PAGE_SUBTITLE}{" "}
           <Link to={"/login"} className="hover:underline">
             {REGISTER_PAGE_SUBTITLE_SIGN_UP}
@@ -98,18 +97,15 @@ const Register: React.FC = () => {
 
         <Button
           onClick={() => registerWithGoogle()}
-          text={GOOGLE_BUTTON_TEXT}
-          icon={<FcGoogle className="text-lg" />}
-          className="flex items-center justify-center border-border border w-full p-2 mb-4 rounded-sm hover:ring-1 hover:ring-ring transition cursor-pointer"
-        />
+        >{GOOGLE_BUTTON_TEXT}<FcGoogle /></Button>
 
         <div className="flex items-center my-4">
           <hr className="flex-grow border-gray-300" />
           <span className="mx-2 text-gray-500 text-sm">{DIVIDER_TEXT}</span>
           <hr className="flex-grow border-gray-300" />
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {/* TODO Add Form + Zod validation (export from file) */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="relative mb-4">
             <Controller
               name="email"
@@ -130,11 +126,7 @@ const Register: React.FC = () => {
               )}
             />
           </div>
-          <Button
-            type="submit"
-            className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-            text={EMAIL_BUTTON_TEXT}
-          />
+          <Button>{EMAIL_BUTTON_TEXT}</Button>
         </form>
       </Card>
     </>

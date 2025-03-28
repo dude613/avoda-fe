@@ -1,20 +1,27 @@
 import React from "react";
+import { cn } from "@/lib/utils"; // Assuming this path is correct
 
-interface CardProps {
-    children: React.ReactNode;
-    className?: string;
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Inherit standard div attributes
+  children: React.ReactNode;
 }
 
-const Card: React.FC<CardProps> = ({ children, className = "" }) => {
-    return (
-        <div className={`flex items-center justify-center min-h-screen bg-card px-4 ${className}`}>
-            <div className="pt-4 pl-8 pr-6 pb-2 rounded-lg shadow-lg border border-gray-300 w-auto sm:w-96 md:w-1/3 lg:w-1/4 xl:min-w-1/3 h-auto">
-                <div className="border border-border rounded-lg p-8">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
+const Card: React.FC<CardProps> = ({ children, className, ...props }) => {
+  return (
+    // Outer div for centering on the screen
+    <div className="flex items-center justify-center min-h-screen bg-background px-4">
+      {/* Inner div representing the actual card */}
+      <div
+        className={cn(
+          "w-full max-w-sm rounded-lg border bg-card text-card-foreground shadow-sm p-6", // Simplified width, padding, and added standard card styles
+          className // Merge incoming className
+        )}
+        {...props} // Spread remaining props onto the inner div
+      >
+        {children}
+      </div>
+    </div>
+  );
 };
 
 export default Card;

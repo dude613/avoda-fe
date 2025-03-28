@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { LuUserPlus } from "react-icons/lu";
 import { Input } from "./ui/input";
 import { Controller, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import Button from "../ui/Button";
+import { Button } from "@/components/ui/button";
 import CircularLoading from "./CircularLoading";
-import { SiMinutemailer } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
 import { AddTeamMemberAPI, fetchOrganization, SkipOnboardingAPI } from "../service/api";
@@ -14,6 +13,7 @@ import { teamContent } from "@/constants/AddTeamMembers";
 
 import Email from "./form/email";
 import { Label } from "./ui/label";
+import { FaArrowRight } from "react-icons/fa";
 
 interface FormData {
   members: { name: string; email: string; role: string }[];
@@ -145,9 +145,9 @@ const AddTeamMembers = () => {
                 <BsArrowLeft className="mr-1 h-4 w-4" />
                 {TEAM_BACK_BTN}
               </Link>
-              <button className="border-none text-sm font-semibold hover:text-gray-700 cursor-pointer" onClick={handleSkipOnBoarding}>
+              <Button className="border-none text-sm font-semibold hover:text-gray-700 cursor-pointer" onClick={handleSkipOnBoarding}>
                 {TEAM_SKIP_BTN}
-              </button>
+              </Button>
             </div>
             <div className="box-shadow">
               <div className="mb-6 h-full overflow-auto w-fit">
@@ -160,20 +160,18 @@ const AddTeamMembers = () => {
                 </span>
               </div>
               <div className="flex overflow-hidden bg-gray-100 mb-8">
-                <button
-                  type="button"
+                <Button
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "email" ? "bg-white font-medium rounded-md shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("email")}
                 >
                   {TEAM_EMAIL_INVITE}
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   className={`py-2 px-4 flex-1 mx-1 my-1 ${tab === "bulk" ? "bg-white font-medium shadow-md" : "bg-gray-100 text-gray-500"}`}
                   onClick={() => handleTabChange("bulk")}
                 >
                   {TEAM_BULK_UPLOAD}
-                </button>
+                </Button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)}>
                 {tab === "email" ? (
@@ -253,13 +251,13 @@ const AddTeamMembers = () => {
                       </div>
                     ))}
                     <Button
-                      type="button"
-                      icon={<LuUserPlus className="text-xl" />}
-                      text={TEAM_ADD_ANOTHER_BTN}
                       disabled={!canAddAnother}
                       className={`flex rounded-lg w-fit md:px-4 py-4 mt-8 lg:px-8 bg-transparent text-primary border hover:bg-transparent cursor-pointer ${!canAddAnother ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
                       onClick={handleAddMember}
-                    />
+                    >
+                      <LuUserPlus/>
+                      {TEAM_ADD_ANOTHER_BTN}
+                    </Button>
                   </div>
                 ) : (
                   <FileUploader
@@ -273,12 +271,9 @@ const AddTeamMembers = () => {
 
                 <Button
                   type="submit"
-                  text={loading ? TEAM_INVITATION_BTN_LOADER : TEAM_SEND_INVITATION_BTN}
-                  icon={loading ? <CircularLoading /> : undefined}
-                  iconRight={!loading ? <SiMinutemailer /> : undefined}
                   disabled={loading}
                   className={`bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
-                />
+                >{!loading && <FaArrowRight />}{loading && <CircularLoading />}{`${loading ? TEAM_INVITATION_BTN_LOADER : TEAM_SEND_INVITATION_BTN}`}</Button>
               </form>
 
               <p className="text-sm text-gray-700 mt-5 text-center">

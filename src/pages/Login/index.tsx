@@ -1,25 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { Loader2 } from "lucide-react"; // Added for loading spinner
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import Button from "../../ui/Button";
 import Card from "@/ui/Card";
-import { loginContent } from "@/constants/Login";
 import { LoginAPI } from "@/service/api";
-import Email from "@/components/form/email";
-import PasswordWithStrength from "@/components/form/PasswordWithStrength";
+import AuthInput from "@/ui/AuthInput";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
+import * as constants from "@/constants/Auth";
+import { Button } from "@/components/ui/button";
 const Login: React.FC = () => {
   const {
-    LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE, GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT,
-    PASSWORD_PLACEHOLDER, DIVIDER_TEXT, NO_ACCOUNT_TEXT,
-    INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, LOADING_TEXT, LOGIN_SUCCESS_TOAST,
-    USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST, INVALID_PASSWORD_ERROR, EMAIL_REGEX, PASSWORD_REGEX
-  } = loginContent;
+    titles: { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE },
+    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT },
+    messages: { DIVIDER_TEXT, NO_ACCOUNT_TEXT, LOADING_TEXT },
+    placeholders: {PASSWORD_PLACEHOLDER},
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR },
+    toasts: { LOGIN_SUCCESS_TOAST, USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST },
+    regex: { EMAIL_REGEX}
+  } = constants;
 
   const navigate = useNavigate();
   const { control, handleSubmit, formState: { errors } } = useForm({
@@ -84,10 +86,7 @@ const Login: React.FC = () => {
         <p className="text-xs text-primary mb-4 text-center">{LOGIN_PAGE_SUBTITLE}</p>
         <Button
           onClick={() => login()}
-          text={GOOGLE_BUTTON_TEXT}
-          icon={<FcGoogle className="text-lg" />}
-          className="flex items-center justify-center border-border border w-full p-2 mb-4 rounded-sm hover:ring-1 hover:ring-ring transition cursor-pointer"
-        />
+        >{GOOGLE_BUTTON_TEXT}<FcGoogle/></Button>
         <div className="flex items-center my-4">
           <hr className="flex-grow border border-border" />
           <span className="mx-2 text-primary text-xs">{DIVIDER_TEXT}</span>
@@ -106,12 +105,13 @@ const Login: React.FC = () => {
               },
             }}
             render={({ field }) => (
-              <>
-                <Email
-                  {...field}
-                  error={errors.email?.message?.toString()}
-                />
-              </>
+              <AuthInput
+                {...field}
+                type="email"
+                label="Email"
+                error={errors.email?.message?.toString()}
+                showStrengthIndicator={false}
+              />
             )}
           />
         </div>
@@ -129,24 +129,18 @@ const Login: React.FC = () => {
               },
             }}
             render={({ field }) => (
-              <>
-                <PasswordWithStrength
-                  placeholder={PASSWORD_PLACEHOLDER}
-                  value={field.value}
-                  showLabel={true}
-                  onChange={field.onChange}
-                  error={errors.password?.message?.toString()}
-                />
-              </>
+              <AuthInput
+                {...field}
+                type="password"
+                label={PASSWORD_PLACEHOLDER}
+                error={errors.password?.message?.toString()}
+                showStrengthIndicator={false}
+              />
             )}
           />
         </div>
 
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          text={loading ? LOADING_TEXT : EMAIL_BUTTON_TEXT}
-          className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-        />
+        <Button onClick={handleSubmit(onSubmit)}>{loading ? LOADING_TEXT : EMAIL_BUTTON_TEXT}</Button>
 
         <p className="text-gray-500 text-sm text-center mt-3">
           {NO_ACCOUNT_TEXT}{" "}

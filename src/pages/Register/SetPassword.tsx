@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import Button from "../../ui/Button";
-import { registerContent } from "@/constants/Register";
+import {Button} from "../../components/ui/button";
 import Password from "@/components/form/password";
 import Card from "@/ui/Card";
+import * as constants from "@/constants/Auth";
 
 const SetPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -79,6 +79,7 @@ const SetPassword: React.FC = () => {
     }
   };
 
+  //TODO Update the field components to be like the auth. 
   return (
     <>
       <Toaster />
@@ -135,11 +136,7 @@ const SetPassword: React.FC = () => {
           />
         </div>
 
-        <Button
-          onClick={handleSubmit(handleCreateAccount)}
-          className="bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-          text={loading ? CREATING_ACCOUNT_TEXT : CREATE_ACCOUNT_BUTTON_TEXT}
-        />
+        <Button onClick={handleSubmit(handleCreateAccount)}>{loading ? CREATING_ACCOUNT_TEXT : CREATE_ACCOUNT_BUTTON_TEXT}</Button>
       </Card>
     </>
   );

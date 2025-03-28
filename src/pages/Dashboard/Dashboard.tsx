@@ -10,7 +10,7 @@ import {
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Pagination from "../../util/Pagination";
-import Button from "../../ui/Button";
+import {Button} from "../../components/ui/button";
 import { VscSettings } from "react-icons/vsc";
 import { Input } from "../../components/ui/input";
 import { useDispatch, useSelector } from 'react-redux';

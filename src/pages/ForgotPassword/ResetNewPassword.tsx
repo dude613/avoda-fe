@@ -2,6 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
+//TODO Update this to be the standard fields like login/register
 import Password from "@/components/form/password";
 import Button from "@/ui/Button";
 import { forgotContent } from "@/constants/ForgotPassword";
@@ -64,7 +65,7 @@ export default function ResetNewPassword() {
     return (
         <>
             <Toaster />
-            <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+            <div className="flex items-center justify-center min-h-screen px-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
                     <div className="flex items-center justify-center">
                         <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">

@@ -4,7 +4,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { LuBuilding } from "react-icons/lu";
-import Button from "../ui/Button";
+import {Button} from "./ui/button";
 import CircularLoading from "./CircularLoading";
 import { CreateOrganizationAPI } from "../service/api";
 import toast, { Toaster } from "react-hot-toast";
@@ -236,12 +236,9 @@ export default function CreateOrganization() {
 
                             <Button
                                 type="submit"
-                                text={`${loading ? ORGANIZATION_BUTTON_LOADING_TEXT : ORGANIZATION_BUTTON_TEXT}`}
-                                icon={loading && <CircularLoading />}
-                                iconRight={!loading && <FaArrowRight />}
                                 disabled={loading}
                                 className={`bg-primary text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""} hover:scale-105`}
-                            />
+                            >{!loading && <FaArrowRight />}{loading && <CircularLoading />}{`${loading ? ORGANIZATION_BUTTON_LOADING_TEXT : ORGANIZATION_BUTTON_TEXT}`}</Button>
                             <p className="text-xs text-textPrimary opacity-70 mb-4 text-center">
                                 {ORGANIZATION_FOOTER_TEXT}
                             </p>

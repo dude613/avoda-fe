@@ -1,9 +1,13 @@
 import React, { useMemo } from "react";
-import { registerContent } from "@/constants/Register";
+import * as constants from "@/constants/Auth";
 
-const { PASSWORD_VERY_WEAK, PASSWORD_WEAK, PASSWORD_MEDIUM,
-  PASSWORD_STRONG, PASSWORD_VERY_STRONG, PASSWORD_STRENGTH_TEXT
-} = registerContent;
+const PASSWORD_VERY_WEAK = 'Weak Password';
+const PASSWORD_WEAK = 'Weak Password';
+const PASSWORD_MEDIUM = 'Medium Password';
+const PASSWORD_STRONG = 'Strong Password';
+const PASSWORD_VERY_STRONG = 'Very Strong Password';
+const PASSWORD_STRENGTH_TEXT = 'Password Strength';
+
 interface PasswordStrengthMeterProps {
   password: string;
 }

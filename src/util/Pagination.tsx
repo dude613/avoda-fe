@@ -1,5 +1,5 @@
 import { Table } from "@tanstack/react-table";
-
+import { Button } from "@/components/ui/button";
 interface PaginationProps {
     table: Table<any>;
 }
@@ -30,35 +30,35 @@ export default function Pagination({ table }: PaginationProps) {
                     Page {table.getState().pagination.pageIndex + 1} of{" "}
                     {table.getPageCount()}
                 </span>
-                <button
+                <Button
                     className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     {"<<"}
-                </button>
-                <button
+                </Button>
+                <Button
                     className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
                     {"<"}
-                </button>
+                </Button>
 
-                <button
+                <Button
                     className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     {">"}
-                </button>
-                <button
+                </Button>
+                <Button
                     className="p-2 border border-gray-300 rounded disabled:opacity-50 cursor-pointer"
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}
                 >
                     {">>"}
-                </button>
+                </Button>
             </div>
         </div>
     );
