@@ -8,7 +8,7 @@ export const forgotContent = {
     RESET_PASSWORD_TITLE: "Reset New Password",
     RESET_PASSWORD_SUBTITLE: "Enter your new password below.",
     INVALID_PASSWORD_ERROR: "Password must be at least 8 characters, with 1 uppercase letter and 1 special character.",
-
+    NOT_EMAIL_EXIST: "Email is missing. Please try the password reset process again.",
     RESET_PASSWORD_BUTTON_TEXT: "Reset Password",
     BACK_TO_LOGIN_TEXT: "Back to Login",
     RESEND_EMAIL_BUTTON_TEXT: "Resend Email",

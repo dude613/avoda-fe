@@ -16,6 +16,7 @@ export const registerContent = {
     RESEND_CODE_TEXT: "Resend Code",
     RESENDING_CODE_TEXT: "Resending",
     EMAIL_PLACEHOLDER: "name@example.com",
+    NOT_EMAIL_EXIST : "Email is required. Please go back to the registration page.",
     PASSWORD_PLACEHOLDER: "Password",
     CONFIRM_PASSWORD_PLACEHOLDER: "Confirm Password",
     DIVIDER_TEXT: "OR CONTINUE WITH",

@@ -15,7 +15,7 @@ export default function ResetNewPassword() {
         RESET_PASSWORD_BUTTON_TEXT,
         RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
         NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
-        PASSWORD_RESET_FAILED_TOAST
+        PASSWORD_RESET_FAILED_TOAST,NOT_EMAIL_EXIST
     } = forgotContent
 
     const location = useLocation();
@@ -34,6 +34,11 @@ export default function ResetNewPassword() {
 
 
     const onSubmit = async (data: any) => {
+        if (!emailFromUrl) {
+            toast.error(NOT_EMAIL_EXIST, { duration: 2000 });
+            navigate("/forgot-password");
+            return;
+        }
         try {
             const response = await fetch(`${baseUrl}/api/auth/new-password`, {
                 method: "POST",

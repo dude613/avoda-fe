@@ -67,11 +67,15 @@ const Login: React.FC = () => {
         } else {
           toast.error(response.status === 400 ? USER_NOT_FOUND_TOAST : SERVER_ERROR_TOAST, { position: "bottom-center" });
         }
-      } catch { }
+      } catch (error) {
+        console.error("Google login error:", error);
+        toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+      }
     },
     onError: console.error,
     scope: "openid profile email",
   });
+
 
   return (
     <>
@@ -96,7 +100,7 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: {value : true , message : REQUIRED_EMAIL_ERROR},
+              required: { value: true, message: REQUIRED_EMAIL_ERROR },
               pattern: {
                 value: EMAIL_REGEX,
                 message: INVALID_EMAIL_ERROR,
@@ -119,7 +123,7 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: {value : true , message : REQUIRED_PASSWORD_ERROR},
+              required: { value: true, message: REQUIRED_PASSWORD_ERROR },
               pattern: {
                 value: PASSWORD_REGEX,
                 message: INVALID_PASSWORD_ERROR,

@@ -13,7 +13,7 @@ const SetPassword: React.FC = () => {
     SET_PASSWORD_TITLE, SERVER_ERROR_TOAST, SET_PASSWORD_SUBTITLE,
     CREATING_ACCOUNT_TEXT, CREATE_ACCOUNT_BUTTON_TEXT, REGISTER_SUCCESS_TOAST,
     CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR,
-    INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX
+    INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX, NOT_EMAIL_EXIST
   } = registerContent;
 
   const navigate = useNavigate();
@@ -44,6 +44,11 @@ const SetPassword: React.FC = () => {
   });
 
   const handleCreateAccount = async (data: any) => {
+    if (!email) {
+      toast.error(NOT_EMAIL_EXIST, { duration: 2000 });
+      navigate("/register");
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/auth/register`, {
