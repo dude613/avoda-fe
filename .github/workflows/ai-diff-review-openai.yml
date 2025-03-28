@@ -1,4 +1,4 @@
-name: PR Analysis with OpenAI (Per-File)
+name: PR Analysis with OpenAI
 
 on:
   pull_request:
