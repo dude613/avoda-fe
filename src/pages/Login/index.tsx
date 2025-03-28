@@ -126,7 +126,7 @@ const Login: React.FC = () => {
               required: { value: true, message: REQUIRED_PASSWORD_ERROR },
               pattern: {
                 value: PASSWORD_REGEX,
-                message: PASSWORD_VALIDATION_ERROR,
+                message: INVALID_PASSWORD_ERROR,
               },
             }}
             render={({ field }) => (
