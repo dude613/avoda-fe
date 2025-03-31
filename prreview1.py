@@ -137,5 +137,12 @@ def main():
     print("Posting review comment...")
     post_comment(review_response)
 
+    if os.path.exists(output_filename):
+        print("Logging AI PR Review...")
+        with open(output_filename, "r")as f:
+            print(f.read())
+    else:
+        print("No AI PR Review found.")
+
 if __name__ == "__main__":
     main()
