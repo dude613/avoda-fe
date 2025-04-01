@@ -137,7 +137,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
                     />
                     {type === 'password' && (
                         <button
-                            type="button" // Prevent form submission
+                            type="button"
                             className="text-muted-foreground/80 hover:text-foreground absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={toggleVisibility}
                             aria-label={isPasswordVisible ? "Hide password" : "Show password"}
