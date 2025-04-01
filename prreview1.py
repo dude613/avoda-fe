@@ -1,6 +1,7 @@
 import sys
 import requests
 import os
+
 # --- Configuration & Constants (hardcoded) ---
 GITHUB_API_URL = "https://api.github.com"
 OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
@@ -9,7 +10,7 @@ MIN_DIFF_SIZE = 100
 
 # Our base prompt without the diff.
 BASE_PROMPT = (
-    "You are a seasoned code reviewer. Please analyze the following cumulative code diff and provide a strong but to the point review for the PR. Only comment on changes directly introduced in the diff — ignore unrelated assumptions or suggestions or hallucinations. Follow these instructions regarding content perfectly, do not hallucinate and ensure that you are following the directions as a whole since they apply to each section.Format your response in Markdown with the following structure:\n\n # PR Code Review Analysis\n\n ## Summary:\n Consicely summarize the changes introduced in the diff. No additional comments. No points about adding todos. No points about changing ENVs. No points about double checking. \n\n ## Changes:\n To the point bullet points listing only functional code changes. Ignore formatting, styling, test updates, or unrelated improvements. Write the file name after the period of each bullet point.\n\n ## Detailed Observations:\n Bullet points listing only functional issues or potential bugs directly introduced in the diff. No generic suggestions (like check accessibility or verify behavior). No points about changing styles/tailwind classes. No points about adding todos. No points about changing ENVs. No points about double checking. No points about changing regex and constants/text changes or updates. \n\n ## Fixes and Improvements:\n Bullet points listing actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node backend. Only include specific, value-adding improvements or corrections related to core functionalities that appear in the diff. Write the file name after the period of each bullet point. No points about changing regex and constants/text changes.No points about adding todos. Do not mention testing, accessibility, or behavioral verification unless clearly broken in the code diff itself. Do not mention fixes or improvements that contain action to: Verify or Double Check or Confirm That or Check Constants etc. Rate bug fixes, 3 or 5 or 8 or 10. 10 being a super critical - a fix-now urgent bug."
+    "You are a seasoned code reviewer. Please analyze the following cumulative code diff and provide a strong but to the point review for the PR. Only comment on changes directly introduced in the diff — ignore unrelated assumptions or suggestions or hallucinations. Follow these instructions regarding content perfectly, do not hallucinate and ensure that you are following the directions as a whole since they apply to each section. Format your response in Markdown with the following structure:\n\n # PR Code Review Analysis\n\n ## Summary:\n Concisely summarize the changes introduced in the diff. No additional comments. No points about adding todos. No points about changing ENVs. No points about double checking. \n\n ## Changes:\n To the point bullet points listing only functional code changes. Ignore formatting, styling, test updates, or unrelated improvements. Write the file name after the period of each bullet point.\n\n ## Detailed Observations:\n Bullet points listing only functional issues or potential bugs directly introduced in the diff. No generic suggestions (like check accessibility or verify behavior). No points about changing styles/tailwind classes. No points about adding todos. No points about changing ENVs. No points about double checking. No points about changing regex and constants/text changes or updates. \n\n ## Fixes and Improvements:\n Bullet points listing actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node backend. Only include specific, value-adding improvements or corrections related to core functionalities that appear in the diff. Write the file name after the period of each bullet point. No points about changing regex and constants/text changes. No points about adding todos. Do not mention testing, accessibility, or behavioral verification unless clearly broken in the code diff itself. Do not mention fixes or improvements that contain action to: Verify or Double Check or Confirm That or Check Constants etc. Rate bug fixes, 3 or 5 or 8 or 10. 10 being a super critical - a fix-now urgent bug."
 )
 
 # Retrieve configuration from environment variables or hardcoded for local testing
@@ -58,14 +59,52 @@ def call_openai_api(prompt: str, openai_api_key: str):
         "messages": [
             {"role": "user", "content": prompt}
         ]
-        # "max_tokens" and "temperature" parameters can be added here if needed.
     }
     response = requests.post(OPENAI_API_URL, headers=headers, json=body)
     response.raise_for_status()
     data = response.json()
     return data["choices"][0]["message"]["content"]
 
+def get_existing_comments():
+    """
+    Fetch all comments for a given PR to check if a previous review comment exists.
+    """
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def find_existing_pr_review_comment(comments):
+    """
+    Check for an existing PR review comment that contains the PR Code Review Analysis markdown header.
+    Returns the comment ID if found, otherwise returns None.
+    """
+    for comment in comments:
+        if "# PR Code Review Analysis" in comment["body"]:
+            return comment["id"]
+    return None
+
+def delete_existing_comment(comment_id):
+    """
+    Delete an existing PR review comment with the given comment ID.
+    """
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments/{comment_id}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.delete(url, headers=headers)
+    response.raise_for_status()
+    print("Existing comment deleted.")
+
 def post_comment(review: str):
+    """
+    Post a new comment with the PR review analysis.
+    """
     url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
     comment = {"body": review}
     response = requests.post(url, headers={
@@ -83,6 +122,9 @@ def save_review_to_file(filename: str, content: str):
     print(f"Saved review to {filename}")
 
 def main():
+    """
+    Main function to perform the PR review process.
+    """
     print(f"Fetching changed files for PR #{PR_NUMBER} in {OWNER}/{REPO}...")
     files = get_changed_files(OWNER, REPO, int(PR_NUMBER), GITHUB_TOKEN)
 
@@ -90,7 +132,7 @@ def main():
     ignore_extensions = (
         '.yml', '.css', '.json', '.lock', '.env', '.txt', 
         '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', 
-        '.ttf', '.woff', '.woff2', '.eot', '.otf'
+        '.ttf', '.woff', '.woff2', '.eot', '.otf', '.webp', '.md', '.htm', '.xml', '.jsonld', '.csv', '.yaml', '.yml', '.toml'
     )
 
     aggregated_diff = ""
@@ -134,12 +176,20 @@ def main():
     output_filename = "pr_review_summary.txt"
     save_review_to_file(output_filename, review_response)
 
+    # Fetch the list of comments and check if an existing review comment exists
+    comments = get_existing_comments()
+    existing_comment_id = find_existing_pr_review_comment(comments)
+
+    if existing_comment_id:
+        print("Found existing PR review comment. Deleting it...")
+        delete_existing_comment(existing_comment_id)
+
     print("Posting review comment...")
     post_comment(review_response)
 
     if os.path.exists(output_filename):
         print("Logging AI PR Review...")
-        with open(output_filename, "r")as f:
+        with open(output_filename, "r") as f:
             print(f.read())
     else:
         print("No AI PR Review found.")
