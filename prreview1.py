@@ -85,7 +85,7 @@ def find_existing_pr_review_comment(comments):
     Returns the comment ID if found, otherwise returns None.
     """
     for comment in comments:
-        if "# PR Code Review Analysis" in comment["body"]:
+        if "PR Code Review Analysis" in comment["body"]:
             return comment["id"]
     return None
 
@@ -101,7 +101,7 @@ def delete_existing_comment(comment_id):
     }
     response = requests.delete(url, headers=headers)
     response.raise_for_status()
-    print("Existing comment deleted.")
+    print(f"Existing comment {comment_id} deleted.")
 
 def post_comment(review: str):
     """
@@ -184,7 +184,7 @@ def main():
     existing_comment_id = find_existing_pr_review_comment(comments)
 
     if existing_comment_id:
-        print("Found existing PR review comment. Deleting it...")
+        print(f"Found existing PR review comment {existing_comment_id}. Deleting it...")
         delete_existing_comment(existing_comment_id)
 
     print("Posting review comment...")
