@@ -6,6 +6,7 @@ import { headerContent } from "@/constants/Header"
 import UserProfile from "./user-profile-drawer/UserProfile"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "@/redux/Store"
+import { ThemeToggle } from "./ThemeToggle" // Added import
 import { getUserProfile } from "@/redux/slice/UserProfile"
 
 const Header: React.FC = () => {
@@ -34,7 +35,8 @@ const Header: React.FC = () => {
         </Link>
       </h1>
 
-      <nav className="flex items-center">
+      <nav className="flex items-center space-x-2"> {/* Added space-x-2 for spacing */}
+        <ThemeToggle /> {/* Added ThemeToggle component */}
         {accessToken ? (
           <div className="relative">
             <button
