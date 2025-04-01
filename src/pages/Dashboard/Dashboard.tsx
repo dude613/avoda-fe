@@ -18,6 +18,7 @@ import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import { ArchivedUser } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
+import { titles, buttons } from "@/constants/Auth";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
@@ -191,23 +192,16 @@ export default function Dashboard() {
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
 
-            <Button text={"Role"}
-              icon={<IoMdAddCircleOutline size={20} />}
-              className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold w-36 h-9 rounded-lg"
-            />
-            <Button text={"Status"}
-              icon={<IoMdAddCircleOutline size={20} />}
-              className="flex justify-center items-center gap-1 border border-dashed border-primary font-semibold  w-40 h-9 rounded-lg"
-            />
+            <Button
+            >{<IoMdAddCircleOutline size={20} />}{"Role"}</Button>
+            <Button
+            >{<IoMdAddCircleOutline size={20} />}{"Status"}</Button>
           </div>
           <div className="flex justify-end items-center gap-2">
-            <Button text={"View"}
-              icon={<VscSettings size={20} />}
-              className="flex justify-center items-center gap-2 border border-primary font-semibold px-4 h-9 rounded-lg"
-            />
-            <Button text={'Invite User'}
-              className="bg-primary text-lg text-white font-bold py-2 px-4 w-full rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-            />
+            <Button
+            >{"View"}</Button>
+            <Button
+            >{<VscSettings size={20} />}{"Invite User"}</Button>
           </div>
 
         </div>
@@ -249,14 +243,14 @@ export default function Dashboard() {
               <h2 className="text-xl font-bold mb-2">Confirm Deletion</h2>
               <p>Are you sure you want to Archive this user?</p>
               <div className="flex justify-center mt-4 gap-4">
-                <Button text={"Cancel"}
+                <Button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-border rounded-md"
-                />
-                <Button text={'Archive'}
+                  variant={"destructive"}
+                >{"Cancel"}</Button>
+                <Button
                   onClick={handleConfirmDelete}
-                  className="bg-primary text-lg text-white font-bold py-1 px-4 rounded-xl hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-                />
+                  variant={"destructive"}
+                >{"Archive"}</Button>
               </div>
             </div>
           </div>

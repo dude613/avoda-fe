@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { Loader2 } from "lucide-react"; // Added for loading spinner
 import { useGoogleLogin } from "@react-oauth/google";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -10,27 +9,32 @@ import Card from "@/ui/Card";
 import { LoginAPI } from "@/service/api";
 import AuthInput from "@/ui/AuthInput";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
-import * as constants from "@/constants/Auth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { titles, buttons, messages, errors, regex, toasts, placeholders } from "@/constants/Auth";
+
+type loginData = {
+  email: string;
+  password: string;
+};
+
+//TODO API Response Type
+
 const Login: React.FC = () => {
-  const {
-    titles: { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE },
-    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGNUP_LINK_TEXT, FORGOT_PASSWORD_LINK_TEXT },
-    messages: { DIVIDER_TEXT, NO_ACCOUNT_TEXT, LOADING_TEXT },
-    placeholders: {PASSWORD_PLACEHOLDER},
-    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR, REQUIRED_PASSWORD_ERROR, INVALID_PASSWORD_ERROR },
-    toasts: { LOGIN_SUCCESS_TOAST, USER_NOT_FOUND_TOAST, SERVER_ERROR_TOAST },
-    regex: { EMAIL_REGEX, PASSWORD_REGEX }
-  } = constants;
 
   const navigate = useNavigate();
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    mode: "onChange",
+  // Rename formState errors to avoid conflict with imported constants
+  const { control, handleSubmit, formState: { errors: formErrors } } = useForm<loginData>({
+    // Change validation mode to onBlur to avoid premature errors
+    mode: "onBlur", 
+    defaultValues: {
+      email: localStorage.getItem("email") || "",
+      password: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
-  const onSubmit = async (data: any) => {
+
+  const onSubmit = async (data: loginData) => {
     const { email, password } = data;
     setLoading(true);
     try {
@@ -38,15 +42,15 @@ const Login: React.FC = () => {
       if (response.success) {
         localStorage.setItem("userId", response.user._id);
         localStorage.setItem("accessToken", response.accessToken);
-        toast.success(response.message || LOGIN_SUCCESS_TOAST, { duration: 2000 });
+        toast.success(response.message || toasts.LOGIN_SUCCESS, { duration: 2000 });
         const onboardingSkipped = response?.onboardingSkipped;
         const destination = onboardingSkipped ? "/create-organization" : "/dashboard"
         navigate(destination, { replace: true });
       } else {
-        toast.error(response.error || USER_NOT_FOUND_TOAST, { duration: 2000 });
+        toast.error(response.error || toasts.USER_NOT_FOUND, { duration: 2000 });
       }
     } catch {
-      toast.error(SERVER_ERROR_TOAST);
+      toast.error(toasts.SERVER_ERROR);
     } finally {
       setLoading(false);
     }
@@ -64,14 +68,14 @@ const Login: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", data.user._id);
           localStorage.setItem("accessToken", data.accessToken);
-          toast.success(LOGIN_SUCCESS_TOAST, { position: "bottom-center" });
+          toast.success(toasts.LOGIN_SUCCESS, { position: "bottom-center" });
           setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
         } else {
-          toast.error(response.status === 400 ? USER_NOT_FOUND_TOAST : SERVER_ERROR_TOAST, { position: "bottom-center" });
+          toast.error(response.status === 400 ? toasts.USER_NOT_FOUND : toasts.SERVER_ERROR, { position: "bottom-center" });
         }
       } catch (error) {
         console.error("Google login error:", error);
-        toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
       }
     },
     onError: console.error,
@@ -83,14 +87,14 @@ const Login: React.FC = () => {
     <>
       <Toaster />
       <Card>
-        <h2 className="text-xl font-bold mb-2 text-center">{LOGIN_PAGE_TITLE}</h2>
-        <p className="text-xs text-primary mb-4 text-center">{LOGIN_PAGE_SUBTITLE}</p>
+        <h2 className="text-xl font-bold mb-2 text-center">{titles.LOGIN_PAGE_TITLE}</h2>
+        <p className="text-xs text-primary mb-4 text-center">{titles.LOGIN_PAGE_SUBTITLE}</p>
         <Button
           onClick={() => login()}
-        >{GOOGLE_BUTTON_TEXT}<FcGoogle/></Button>
+        >{buttons.GOOGLE}<FcGoogle /></Button>
         <div className="flex items-center my-4">
           <hr className="flex-grow border border-border" />
-          <span className="mx-2 text-primary text-xs">{DIVIDER_TEXT}</span>
+          <span className="mx-2 text-primary text-xs">{messages.DIVIDER_TEXT}</span>
           <hr className="flex-grow border border-border" />
         </div>
         <div className="relative mb-4">
@@ -99,10 +103,11 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: { value: true, message: REQUIRED_EMAIL_ERROR },
+              required: true,
               pattern: {
-                value: EMAIL_REGEX,
-                message: INVALID_EMAIL_ERROR,
+                // Convert string constant to RegExp
+                value: new RegExp(regex.EMAIL), 
+                message: errors.INVALID_EMAIL,
               },
             }}
             render={({ field }) => (
@@ -110,7 +115,7 @@ const Login: React.FC = () => {
                 {...field}
                 type="email"
                 label="Email"
-                error={errors.email?.message?.toString()}
+                error={typeof formErrors.email?.message === 'string' ? formErrors.email.message : undefined} 
                 showStrengthIndicator={false}
               />
             )}
@@ -123,36 +128,36 @@ const Login: React.FC = () => {
             control={control}
             defaultValue=""
             rules={{
-              required: { value: true, message: REQUIRED_PASSWORD_ERROR },
+              required: { value: true, message: errors.INVALID_PASSWORD }, 
               pattern: {
-                value: PASSWORD_REGEX,
-                message: INVALID_PASSWORD_ERROR,
+                value: regex.PASSWORD, 
+                message: errors.INVALID_PASSWORD, 
               },
             }}
             render={({ field }) => (
               <AuthInput
                 {...field}
                 type="password"
-                label={PASSWORD_PLACEHOLDER}
-                error={errors.password?.message?.toString()}
+                label={placeholders.PASSWORD}
+                error={typeof formErrors.password?.message === 'string' ? formErrors.password.message : undefined} 
                 showStrengthIndicator={false}
               />
             )}
           />
         </div>
 
-        <Button onClick={handleSubmit(onSubmit)}>{loading ? LOADING_TEXT : EMAIL_BUTTON_TEXT}</Button>
+        <Button onClick={handleSubmit(onSubmit)}>{loading ? messages.LOADING_TEXT : buttons.LOGIN_TEXT}</Button>
 
-        <p className="text-gray-500 text-sm text-center mt-3">
-          {NO_ACCOUNT_TEXT}{" "}
+        <p className="text-gray-900 text-sm text-center mt-3">
+          {messages.NO_ACCOUNT_TEXT}{" "}
           <span className="text-sm text-black hover:underline">
-            <Link to="/register">{SIGNUP_LINK_TEXT}</Link>
+            <Link to="/register">{buttons.SIGNUP_LINK_TEXT}</Link>
           </span>
         </p>
 
-        <p className="text-sm text-center mt-5">
-          <Link to="/forgot-password" className="hover:underline text-black">
-            {FORGOT_PASSWORD_LINK_TEXT}
+        <p className="text-xs text-center mt-5">
+          <Link to="/forgot-password" className="hover:underline text-gray-400 hover:text-gray-900">
+            {buttons.FORGOT_PASSWORD_LINK_TEXT}
           </Link>
         </p>
       </Card>
