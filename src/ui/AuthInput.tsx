@@ -38,8 +38,8 @@ const AuthInput: React.FC<AuthInputProps> = ({
 
     // Effect to handle error display and fade-out
     useEffect(() => {
-        let fadeTimer: NodeJS.Timeout;
-        let clearTimer: NodeJS.Timeout;
+        let fadeTimer: NodeJS.Timeout | undefined;
+        let clearTimer: NodeJS.Timeout | undefined;
 
         if (error) {
             setDisplayError(error); // Set the error message to display
@@ -63,8 +63,8 @@ const AuthInput: React.FC<AuthInputProps> = ({
 
         // Cleanup function to clear timers if the component unmounts or the error changes
         return () => {
-            clearTimeout(fadeTimer);
-            clearTimeout(clearTimer);
+            if (fadeTimer) clearTimeout(fadeTimer);
+            if (clearTimer) clearTimeout(clearTimer);
         };
     }, [error]); // Rerun effect when the error prop changes
 
