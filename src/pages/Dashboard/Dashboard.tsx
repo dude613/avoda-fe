@@ -249,7 +249,7 @@ export default function Dashboard() {
                 >{"Cancel"}</Button>
                 <Button
                   onClick={handleConfirmDelete}
-                  variant={"destructive"}
+                  variant={"outline"}
                 >{"Archive"}</Button>
               </div>
             </div>
