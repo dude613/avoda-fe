@@ -72,7 +72,8 @@ def get_existing_comments():
     url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
     }
     response = requests.get(url, headers=headers)
     response.raise_for_status()
@@ -92,10 +93,11 @@ def delete_existing_comment(comment_id):
     """
     Delete an existing PR review comment with the given comment ID.
     """
-    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments/{comment_id}"
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/comments/{comment_id}"
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
     }
     response = requests.delete(url, headers=headers)
     response.raise_for_status()
@@ -109,7 +111,8 @@ def post_comment(review: str):
     comment = {"body": review}
     response = requests.post(url, headers={
         "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
     }, json=comment)
     response.raise_for_status()
 
