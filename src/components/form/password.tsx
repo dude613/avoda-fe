@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useId, useState } from "react";
 import ErrorMessage from "./ErrorMessage";
-import { Button } from "@/components/ui/button";
 
 interface PasswordProps {
   value?: string;
