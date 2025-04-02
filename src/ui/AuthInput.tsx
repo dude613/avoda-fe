@@ -8,33 +8,69 @@ interface AuthInputProps {
     disabled?: boolean;
     className?: string;
     label?: string;
-    showStrengthIndicator?: boolean; // Added prop
+    showStrengthIndicator?: boolean;
 }
-import { useId, useState, useMemo } from "react"; // Added useState, useMemo
+// Import useEffect
+import { useId, useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from "lucide-react"; // Added icons
-import { Button } from "@/components/ui/button";
+import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
 
 const AuthInput: React.FC<AuthInputProps> = ({
     type = "text",
     placeholder,
-    value = "", // Default value needed for strength check
+    value = "",
     onChange,
     onKeyDown,
-    error,
+    error, // The error prop from react-hook-form
     disabled,
     className,
     label,
-    showStrengthIndicator = false, // Default to false
+    showStrengthIndicator = false,
 }) => {
     const id = useId();
-    const [isFocused, setIsFocused] = useState(false); // Focus state
-    const [isVisible, setIsVisible] = useState<boolean>(false); // Visibility state
+    const [isFocused, setIsFocused] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); // Renamed for clarity
+
+    // State for managing the displayed error and its fade-out
+    const [displayError, setDisplayError] = useState<string | undefined>(undefined);
+    const [isErrorVisible, setIsErrorVisible] = useState<boolean>(false);
+
+    // Effect to handle error display and fade-out
+    useEffect(() => {
+        let fadeTimer: NodeJS.Timeout | undefined;
+        let clearTimer: NodeJS.Timeout | undefined;
+
+        if (error) {
+            setDisplayError(error); // Set the error message to display
+            setIsErrorVisible(true); // Make it visible immediately
+
+            // Start timer to initiate fade-out after 1 second
+            fadeTimer = setTimeout(() => {
+                setIsErrorVisible(false); // Start fading out
+            }, 2000); // 2 second delay
+
+            // Start timer to clear the error message after fade-out completes (adjust duration if needed)
+            clearTimer = setTimeout(() => {
+                setDisplayError(undefined); // Clear the error message content
+            }, 2400); // 2000ms delay + 400ms fade duration
+
+        } else {
+            // If the error prop becomes undefined (e.g., user corrects input), hide immediately
+            setIsErrorVisible(false);
+            setDisplayError(undefined);
+        }
+
+        // Cleanup function to clear timers if the component unmounts or the error changes
+        return () => {
+            if (fadeTimer) clearTimeout(fadeTimer);
+            if (clearTimer) clearTimeout(clearTimer);
+        };
+    }, [error]); // Rerun effect when the error prop changes
 
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
-    const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+    const toggleVisibility = () => setIsPasswordVisible((prevState) => !prevState);
 
     // --- Strength Logic Start ---
     const checkStrength = (pass: string) => {
@@ -65,9 +101,8 @@ const AuthInput: React.FC<AuthInputProps> = ({
     };
 
     const getStrengthText = (score: number) => {
-        // Adjusted text slightly for focus context
         if (score === 0 && value.length > 0) return "Weak password";
-        if (score === 0) return ""; // Don't show text initially
+        if (score === 0) return "";
         if (score <= 2) return "Weak password";
         if (score === 3) return "Medium password";
         return "Strong password";
@@ -76,40 +111,40 @@ const AuthInput: React.FC<AuthInputProps> = ({
 
 
     return (
-        <div> {/* Added outer div to contain input and strength meter */}
+        <div>
             <div className="group relative">
                 <label
                     htmlFor={id}
                     className="origin-start text-muted-foreground/70 group-focus-within:text-foreground has-[+input:not(:placeholder-shown)]:text-foreground absolute top-1/2 block -translate-y-1/2 cursor-text px-1 text-sm transition-all group-focus-within:pointer-events-none group-focus-within:top-0 group-focus-within:cursor-default group-focus-within:text-xs group-focus-within:font-medium has-[+input:not(:placeholder-shown)]:pointer-events-none has-[+input:not(:placeholder-shown)]:top-0 has-[+input:not(:placeholder-shown)]:cursor-default has-[+input:not(:placeholder-shown)]:text-xs has-[+input:not(:placeholder-shown)]:font-medium"
                     >
                     <span className="bg-background inline-flex px-2">
-                        {label || placeholder} {/* Use label prop, fallback to original placeholder */}
+                        {label || placeholder}
                     </span>
                 </label>
-                <div> {/* Added div for input + toggle button */}
+                <div>
                     <Input
                         id={id}
-                        type={type === 'password' && isVisible ? "text" : type} // Handle visibility toggle
-                        placeholder=" " // Crucial for the animation
-                        className={cn("w-full", type === 'password' && "pe-9", className)} // Add padding for eye icon
+                        type={type === 'password' && isPasswordVisible ? "text" : type}
+                        placeholder=" "
+                        className={cn("w-full", type === 'password' && "pe-9", className)}
                         value={value}
                         onChange={onChange}
                         onKeyDown={onKeyDown}
                         disabled={disabled}
-                        onFocus={handleFocus} // Add focus handler
-                        onBlur={handleBlur}   // Add blur handler
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                         aria-describedby={showStrengthIndicator && type === 'password' ? `${id}-description` : undefined}
                     />
-                    {/* Password Visibility Toggle */}
                     {type === 'password' && (
                         <button
+                            type="button"
                             className="text-muted-foreground/80 hover:text-foreground absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={toggleVisibility}
-                            aria-label={isVisible ? "Hide password" : "Show password"}
-                            aria-pressed={isVisible}
+                            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+                            aria-pressed={isPasswordVisible}
                             aria-controls={id}
                         >
-                            {isVisible ? (
+                            {isPasswordVisible ? (
                                 <EyeOffIcon size={16} aria-hidden="true" />
                             ) : (
                                 <EyeIcon size={16} aria-hidden="true" />
@@ -117,15 +152,22 @@ const AuthInput: React.FC<AuthInputProps> = ({
                         </button>
                     )}
                 </div>
-                {error && <p className="text-destructive text-xs mb-2 mt-2">{error}</p>}
+                {/* Error Message with Fade-out */}
+                {displayError && (
+                    <p className={cn(
+                        "text-destructive text-xs mb-2 mt-2 transition-opacity duration-300 ease-out",
+                        isErrorVisible ? "opacity-100" : "opacity-0"
+                    )}>
+                        {displayError}
+                    </p>
+                )}
             </div>
 
             {/* Conditionally Rendered Password Strength Indicator */}
             {type === 'password' && showStrengthIndicator && isFocused && (
-                <div className="mt-2"> {/* Added margin top */}
-                    {/* Progress Bar */}
+                 <div className="mt-2">
                     <div
-                        className="bg-border mt-1 mb-2 h-1 w-full overflow-hidden rounded-full" // Adjusted margins
+                        className="bg-border mt-1 mb-2 h-1 w-full overflow-hidden rounded-full"
                         role="progressbar"
                         aria-valuenow={strengthScore}
                         aria-valuemin={0}
@@ -133,24 +175,22 @@ const AuthInput: React.FC<AuthInputProps> = ({
                         aria-label="Password strength"
                     >
                         <div
-                            className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-300 ease-out`} // Shortened duration
+                            className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-300 ease-out`}
                             style={{ width: `${(strengthScore / 4) * 100}%` }}
                         ></div>
                     </div>
-
-                    {/* Strength Text & Requirements (only if password entered) */}
                     {value.length > 0 && (
                         <>
-                            <p id={`${id}-description`} className="text-foreground mb-2 text-xs font-medium"> {/* Smaller text */}
+                            <p id={`${id}-description`} className="text-foreground mb-2 text-xs font-medium">
                                 {getStrengthText(strengthScore)}. Must contain:
                             </p>
-                            <ul className="space-y-1" aria-label="Password requirements"> {/* Reduced spacing */}
+                            <ul className="space-y-1" aria-label="Password requirements">
                                 {strength.map((req, index) => (
-                                    <li key={index} className="flex items-center gap-1.5"> {/* Reduced gap */}
+                                    <li key={index} className="flex items-center gap-1.5">
                                         {req.met ? (
-                                            <CheckIcon size={14} className="text-emerald-500" aria-hidden="true" /> // Smaller icon
+                                            <CheckIcon size={14} className="text-emerald-500" aria-hidden="true" />
                                         ) : (
-                                            <XIcon size={14} className="text-muted-foreground/80" aria-hidden="true" /> // Smaller icon
+                                            <XIcon size={14} className="text-muted-foreground/80" aria-hidden="true" />
                                         )}
                                         <span className={`text-xs ${req.met ? "text-emerald-600" : "text-muted-foreground"}`}>
                                             {req.text}

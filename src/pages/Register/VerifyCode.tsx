@@ -1,18 +1,12 @@
 import OTP from "@/components/form/otp";
 import { Button } from "@/components/ui/button";
-import * as constants from "@/constants/Auth";
+import { titles, messages, toasts } from "@/constants/Auth";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VerifyCode: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
-  const {
-    toasts: { CODE_SENT_TOAST, SERVER_ERROR_TOAST, USER_ALREADY_VERIFIED_TOAST, USER_EXISTS_TOAST, USER_VERIFIED_TOAST },
-    buttons: { RESEND_CODE_TEXT},
-    messages: { VERIFYING_CODE_TEXT, NOT_RECEIVE_CODE_TEXT, RESENDING_CODE_TEXT, },
-    titles: { VERIFY_CODE_SUBTITLE, VERIFY_CODE_TITLE },
-  } = constants;
 
   const [code, setCode] = useState("");
   const navigate = useNavigate();
@@ -59,16 +53,16 @@ const VerifyCode: React.FC = () => {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user._id);
           localStorage.setItem("accessToken", data.accessToken);
-          toast.success(data?.message || USER_VERIFIED_TOAST, { duration: 2000 });
+          toast.success(data?.message || toasts.USER_VERIFIED, { duration: 2000 });
           setTimeout(() => {
             navigate("/create-organization", { replace: true });
           }, 1000);
         }
       } else {
-        toast.error(data?.error || USER_ALREADY_VERIFIED_TOAST, { duration: 2000 });
+        toast.error(data?.error || toasts.USER_NOT_FOUND, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(SERVER_ERROR_TOAST);
+      toast.error(toasts.SERVER_ERROR);
     } finally {
       setLoading(false);
     }
@@ -84,15 +78,15 @@ const VerifyCode: React.FC = () => {
         body: JSON.stringify({ email }),
       });
       if (response.ok && response.status === 200) {
-        toast.success(CODE_SENT_TOAST, { position: "bottom-center" });
+        toast.success(toasts.CODE_SENT, { position: "bottom-center" });
       } else if (response.status === 201) {
-        toast.success(USER_EXISTS_TOAST, { duration: 2000 });
+        toast.success(toasts.USER_EXISTS, { duration: 2000 });
         navigate("/dashboard", { replace: true });
       } else {
-        toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+      toast.error(toasts.SERVER_ERROR, { duration: 2000 });
     } finally {
       setResending(false);
     }
@@ -104,10 +98,10 @@ const VerifyCode: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibld text-gray-800 mb-2">
-            {VERIFY_CODE_TITLE}
+            {titles.VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            {VERIFY_CODE_SUBTITLE} {email}
+            {titles.VERIFY_CODE_SUBTITLE} {email}
           </p>
 
           <div className="flex justify-center mb-4">
@@ -123,7 +117,7 @@ const VerifyCode: React.FC = () => {
           >
             {loading ? (
               <>
-                <span className="animate-pulse">{VERIFYING_CODE_TEXT}</span>
+                <span className="animate-pulse">{messages.VERIFYING_CODE_TEXT}</span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
@@ -134,7 +128,7 @@ const VerifyCode: React.FC = () => {
           </Button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            {NOT_RECEIVE_CODE_TEXT}{" "}
+            {messages.NOT_RECEIVE_CODE_TEXT}{" "}
           </p>
           <p
             className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
@@ -142,13 +136,13 @@ const VerifyCode: React.FC = () => {
           >
             {resending ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">{RESENDING_CODE_TEXT}</span>
+                <span className="animate-pulse">{messages.RESENDING_CODE_TEXT}</span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
               </span>
             ) : (
-              RESEND_CODE_TEXT
+              messages.RESEND_CODE_TEXT
             )}
           </p>
         </div>

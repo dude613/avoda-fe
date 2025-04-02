@@ -5,24 +5,17 @@ import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import Email from "@/components/form/email";
 import {Button} from "@/components/ui/button";
-import * as constants from "@/constants/Auth";
+import { titles, buttons, messages, errors, regex } from "@/constants/Auth";
 import Card from "@/ui/Card";
 
 const ForgotPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
-  const {
-    titles: { FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, CHECK_EMAIL_TITLE },
-    buttons: { RESET_PASSWORD_BUTTON_TEXT },
-    messages: { BACK_TO_LOGIN_TEXT },
-    errors: { INVALID_EMAIL_ERROR },
-    regex: { EMAIL_REGEX },
-  } = constants;
 
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors: formErrors },
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -62,10 +55,10 @@ const ForgotPassword: React.FC = () => {
         </div>
 
         <h2 className="mt-8 text-xl font-semibold text-gray-800 mb-2 text-center">
-          {FORGOT_PASSWORD_TITLE}
+          {titles.FORGOT_PASSWORD_TITLE}
         </h2>
         <p className="text-xs text-gray-500 mb-4 text-center">
-          {FORGOT_PASSWORD_SUBTITLE}
+          {titles.FORGOT_PASSWORD_SUBTITLE}
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -73,29 +66,29 @@ const ForgotPassword: React.FC = () => {
             name="email"
             control={control}
             rules={{
-              required: CHECK_EMAIL_TITLE,
+              required: errors.INVALID_EMAIL,
               pattern: {
-                value: EMAIL_REGEX,
-                message: INVALID_EMAIL_ERROR,
+                value: regex.EMAIL,
+                message: errors.INVALID_EMAIL,
               },
             }}
             render={({ field }) => (
               <Email
                 {...field}
-                error={errors.email?.message?.toString()}
+                error={formErrors.email?.message?.toString()}
               />
             )}
           />
 
           <Button
             type="submit"
-            className="bg-primary text-sm text-white font-bold py-3 mt-2 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-          >{RESET_PASSWORD_BUTTON_TEXT}</Button>
+            className="py-3 mt-2 hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
+          >{buttons.RESET_PASSWORD}</Button>
         </form>
 
         <p className="text-black text-sm text-center mt-5">
           <Link to="/login" className="hover:underline">
-            {BACK_TO_LOGIN_TEXT}
+            {messages.BACK_TO_LOGIN_TEXT}
           </Link>
         </p>
       </Card>

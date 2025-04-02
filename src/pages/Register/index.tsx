@@ -6,31 +6,23 @@ import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import Email from "@/components/form/email";
-import * as constants from "@/constants/Auth";
+import { titles, buttons, messages, errors, regex, toasts } from "@/constants/Auth";
 import Card from "@/ui/Card";
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
-  const {
-    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE, REGISTER_PAGE_SUBTITLE_SIGN_UP },
-    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT },
-    messages: { DIVIDER_TEXT },
-    errors: { INVALID_EMAIL_ERROR },
-    regex: { EMAIL_REGEX },
-    toasts: { REGISTER_SUCCESS_TOAST, USER_EXISTS_TOAST, SERVER_ERROR_TOAST },
-  } = constants;
 
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors: formErrors },
     setValue,
     trigger,
   } = useForm();
 
   const validateEmail = (email: string) => {
-    return EMAIL_REGEX.test(email) ? true : INVALID_EMAIL_ERROR;
+    return regex.EMAIL.test(email) ? true : errors.INVALID_EMAIL;
   };
 
   const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,16 +55,16 @@ const Register: React.FC = () => {
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
+          toast.success(toasts.REGISTER_SUCCESS, { duration: 2000 });
           navigate("/create-organization", { replace: true });
         } else if (response.status === 404) {
-          toast.error(USER_EXISTS_TOAST, { duration: 2000 });
+          toast.error(toasts.USER_EXISTS, { duration: 2000 });
         } else {
-          toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+          toast.error(toasts.SERVER_ERROR, { duration: 2000 });
         }
       } catch (error) {
         console.error("Google login error:", error);
-        toast.error(SERVER_ERROR_TOAST, { duration: 2000 });
+        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
       }
     },
     onError: (error: any) => console.error("Login Failed:", error),
@@ -86,22 +78,22 @@ const Register: React.FC = () => {
       <Toaster />
       <Card>
         <h2 className="text-xl font-bold mb-2 text-center">
-          {REGISTER_PAGE_TITLE}
+          {titles.REGISTER_PAGE_TITLE}
         </h2>
         <p className="text-xs text-primary mb-4 text-center">
-          {REGISTER_PAGE_SUBTITLE}{" "}
+          {titles.REGISTER_PAGE_SUBTITLE}{" "}
           <Link to={"/login"} className="hover:underline">
-            {REGISTER_PAGE_SUBTITLE_SIGN_UP}
+            {titles.REGISTER_PAGE_SUBTITLE_SIGN_UP}
           </Link>
         </p>
 
         <Button
           onClick={() => registerWithGoogle()}
-        >{GOOGLE_BUTTON_TEXT}<FcGoogle /></Button>
+        >{buttons.GOOGLE}<FcGoogle /></Button>
 
         <div className="flex items-center my-4">
           <hr className="flex-grow border-gray-300" />
-          <span className="mx-2 text-gray-500 text-sm">{DIVIDER_TEXT}</span>
+          <span className="mx-2 text-gray-500 text-sm">{messages.DIVIDER_TEXT}</span>
           <hr className="flex-grow border-gray-300" />
         </div>
         {/* TODO Add Form + Zod validation (export from file) */}
@@ -111,7 +103,7 @@ const Register: React.FC = () => {
               name="email"
               control={control}
               rules={{
-                required: INVALID_EMAIL_ERROR,
+                required: errors.INVALID_EMAIL,
                 validate: validateEmail,
               }}
               render={({ field }) => (
@@ -121,12 +113,12 @@ const Register: React.FC = () => {
                     field.onChange(e);
                     handleEmailChange(e);
                   }}
-                  error={errors.email?.message?.toString()}
+                  error={formErrors.email?.message?.toString()} // Updated usage
                 />
               )}
             />
           </div>
-          <Button>{EMAIL_BUTTON_TEXT}</Button>
+          <Button>{buttons.CONTINUE_EMAIL}</Button>
         </form>
       </Card>
     </>

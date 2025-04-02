@@ -6,15 +6,6 @@ export default {
 	],
 	theme: {
 		extend: {
-			colors: {
-				primary: "#1E40AF",
-				secondary: "#9333EA",
-				accent: "#FACC15",
-				btnDark: "#000000",
-				textPrimary: "#111827",
-				text: "#FFFFFF",
-				textMandatory: "#EF4444",
-			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
@@ -34,6 +25,10 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
+				},
+				hover: {
+					DEFAULT: 'hsl(var(--hover))',
+					foreground: 'hsl(var(--hover-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',

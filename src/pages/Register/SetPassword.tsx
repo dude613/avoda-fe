@@ -2,19 +2,13 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import {Button} from "../../components/ui/button";
+import {Button} from "@/components/ui/button";
 import Password from "@/components/form/password";
 import Card from "@/ui/Card";
-import * as constants from "@/constants/Auth";
+import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
 
 const SetPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
-  const {
-    SET_PASSWORD_TITLE, SERVER_ERROR_TOAST, SET_PASSWORD_SUBTITLE,
-    CREATING_ACCOUNT_TEXT, CREATE_ACCOUNT_BUTTON_TEXT, REGISTER_SUCCESS_TOAST,
-    CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR, EMPTY_PASSWORD_ERROR,
-    INVALID_PASSWORD_ERROR, PASSWORD_PLACEHOLDER, PASSWORD_REGEX, NOT_EMAIL_EXIST
-  } = registerContent;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +27,7 @@ const SetPassword: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors: formErrors },
     watch,
   } = useForm({
     defaultValues: {
@@ -45,7 +39,7 @@ const SetPassword: React.FC = () => {
 
   const handleCreateAccount = async (data: any) => {
     if (!email) {
-      toast.error(NOT_EMAIL_EXIST, { duration: 2000 });
+      toast.error(errors.INVALID_EMAIL, { duration: 2000 });
       navigate("/register");
       return;
     }
@@ -63,17 +57,17 @@ const SetPassword: React.FC = () => {
       });
       const responseData = await response.json();
       if (response.ok && responseData.success === true) {
-        toast.success(responseData?.message || REGISTER_SUCCESS_TOAST);
+        toast.success(responseData?.message || toasts.REGISTER_SUCCESS);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
       } else if (response.status === 400) {
         toast.error(responseData?.error || "User already exists");
       } else {
-        toast.error(responseData?.error || SERVER_ERROR_TOAST);
+        toast.error(responseData?.error || toasts.SERVER_ERROR);
       }
     } catch (error) {
-      toast.error(SERVER_ERROR_TOAST);
+      toast.error(toasts.SERVER_ERROR);
     } finally {
       setLoading(false);
     }
@@ -85,10 +79,10 @@ const SetPassword: React.FC = () => {
       <Toaster />
       <Card>
         <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-          {SET_PASSWORD_TITLE}
+          {titles.SET_PASSWORD_TITLE}
         </h2>
         <p className="text-xs text-gray-500 mb-4 text-center">
-          {SET_PASSWORD_SUBTITLE}
+          {titles.SET_PASSWORD_SUBTITLE}
         </p>
 
         <div className="relative mb-4">
@@ -96,19 +90,19 @@ const SetPassword: React.FC = () => {
             name="password"
             control={control}
             rules={{
-              required: EMPTY_PASSWORD_ERROR,
+              required: errors.EMPTY_PASSWORD,
               pattern: {
-                value: PASSWORD_REGEX,
-                message: INVALID_PASSWORD_ERROR,
+                value: regex.PASSWORD,
+                message: errors.INVALID_PASSWORD,
               },
             }}
             render={({ field }) => (
               <div className="relative">
                 <Password
                   {...field}
-                  placeholder={PASSWORD_PLACEHOLDER}
+                  placeholder={placeholders.PASSWORD}
                   showLabel={false}
-                  error={errors.password?.message?.toString()}
+                  error={formErrors.password?.message?.toString()} // Updated usage
                 />
               </div>
             )}
@@ -120,23 +114,23 @@ const SetPassword: React.FC = () => {
             name="confirmPassword"
             control={control}
             rules={{
-              required: EMPTY_PASSWORD_ERROR,
-              validate: (value) => value === watch("password") || PASSWORDS_MISMATCH_ERROR,
+              required: errors.EMPTY_PASSWORD,
+              validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH,
             }}
             render={({ field }) => (
               <div className="relative">
                 <Password
                   {...field}
-                  placeholder={CONFIRM_PASSWORD_PLACEHOLDER}
+                  placeholder={placeholders.CONFIRM_PASSWORD}
                   showLabel={false}
-                  error={errors.confirmPassword?.message?.toString()}
+                  error={formErrors.confirmPassword?.message?.toString()} // Updated usage
                 />
               </div>
             )}
           />
         </div>
 
-        <Button onClick={handleSubmit(handleCreateAccount)}>{loading ? CREATING_ACCOUNT_TEXT : CREATE_ACCOUNT_BUTTON_TEXT}</Button>
+        <Button onClick={handleSubmit(handleCreateAccount)}>{loading ? messages.CREATING_ACCOUNT_TEXT : buttons.CREATE_ACCOUNT}</Button>
       </Card>
     </>
   );

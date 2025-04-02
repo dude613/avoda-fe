@@ -5,19 +5,16 @@ import { FiLock } from "react-icons/fi";
 //TODO Update this to be the standard fields like login/register
 import Password from "@/components/form/password";
 import { Button } from "@/components/ui/button";
-import { forgotContent } from "@/constants/ForgotPassword";
+import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
 
+type formData = {
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
 
 export default function ResetNewPassword() {
     const baseUrl = import.meta.env.VITE_BACKEND_URL;
-    const {
-        PASSWORD_VALIDATION_ERROR, PASSWORD_REGEX,
-        CONFIRM_PASSWORD_PLACEHOLDER, PASSWORDS_MISMATCH_ERROR,
-        RESET_PASSWORD_BUTTON_TEXT,
-        RETURN_TO_SIGNIN_TEXT, RESET_PASSWORD_SUBTITLE, RESET_PASSWORD_TITLE,
-        NEW_PASSWORD_PLACEHOLDER, PASSWORD_REQUIRED_ERROR, PASSWORD_RESET_SUCCESS_TOAST,
-        PASSWORD_RESET_FAILED_TOAST,NOT_EMAIL_EXIST
-    } = forgotContent;
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -28,15 +25,16 @@ export default function ResetNewPassword() {
         control,
         handleSubmit,
         watch,
-        formState: { errors },
-    } = useForm({
+        // Rename formState errors to avoid conflict with imported constants
+        formState: { errors: formErrors }, 
+    } = useForm<formData>({
         mode: "onChange",
     });
 
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: formData) => {
         if (!emailFromUrl) {
-            toast.error(NOT_EMAIL_EXIST, { duration: 2000 });
+            toast.error(errors.INVALID_EMAIL);
             navigate("/forgot-password");
             return;
         }
@@ -51,14 +49,14 @@ export default function ResetNewPassword() {
 
             const result = await response.json();
             if (response.ok && result.success) {
-                toast.success(result?.message || PASSWORD_RESET_SUCCESS_TOAST);
+                toast.success(result?.message || toasts.PASSWORD_RESET_SUCCESS);
                 navigate("/login");
             } else {
                 toast.error(result.error || `Failed to reset password: ${response.status}`);
             }
         } catch (error) {
             console.error("Password reset error:", error);
-            toast.error(PASSWORD_RESET_FAILED_TOAST);
+            toast.error(toasts.PASSWORD_RESET_FAILED);
         }
     };
 
@@ -73,10 +71,10 @@ export default function ResetNewPassword() {
                         </div>
                     </div>
                     <h2 className="mt-8 text-2xl font-bold text-gray-800 mb-2 text-center">
-                        {RESET_PASSWORD_TITLE}
+                        {titles.RESET_PASSWORD_TITLE}
                     </h2>
                     <p className="text-sm font-semibold text-gray-500 text-center mb-8">
-                        {RESET_PASSWORD_SUBTITLE}
+                        {titles.RESET_PASSWORD_SUBTITLE}
                     </p>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -85,18 +83,19 @@ export default function ResetNewPassword() {
                                 name="password"
                                 control={control}
                                 rules={{
-                                    required: PASSWORD_REQUIRED_ERROR,
+                                    required: errors.PASSWORD_REQUIRED_ERROR, 
                                     pattern: {
-                                        value: PASSWORD_REGEX,
-                                        message: PASSWORD_VALIDATION_ERROR,
+                                        value: regex.PASSWORD, 
+                                        message: errors.PASSWORD_VALIDATION_ERROR, // Use imported constants
                                     },
                                 }}
                                 render={({ field }) => (
                                     <Password
                                         {...field}
-                                        placeholder={NEW_PASSWORD_PLACEHOLDER}
+                                        placeholder={placeholders.NEW_PASSWORD}
                                         showLabel={false}
-                                        error={errors.password?.message?.toString()}
+                                        // Use renamed formErrors and ensure string type
+                                        error={typeof formErrors.password?.message === 'string' ? formErrors.password.message : undefined}
                                     />
                                 )}
                             />
@@ -107,27 +106,30 @@ export default function ResetNewPassword() {
                                 name="confirmPassword"
                                 control={control}
                                 rules={{
-                                    required: PASSWORD_REQUIRED_ERROR,
-                                    validate: (value) => value === watch("password") || PASSWORDS_MISMATCH_ERROR,
+                                    // Use imported constants
+                                    required: errors.PASSWORD_REQUIRED_ERROR, 
+                                    // Use imported constants
+                                    validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR, 
                                 }}
                                 render={({ field }) => (
                                     <Password
                                         {...field}
-                                        placeholder={CONFIRM_PASSWORD_PLACEHOLDER}
+                                        placeholder={placeholders.CONFIRM_PASSWORD}
                                         showLabel={false}
-                                        error={errors.confirmPassword?.message?.toString()}
+                                        // Use renamed formErrors and ensure string type
+                                        error={typeof formErrors.confirmPassword?.message === 'string' ? formErrors.confirmPassword.message : undefined}
                                     />
 
                                 )}
                             />
                         </div>
                         <Button
-                            >{RESET_PASSWORD_BUTTON_TEXT}</Button>
+                            >{buttons.RESET_PASSWORD}</Button>
                     </form>
 
                     <p className="text-gray-800 text-sm text-center mt-5">
                         <Link to={"/login"} className="hover:underline">
-                            {RETURN_TO_SIGNIN_TEXT}
+                            {messages.BACK_TO_LOGIN_TEXT}
                         </Link>
                     </p>
                 </div>
