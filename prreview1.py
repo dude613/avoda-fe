@@ -65,6 +65,56 @@ def call_openai_api(prompt: str, openai_api_key: str):
     data = response.json()
     return data["choices"][0]["message"]["content"]
 
+def get_existing_comments():
+    """
+    Fetch all comments for a given PR to check if a previous review comment exists.
+    """
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def find_existing_pr_review_comment(comments):
+    """
+    Check for an existing PR review comment that contains the PR Code Review Analysis markdown header.
+    Returns the comment ID if found, otherwise returns None.
+    """
+    for comment in comments:
+        if "PR Code Review Analysis" in comment["body"]:
+            return comment["id"]
+    return None
+
+def delete_existing_comment(comment_id):
+    """
+    Delete an existing PR review comment with the given comment ID.
+    """
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/comments/{comment_id}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+    response = requests.delete(url, headers=headers)
+    response.raise_for_status()
+    print(f"Existing comment {comment_id} deleted.")
+
+def post_comment(review: str):
+    """
+    Post a new comment with the PR review analysis.
+    """
+    url = f"{GITHUB_API_URL}/repos/{OWNER}/{REPO}/issues/{PR_NUMBER}/comments"
+    comment = {"body": review}
+    response = requests.post(url, headers={
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }, json=comment)
+    response.raise_for_status()
 
 def save_review_to_file(filename: str, content: str):
     """
