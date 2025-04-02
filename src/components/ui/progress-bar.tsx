@@ -1,12 +1,27 @@
-// components/ui/progress-bar.tsx
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-interface ProgressBarProps {
+const progressBarVariants = cva(
+  "space-y-2",
+  {
+    variants: {
+      variant: {
+        default: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+interface ProgressBarProps 
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof progressBarVariants> {
   currentStep: number
   totalSteps: number
   label: string
   statusText: string
-  className?: string
 }
 
 export const ProgressBar = ({
@@ -14,12 +29,13 @@ export const ProgressBar = ({
   totalSteps,
   label,
   statusText,
-  className
+  className,
+  variant,
 }: ProgressBarProps) => {
   const progress = (currentStep / totalSteps) * 100
   
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn(progressBarVariants({ variant, className }))}>
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium">{label}</span>
         <span className="text-sm text-muted-foreground">{statusText}</span>
@@ -33,3 +49,5 @@ export const ProgressBar = ({
     </div>
   )
 }
+
+export { progressBarVariants }

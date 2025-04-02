@@ -48,7 +48,7 @@ export default function ResetNewPassword() {
 
             const result = await response.json();
             if (response.ok && result.success) {
-                toast.success(result?.message || toasts.PASSWORD_RESET_SUCCESS);
+                toast.success(result?.message || toasts.PASSWORD_RESET_SUCCESS_TOAST);
                 navigate("/login");
             } else {
                 toast.error(result.error || `Failed to reset password: ${response.status}`);

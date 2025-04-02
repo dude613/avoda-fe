@@ -23,7 +23,7 @@ interface SelectProps
   error?: boolean
 }
 
-const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, error, variant, ...props }, ref) => (
     <select
       ref={ref}
@@ -38,4 +38,4 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
 Select.displayName = "Select"
 
-export { Select, selectVariants }
+export { selectVariants }

@@ -11,15 +11,15 @@ import {
   Input,
   Card,
   ProgressBar,
-  CardSelect,
   Select,
 } from "@/components/ui";
+import   {CardSelect} from "@/components/card-select";
 import {
   FormItem,
   FormLabel,
   FormDescription,
   Form,
-} from "@/components/ui/form";
+} from "@/components/form";
 import { CreateOrganizationAPI } from "../../service/api";
 import { organizationContent } from "@/constants/CreateOrganization";
 
@@ -166,8 +166,7 @@ export default function CreateOrganization() {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen px-4 mt-10 bg-card">
-        <Card className="w-full max-w-xl p-8 border border-border shadow-lg">
+      <Card variant="elevated" size="lg">
           <Form {...form}>
             <div className="space-y-2 mb-8">
               <ProgressBar
@@ -202,16 +201,17 @@ export default function CreateOrganization() {
                         placeholder={ORGANIZATION_PLACEHOLDER}
                         {...field}
                         className="text-sm"
+                        error={!!errors.organizationName}
                       />
                     )}
                   />
                   {errors.organizationName && (
-                    <span className="text-destructive text-xs absolute -bottom-5 left-0">
+                    <p className="text-destructive text-xs mt-1">
                       {errors.organizationName?.message}
-                    </span>
+                    </p>
                   )}
                 </div>
-                <FormDescription className="text-xs text-textPrimary opacity-70 mt-2">
+                <FormDescription className="text-xs text-textPrimary opacity-70">
                   {ORGANIZATION_BODY_TEXT}
                 </FormDescription>
               </FormItem>
@@ -259,7 +259,7 @@ export default function CreateOrganization() {
                     {errors.industry.message}
                   </p>
                 )}
-                <FormDescription className="text-xs text-textPrimary opacity-70 mb-8">
+                <FormDescription className="text-xs text-textPrimary opacity-70">
                   {ORGANIZATION_SELECT_ERROR}
                 </FormDescription>
               </FormItem>
@@ -302,7 +302,6 @@ export default function CreateOrganization() {
             </form>
           </Form>
         </Card>
-      </div>
     </>
   );
 }

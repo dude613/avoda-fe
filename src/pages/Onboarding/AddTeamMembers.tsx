@@ -5,19 +5,19 @@ import {
   Input,
   Button,
   ProgressBar,
-  FileUploader,
   NavigationLink,
   Tabs,
   Select,
-  FormRow,
   Card
 } from "@/components/ui";
+import {FileUploader} from "@/components/file-uploader";
 import {
   FormDescription,
   FormItem,
   FormLabel,
   Form,
-} from "@/components/ui/form";
+  FormRow
+} from "@/components/form";
 import {
   Controller,
   SubmitHandler,
@@ -180,8 +180,7 @@ const AddTeamMembers = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen px-4 mt-10 bg-card">
-        <Card className="w-full max-w-xl p-8 border border-border shadow-lg">
+      <Card variant="elevated" size="lg">
             <Form {...form}>
               <ProgressBar
                 currentStep={2}
@@ -251,7 +250,7 @@ const AddTeamMembers = () => {
                                 <Input
                                   {...field}
                                   placeholder={TEAM_NAME_PLACEHOLDER}
-                                  error={errors.members?.[index]?.name?.message}
+                                  error={errors.members?.[index]?.name?.message? true : false}
                                 />
                               )}
                             />
@@ -346,7 +345,6 @@ const AddTeamMembers = () => {
               </div>
             </Form>
           </Card>
-      </div>
     </>
   );
 };

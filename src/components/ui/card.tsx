@@ -1,28 +1,50 @@
-import React from "react";
-import { cn } from "@/lib/utils"; // Assuming this path is correct
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
 
-//TODO Put all in the correct components folder
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  // Inherit standard div attributes
-  children: React.ReactNode;
-}
+const cardVariants = cva(
+  "rounded-lg border bg-card text-card-foreground w-full",
+  {
+    variants: {
+      variant: {
+        default: "border-border shadow-sm",
+        elevated: "border-border shadow-lg"
+      },
+      size: {
+        sm: "max-w-[95vw] sm:max-w-sm p-4 sm:p-6",  // Added mobile-first constraints
+        md: "max-w-[95vw] sm:max-w-md p-4 sm:p-6",
+        lg: "max-w-[95vw] sm:max-w-xl p-6 sm:p-8"
+      },
+      layout: {
+        default: "",
+        centered: "mx-auto",
+        spaced: "space-y-4",
+        centeredAndSpaced: "mx-auto space-y-4"
+      }
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "sm",
+      layout: "default"
+    }
+  }
+)
 
-const Card: React.FC<CardProps> = ({ children, className, ...props }) => {
-  return (
-    // Outer div for centering on the screen
-    <div className="flex items-center justify-center min-h-screen bg-background px-4">
-      {/* Inner div representing the actual card */}
+interface CardProps 
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant, size, layout, ...props }, ref) => {
+    return (
       <div
-        className={cn(
-          "w-full max-w-sm rounded-lg border bg-card text-card-foreground shadow-sm p-6", // Simplified width, padding, and added standard card styles
-          className // Merge incoming className
-        )}
-        {...props} // Spread remaining props onto the inner div
-      >
-        {children}
-      </div>
-    </div>
-  );
-};
+        ref={ref}
+        className={cn(cardVariants({ variant, size, layout, className }))}
+        {...props}
+      />
+    )
+  }
+)
+Card.displayName = "Card"
 
-export default Card;
+export { Card, cardVariants }

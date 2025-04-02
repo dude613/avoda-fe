@@ -69,7 +69,7 @@ const Register: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card className="max-w-md w-full mx-auto p-6 space-y-4">
+      <Card size="md" layout="centeredAndSpaced">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold">{REGISTER_PAGE_TITLE}</h2>
           <p className="text-muted-foreground text-sm">
@@ -106,7 +106,7 @@ const Register: React.FC = () => {
                 label="Email"
                 type="email"
                 placeholder="Enter your email"
-                error={errors.email?.message?.toString()}
+                error={errors.email?.message? true: false}
                 {...field}
               />
             )}

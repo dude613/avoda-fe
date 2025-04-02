@@ -80,7 +80,6 @@ export const toasts = {
   PASSWORD_RESET_SUCCESS_TOAST: "Password reset successfully.",
   PASSWORD_RESET_FAILED_TOAST: "Failed to reset password.",
   RESET_LINK_SENT_TOAST: "Reset link sent to your email.",
-  PASSWORD_RESET_SUCCESS: "Password reset successfully.",
   PASSWORD_RESET_FAILED: "Failed to reset password.",
   INVALID_EMAIL_TOAST: "Invalid email",
 };

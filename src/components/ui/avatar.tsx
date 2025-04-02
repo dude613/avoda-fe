@@ -6,19 +6,19 @@ const avatarVariants = cva(
   "relative flex shrink-0 overflow-hidden rounded-full border-2 shadow-sm",
   {
     variants: {
+      variant: {
+        default: "border-white/30",
+        outline: "border-border"
+      },
       size: {
         default: "h-9 w-9",
         sm: "h-7 w-7",
         lg: "h-11 w-11"
-      },
-      variant: {
-        default: "border-white/30",
-        outline: "border-border"
       }
     },
     defaultVariants: {
-      size: "default",
-      variant: "default"
+      variant: "default",
+      size: "default"
     }
   }
 )
@@ -30,11 +30,11 @@ interface AvatarProps
 }
 
 const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
-  ({ className, size, variant, src, alt, fallback, ...props }, ref) => {
+  ({ className, variant, size, src, alt, fallback, ...props }, ref) => {
     const [error, setError] = React.useState(false)
     
     return (
-      <div className={avatarVariants({ size, className })}>
+      <div className={cn(avatarVariants({ variant, size, className }))}>
         {src && !error ? (
           <img
             ref={ref}

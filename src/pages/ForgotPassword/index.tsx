@@ -53,7 +53,7 @@ const ForgotPassword: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card className="max-w-md w-full mx-auto p-6 space-y-4">
+      <Card size="md" layout="centeredAndSpaced">
         <div className="text-center space-y-2">
           <IconContainer>
             <FiLock className="text-2xl" />
@@ -80,7 +80,7 @@ const ForgotPassword: React.FC = () => {
                 label="Email"
                 type="email"
                 placeholder="Enter your email"
-                error={errors.email?.message?.toString()}
+                error={errors.email?.message ? true :false}
                 {...field}
               />
             )}
@@ -91,7 +91,7 @@ const ForgotPassword: React.FC = () => {
           </Button>
         </form>
 
-        <FormDivider text={"or"}/>
+        <FormDivider text="or" />
         
         <div className="text-center">
           <NavigationLink 

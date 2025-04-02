@@ -1,15 +1,37 @@
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
 
-interface TabsProps {
+const tabsVariants = cva(
+  "flex overflow-hidden bg-gray-100",
+  {
+    variants: {
+      variant: {
+        default: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+interface TabsProps 
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof tabsVariants> {
   tabs: { value: string; label: string }[]
   activeTab: string
   onTabChange: (value: string) => void
-  className?: string
 }
 
-export const Tabs = ({ tabs, activeTab, onTabChange, className }: TabsProps) => (
-  <div className={cn("flex overflow-hidden bg-gray-100", className)}>
+export const Tabs = ({ 
+  tabs, 
+  activeTab, 
+  onTabChange, 
+  className,
+  variant,
+}: TabsProps) => (
+  <div className={cn(tabsVariants({ variant, className }))}>
     {tabs.map((tab) => (
       <Button
         key={tab.value}
@@ -23,3 +45,5 @@ export const Tabs = ({ tabs, activeTab, onTabChange, className }: TabsProps) => 
     ))}
   </div>
 )
+
+export { tabsVariants }

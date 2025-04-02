@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Avatar, Drawer, NavigationLink } from "@/components/ui"
+import { Avatar, NavigationLink } from "@/components/ui"
+import { Drawer } from "@/components/drawer"
 import UserProfile from "./user-profile-drawer/UserProfile"
 import { headerContent } from "@/constants/Header"
 import { useDispatch, useSelector } from "react-redux"
@@ -40,6 +41,7 @@ const Header = () => {
               aria-label="Open profile"
             >
               <Avatar
+                variant="default"
                 src={userProfile?.data?.picture}
                 fallback={userProfile?.data?.userName || "User"}
                 className="border-white/30"
