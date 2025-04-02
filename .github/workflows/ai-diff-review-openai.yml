@@ -3,7 +3,7 @@ name: AI PR Review
 permissions:
   contents: read
   pull-requests: write
-  statuses: write
+  statuses: write  # Required permission to set commit statuses
 
 on:
   pull_request:
@@ -44,9 +44,8 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository_owner }}/${
-            { github.event.repository.name }}/statuses/${{ github.sha }} \
-            -d '{"state":"success", "description":"AI Review completed successfully", "context":"AI PR Review"}'
+            "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/statuses/${{ github.sha }}" \
+            -d '{"state":"success", "description":"AI Review completed successfully", "context":"AI Review"}'
 
       - name: Set Commit Status (AI Review Failure)
         if: failure()  # This ensures the commit status is only set if the review fails
@@ -58,6 +57,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository_owner }}/${
-            { github.event.repository.name }}/statuses/${{ github.sha }} \
-            -d '{"state":"failure", "description":"AI Review failed", "context":"AI PR Review"}'
+            "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/statuses/${{ github.sha }}" \
+            -d '{"state":"failure", "description":"AI Review failed", "context":"AI Review"}'
