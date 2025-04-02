@@ -124,32 +124,6 @@ def save_review_to_file(filename: str, content: str):
         f.write(content)
     print(f"Saved review to {filename}")
 
-def report_check_status(pr_number, status, github_token, conclusion='success'):
-    """
-    Report the status of the AI PR Review to GitHub using check-run API.
-    """
-    url = f"https://api.github.com/repos/{OWNER}/{REPO}/check-runs"
-    headers = {
-        "Authorization": f"Bearer {github_token}",
-        "Accept": "application/vnd.github.v3+json",
-        "X-GitHub-Api-Version": "2022-11-28"
-    }
-
-    data = {
-        "name": "AI PR Review",
-        "head_sha": pr_number,  # Use the PR's SHA hash here
-        "status": "completed",  # Can be 'queued', 'in_progress', or 'completed'
-        "conclusion": conclusion,  # 'success' or 'failure'
-        "output": {
-            "title": "AI Review",
-            "summary": status,  # Summary of the review (use the status message here)
-        }
-    }
-
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()  # Will raise an exception for HTTP error responses
-    print("Check status reported successfully")
-
 def main():
     """
     Main function to perform the PR review process.
@@ -191,7 +165,6 @@ def main():
 
     if total_diff_size < MIN_DIFF_SIZE:
         print(f"Total diff size ({total_diff_size}) is less than {MIN_DIFF_SIZE}. Skipping AI review.")
-        report_check_status(PR_NUMBER, "", GITHUB_TOKEN, conclusion='success')
         return
 
     # Create the prompt for the entire PR
@@ -216,9 +189,6 @@ def main():
 
     print("Posting review comment...")
     post_comment(review_response)
-
-    print("Reporting check status...")
-    report_check_status(PR_NUMBER, review_response, GITHUB_TOKEN, conclusion='success') 
 
     if os.path.exists(output_filename):
         print("Logging AI PR Review...")
