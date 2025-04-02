@@ -1,125 +1,128 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
-import Email from "@/components/form/email";
-import { titles, buttons, messages, errors, regex, toasts } from "@/constants/Auth";
-import Card from "@/ui/Card";
+import * as constants from "@/constants/Auth";
+import {
+  Button,
+  Input,
+  FormDivider,
+  NavigationLink,
+  Card
+} from "@/components/ui";
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE },
+    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGN_IN_BUTTON_TEXT },
+    messages: { DIVIDER_TEXT, EXISTING_ACCOUNT_TEXT },
+    errors: { INVALID_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+    toasts: { REGISTER_SUCCESS_TOAST, USER_EXISTS_TOAST, SERVER_ERROR_TOAST },
+  } = constants;
 
   const navigate = useNavigate();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors: formErrors },
-    setValue,
-    trigger,
-  } = useForm();
+  const { control, handleSubmit, formState: { errors } } = useForm();
 
-  const validateEmail = (email: string) => {
-    return regex.EMAIL.test(email) ? true : errors.INVALID_EMAIL;
-  };
-
-  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    setValue("email", email);
-    await trigger("email");
-  };
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const onSubmit = (data: any) => {
     localStorage.setItem("email", data.email);
-    navigate("/register/setPassword", {
-      state: { email: data.email },
-    });
+    navigate("/register/setPassword", { state: { email: data.email } });
   };
 
   const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const data = JSON.stringify({
-        idToken: tokenResponse.access_token,
-      });
+      setGoogleLoading(true);
       try {
         const response = await fetch(`${baseUrl}/api/auth/google-register`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: data,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken: tokenResponse.access_token }),
         });
+        
         const responseData = await response.json();
         if (response.ok) {
           localStorage.setItem("userId", responseData.user._id);
           localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success(toasts.REGISTER_SUCCESS, { duration: 2000 });
+          toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
           navigate("/create-organization", { replace: true });
-        } else if (response.status === 404) {
-          toast.error(toasts.USER_EXISTS, { duration: 2000 });
         } else {
-          toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+          toast.error(response.status === 404 ? USER_EXISTS_TOAST : SERVER_ERROR_TOAST);
         }
       } catch (error) {
         console.error("Google login error:", error);
-        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+        toast.error(SERVER_ERROR_TOAST);
+      } finally {
+        setGoogleLoading(false);
       }
     },
-    onError: (error: any) => console.error("Login Failed:", error),
-    scope:
-      "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
+    onError: (error) => {
+      console.error("Login Failed:", error);
+      setGoogleLoading(false);
+    },
+    scope: "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
-
-
   return (
     <>
       <Toaster />
-      <Card>
-        <h2 className="text-xl font-bold mb-2 text-center">
-          {titles.REGISTER_PAGE_TITLE}
-        </h2>
-        <p className="text-xs text-primary mb-4 text-center">
-          {titles.REGISTER_PAGE_SUBTITLE}{" "}
-          <Link to={"/login"} className="hover:underline">
-            {titles.REGISTER_PAGE_SUBTITLE_SIGN_UP}
-          </Link>
-        </p>
+      <Card className="max-w-md w-full mx-auto p-6 space-y-4">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">{REGISTER_PAGE_TITLE}</h2>
+          <p className="text-muted-foreground text-sm">
+            {REGISTER_PAGE_SUBTITLE}
+          </p>
+        </div>
 
         <Button
+          variant="outline"
+          className="w-full justify-center gap-2"
           onClick={() => registerWithGoogle()}
-        >{buttons.GOOGLE}<FcGoogle /></Button>
+          isLoading={googleLoading}
+          loadingText="Signing up..."
+        >
+          <FcGoogle className="text-lg" />
+          {GOOGLE_BUTTON_TEXT}
+        </Button>
 
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300" />
-          <span className="mx-2 text-gray-500 text-sm">{messages.DIVIDER_TEXT}</span>
-          <hr className="flex-grow border-gray-300" />
-        </div>
-        {/* TODO Add Form + Zod validation (export from file) */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="relative mb-4">
-            <Controller
-              name="email"
-              control={control}
-              rules={{
-                required: errors.INVALID_EMAIL,
-                validate: validateEmail,
-              }}
-              render={({ field }) => (
-                <Email
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    handleEmailChange(e);
-                  }}
-                  error={formErrors.email?.message?.toString()} // Updated usage
-                />
-              )}
-            />
-          </div>
-          <Button>{buttons.CONTINUE_EMAIL}</Button>
+        <FormDivider text={DIVIDER_TEXT} />
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              required: INVALID_EMAIL_ERROR,
+              pattern: {
+                value: EMAIL_REGEX,
+                message: INVALID_EMAIL_ERROR,
+              }
+            }}
+            render={({ field }) => (
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                error={errors.email?.message?.toString()}
+                {...field}
+              />
+            )}
+          />
+
+          <Button className="w-full" type="submit">
+            {EMAIL_BUTTON_TEXT}
+          </Button>
         </form>
+
+        <div className="text-center text-sm text-muted-foreground">
+          {EXISTING_ACCOUNT_TEXT}{" "}
+          <NavigationLink to="/login" variant="link" underline>
+            {SIGN_IN_BUTTON_TEXT}
+          </NavigationLink>
+        </div>
       </Card>
     </>
   );

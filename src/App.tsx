@@ -15,9 +15,9 @@ import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
 import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
-import CreateOrganization from "./components/CreateOrganization ";
+import CreateOrganization from "./pages/Onboarding/CreateOrganization ";
 import Header from "./components/Header";
-import AddTeamMembers from "./components/AddTeamMembers";
+import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
 
 function App() {
   const location = useLocation();

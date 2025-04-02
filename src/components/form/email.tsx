@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { MailIcon } from "lucide-react";
 import { useId } from "react";
-import ErrorMessage from "../ErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 
 
 interface EmailProps {

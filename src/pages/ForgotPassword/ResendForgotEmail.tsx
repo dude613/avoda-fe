@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LuPlane } from "react-icons/lu";
 import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import Card from "@/ui/Card";
+import {Card} from "@/components/ui";
 import { titles, buttons} from "@/constants/Auth";
 import {Button} from "@/components/ui/button";
 
@@ -60,7 +60,7 @@ export default function ResendForgotEmail() {
                 <Button
                     type="submit"
                     onClick={handleSubmit}
-                >{buttons.RESEND_EMAIL}</Button>
+                >{buttons.RESEND_EMAIL_BUTTON_TEXT}</Button>
             </Card>
         </>
     );

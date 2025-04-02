@@ -2,7 +2,6 @@ import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
-//TODO Update this to be the standard fields like login/register
 import Password from "@/components/form/password";
 import { Button } from "@/components/ui/button";
 import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
@@ -34,7 +33,7 @@ export default function ResetNewPassword() {
 
     const onSubmit = async (data: formData) => {
         if (!emailFromUrl) {
-            toast.error(errors.INVALID_EMAIL);
+            toast.error(toasts.INVALID_EMAIL_TOAST);
             navigate("/forgot-password");
             return;
         }
@@ -85,14 +84,14 @@ export default function ResetNewPassword() {
                                 rules={{
                                     required: errors.PASSWORD_REQUIRED_ERROR, 
                                     pattern: {
-                                        value: regex.PASSWORD, 
-                                        message: errors.PASSWORD_VALIDATION_ERROR, // Use imported constants
+                                        value: regex.PASSWORD_REGEX, 
+                                        message: errors.INVALID_PASSWORD_ERROR, // Use imported constants
                                     },
                                 }}
                                 render={({ field }) => (
                                     <Password
                                         {...field}
-                                        placeholder={placeholders.NEW_PASSWORD}
+                                        placeholder={placeholders.NEW_PASSWORD_PLACEHOLDER}
                                         showLabel={false}
                                         // Use renamed formErrors and ensure string type
                                         error={typeof formErrors.password?.message === 'string' ? formErrors.password.message : undefined}
@@ -114,7 +113,7 @@ export default function ResetNewPassword() {
                                 render={({ field }) => (
                                     <Password
                                         {...field}
-                                        placeholder={placeholders.CONFIRM_PASSWORD}
+                                        placeholder={placeholders.CONFIRM_PASSWORD_PLACEHOLDER}
                                         showLabel={false}
                                         // Use renamed formErrors and ensure string type
                                         error={typeof formErrors.confirmPassword?.message === 'string' ? formErrors.confirmPassword.message : undefined}
@@ -124,7 +123,7 @@ export default function ResetNewPassword() {
                             />
                         </div>
                         <Button
-                            >{buttons.RESET_PASSWORD}</Button>
+                            >{buttons.RESET_PASSWORD_BUTTON_TEXT}</Button>
                     </form>
 
                     <p className="text-gray-800 text-sm text-center mt-5">
