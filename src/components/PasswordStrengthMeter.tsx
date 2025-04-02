@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import * as constants from "@/constants/Auth";
 
 const PASSWORD_VERY_WEAK = 'Weak Password';
 const PASSWORD_WEAK = 'Weak Password';

@@ -11,7 +11,7 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import { teamContent } from "@/constants/AddTeamMembers";
-import { Input } from '../components/ui/input';
+import { Input } from './ui/input';
 
 type FileUploaderProps = {
     mode: "single" | "multiple" | "csv";
@@ -19,7 +19,7 @@ type FileUploaderProps = {
     onUpload: (data: any) => void;
 };
 
-export default function FileUploader({
+export function FileUploader({
     mode,
     allowedTypes,
     onUpload,

@@ -15,9 +15,9 @@ import { useEffect } from "react";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
 import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
-import CreateOrganization from "./components/CreateOrganization ";
+import CreateOrganization from "./pages/Onboarding/CreateOrganization ";
 import Header from "./components/Header";
-import AddTeamMembers from "./components/AddTeamMembers";
+import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
 
 function App() {
   const location = useLocation();
@@ -31,6 +31,7 @@ function App() {
   return (
     <>
       <Header />
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] w-full px-4">
       <Routes>
         <Route
           path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
@@ -54,6 +55,7 @@ function App() {
         </Route>
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
+      </div>
     </>
   );
 }

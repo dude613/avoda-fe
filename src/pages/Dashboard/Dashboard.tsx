@@ -18,7 +18,6 @@ import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import { ArchivedUser } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import { titles, buttons } from "@/constants/Auth";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();

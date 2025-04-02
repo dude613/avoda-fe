@@ -53,16 +53,16 @@ const VerifyCode: React.FC = () => {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user._id);
           localStorage.setItem("accessToken", data.accessToken);
-          toast.success(data?.message || toasts.USER_VERIFIED, { duration: 2000 });
+          toast.success(data?.message || toasts.USER_VERIFIED_TOAST, { duration: 2000 });
           setTimeout(() => {
             navigate("/create-organization", { replace: true });
           }, 1000);
         }
       } else {
-        toast.error(data?.error || toasts.USER_NOT_FOUND, { duration: 2000 });
+        toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(toasts.SERVER_ERROR);
+      toast.error(toasts.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
@@ -78,15 +78,15 @@ const VerifyCode: React.FC = () => {
         body: JSON.stringify({ email }),
       });
       if (response.ok && response.status === 200) {
-        toast.success(toasts.CODE_SENT, { position: "bottom-center" });
+        toast.success(toasts.CODE_SENT_TOAST, { position: "bottom-center" });
       } else if (response.status === 201) {
-        toast.success(toasts.USER_EXISTS, { duration: 2000 });
+        toast.success(toasts.USER_EXISTS_TOAST, { duration: 2000 });
         navigate("/dashboard", { replace: true });
       } else {
-        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+        toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+      toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
     } finally {
       setResending(false);
     }
@@ -128,7 +128,7 @@ const VerifyCode: React.FC = () => {
           </Button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            {messages.NOT_RECEIVE_CODE_TEXT}{" "}
+            {messages.CODE_NOT_RECEIVED_TEXT}{" "}
           </p>
           <p
             className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
