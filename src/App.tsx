@@ -18,6 +18,7 @@ import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
 import CreateOrganization from "./pages/Onboarding/CreateOrganization ";
 import Header from "./components/Header";
 import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
+import DebugPage from "./pages/Debug"; // Import the new DebugPage
 
 function App() {
   const location = useLocation();
@@ -53,6 +54,8 @@ function App() {
           <Route path="/add-employee" element={<AddTeamMembers />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
+        {/* Add the debug route */}
+        <Route path="/debug" element={<DebugPage />} />
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
       </div>
