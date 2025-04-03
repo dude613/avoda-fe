@@ -25,7 +25,6 @@ const Header = () => {
   const isLoginPage = location.pathname === "/login"
   const isRegisterPage = location.pathname === "/register"
 
-  console.log("isRegisterPage", isRegisterPage);
 
   return (
     <header className="bg-primary text-primary-foreground shadow-md relative z-10 flex h-14 items-center justify-between px-4 sm:px-6">

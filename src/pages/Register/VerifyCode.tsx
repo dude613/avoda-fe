@@ -117,7 +117,7 @@ const VerifyCode: React.FC = () => {
           >
             {loading ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">Creating Account</span>
+                <span className="animate-pulse">{messages.CREATING_ACCOUNT_TEXT}</span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
