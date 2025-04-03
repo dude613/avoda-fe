@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import {Button} from "@/components/ui/button";
-import Password from "@/components/form/password";
+import { Button, Input } from "@/components/ui";
 import {Card} from "@/components/ui";
 import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
+import { Eye, EyeOff } from "lucide-react";
+
+interface FormData {
+  password: string;
+  confirmPassword: string;
+}
 
 const SetPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -17,6 +22,8 @@ const SetPassword: React.FC = () => {
   const emailFromState = location.state?.email;
   const email = emailFromQuery || emailFromState || localStorage.getItem("email");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!email) {
@@ -29,7 +36,7 @@ const SetPassword: React.FC = () => {
     handleSubmit,
     formState: { errors: formErrors },
     watch,
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -37,7 +44,7 @@ const SetPassword: React.FC = () => {
     mode: "onChange"
   });
 
-  const handleCreateAccount = async (data: any) => {
+  const handleCreateAccount = async (data: FormData) => {
     if (!email) {
       toast.error(toasts.INVALID_EMAIL_TOAST, { duration: 2000 });
       navigate("/register");
@@ -73,7 +80,6 @@ const SetPassword: React.FC = () => {
     }
   };
 
-  //TODO Update the field components to be like the auth. 
   return (
     <>
       <Toaster />
@@ -90,7 +96,7 @@ const SetPassword: React.FC = () => {
             name="password"
             control={control}
             rules={{
-              required: errors.EMPTY_PASSWORD_ERROR,
+              required: { value: true, message: errors.EMPTY_PASSWORD_ERROR },
               pattern: {
                 value: regex.PASSWORD_REGEX,
                 message: errors.INVALID_PASSWORD_ERROR,
@@ -98,12 +104,25 @@ const SetPassword: React.FC = () => {
             }}
             render={({ field }) => (
               <div className="relative">
-                <Password
+                <Input
                   {...field}
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
                   placeholder={placeholders.PASSWORD_PLACEHOLDER}
-                  showLabel={false}
-                  error={formErrors.password?.message?.toString()} // Updated usage
+                  error={formErrors.password?.message ? true : false}
                 />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.password && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.password.message as string}
+                  </p>
+                )}
               </div>
             )}
           />
@@ -114,23 +133,51 @@ const SetPassword: React.FC = () => {
             name="confirmPassword"
             control={control}
             rules={{
-              required: errors.PASSWORDS_MISMATCH_ERROR,
+              required: { value: true, message: errors.PASSWORDS_MISMATCH_ERROR },
               validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR,
             }}
             render={({ field }) => (
               <div className="relative">
-                <Password
+                <Input
                   {...field}
+                  type={showConfirmPassword ? "text" : "password"}
+                  label="Confirm Password"
                   placeholder={placeholders.CONFIRM_PASSWORD_PLACEHOLDER}
-                  showLabel={false}
-                  error={formErrors.confirmPassword?.message?.toString()} // Updated usage
+                  error={formErrors.confirmPassword?.message ? true : false}
                 />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.confirmPassword && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.confirmPassword.message as string}
+                  </p>
+                )}
               </div>
             )}
           />
         </div>
 
-        <Button onClick={handleSubmit(handleCreateAccount)}>{loading ? messages.CREATING_ACCOUNT_TEXT : buttons.CREATE_ACCOUNT_BUTTON_TEXT}</Button>
+        <Button 
+          onClick={handleSubmit(handleCreateAccount)}
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="inline-flex items-center gap-1">
+              <span className="animate-pulse">{messages.CREATING_ACCOUNT_TEXT}</span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
+            </span>
+          ) : (
+            buttons.CREATE_ACCOUNT_BUTTON_TEXT
+          )}
+        </Button>
       </Card>
     </>
   );

@@ -137,9 +137,9 @@ export default function CreateOrganization() {
       const res = await CreateOrganizationAPI(data);
       if (res.success === true) {
         setFormData(null);
-        toast.success(res?.message || "Organization created successfully!", {
-          duration: 2000,
-        });
+        // toast.success(res?.message || "Organization created successfully!", {
+        //   duration: 2000,
+        // });
         await new Promise((resolve) => setTimeout(resolve, 2200));
         navigate("/add-employee");
       } else {

@@ -106,11 +106,16 @@ const Register: React.FC = () => {
                 label="Email"
                 type="email"
                 placeholder="Enter your email"
-                error={errors.email?.message? true: false}
+                error={errors.email?.message ? true : false}
                 {...field}
               />
             )}
           />
+          {errors.email && (
+            <p className="text-destructive text-xs mt-1">
+              {errors.email.message as string}
+            </p>
+          )}
 
           <Button className="w-full" type="submit">
             {EMAIL_BUTTON_TEXT}

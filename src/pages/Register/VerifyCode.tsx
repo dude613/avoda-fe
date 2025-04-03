@@ -95,7 +95,7 @@ const VerifyCode: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibld text-gray-800 mb-2">
             {titles.VERIFY_CODE_TITLE}
@@ -112,16 +112,16 @@ const VerifyCode: React.FC = () => {
 
           <Button
             onClick={handleVerify}
-            className="bg-black text-white py-2 w-full rounded flex items-center justify-center gap-2"
+            className="w-full"
             disabled={loading}
           >
             {loading ? (
-              <>
-                <span className="animate-pulse">{messages.VERIFYING_CODE_TEXT}</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="animate-pulse">Creating Account</span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
-              </>
+              </span>
             ) : (
               "Verify Code"
             )}
