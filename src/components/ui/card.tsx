@@ -13,13 +13,15 @@ const cardVariants = cva(
       size: {
         sm: "max-w-[95vw] sm:max-w-sm p-4 sm:p-6",  // Added mobile-first constraints
         md: "max-w-[95vw] sm:max-w-md p-4 sm:p-6",
-        lg: "max-w-[95vw] sm:max-w-xl p-6 sm:p-8"
+        lg: "max-w-[95vw] sm:max-w-xl p-6 sm:p-8",
+        full: "w-full p-6 sm:p-8"
       },
       layout: {
         default: "",
         centered: "mx-auto",
         spaced: "space-y-4",
-        centeredAndSpaced: "mx-auto space-y-4"
+        centeredAndSpaced: "mx-auto space-y-4",
+        responsive:"p-4 sm:p-6"
       }
     },
     defaultVariants: {

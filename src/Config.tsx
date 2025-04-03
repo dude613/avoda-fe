@@ -10,6 +10,7 @@ export const ORGANIZATION_LIST = `${url}/admin/organization-list`;
 export const ADD_TEAM_MEMBER = `${url}/admin/add-teammeber`;
 export const LIST_TEAMMEMBER = `${url}/admin/list-teammeber`;
 export const USER_ARCHIVED = `${url}/admin/user-archived`;
+export const EDIT_TEAM_MEMBER = `${url}/admin/edit-teammeber`;
 
 
 //..................Auth API Endpoints....................\\

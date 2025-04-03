@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE, UPDATE_USER_PROFILE_PICTURE, USER_ARCHIVED } from "../Config"
+import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE, UPDATE_USER_PROFILE_PICTURE, USER_ARCHIVED, EDIT_TEAM_MEMBER } from "../Config"
 
 
 
@@ -137,5 +137,19 @@ export async function ArchivedUser(userId: string) {
     } catch (error) {
         console.error("Error during API call:", error);
         return null; 
+    }
+}
+
+
+export async function EditTeamMemberAPI(formData: any) {
+    try {
+        const response = await axios.put(EDIT_TEAM_MEMBER, formData, {
+            headers: getAuthHeaders(),
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log("error message Create Organization", error)
+        return error;
     }
 }
