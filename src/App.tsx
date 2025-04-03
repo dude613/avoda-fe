@@ -18,7 +18,7 @@ import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
 import CreateOrganization from "./pages/Onboarding/CreateOrganization ";
 import Header from "./components/Header";
 import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
-
+import TeamMembers from "./pages/Team";
 function App() {
   const location = useLocation();
 
@@ -52,6 +52,7 @@ function App() {
           <Route path="/create-organization" element={<CreateOrganization />} />
           <Route path="/add-employee" element={<AddTeamMembers />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/team" element={<TeamMembers />} />
         </Route>
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
