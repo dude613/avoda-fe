@@ -193,19 +193,22 @@ const AddTeamMembers = () => {
               <div className="flex items-center justify-between mb-8">
                 <NavigationLink
                   to="/create-organization"
-                  variant="ghost"
-                  className="text-sm font-semibold"
+                  variant="link"
+                  size="sm"
+                  className="text-muted-foreground hover:text-primary/80"
                 >
                   <BsArrowLeft className="mr-1 h-4 w-4" />
                   {TEAM_BACK_BTN}
                 </NavigationLink>
-                <Button
-                  variant="ghost"
-                  className="text-sm font-semibold"
+                <NavigationLink
+                  to="/dashboard"
+                  variant="link"
+                  size="sm"
+                  className="text-muted-foreground hover:text-primary/80"
                   onClick={handleSkipOnBoarding}
                 >
                   {TEAM_SKIP_BTN}
-                </Button>
+                </NavigationLink>
               </div>
 
               <div className="box-shadow">
@@ -234,7 +237,7 @@ const AddTeamMembers = () => {
                     <div className="mb-8 space-y-6 w-full">
                       {fields.map((field, index) => (
                         <div key={field.id} className="w-full">
-                          <FormItem className="mb-4">
+                          <FormItem className="mb-8">
                             <FormLabel>Name</FormLabel>
                             <Controller
                               name={`members.${index}.name`}
@@ -247,11 +250,18 @@ const AddTeamMembers = () => {
                                 },
                               }}
                               render={({ field }) => (
-                                <Input
-                                  {...field}
-                                  placeholder={TEAM_NAME_PLACEHOLDER}
-                                  error={errors.members?.[index]?.name?.message? true : false}
-                                />
+                                <div className="relative">
+                                  <Input
+                                    {...field}
+                                    placeholder={TEAM_NAME_PLACEHOLDER}
+                                    error={errors.members?.[index]?.name?.message ? true : false}
+                                  />
+                                  {errors.members?.[index]?.name && (
+                                    <p className="absolute -bottom-5 left-0 text-destructive text-xs">
+                                      {errors.members[index].name.message}
+                                    </p>
+                                  )}
+                                </div>
                               )}
                             />
                           </FormItem>
@@ -287,21 +297,29 @@ const AddTeamMembers = () => {
                                 control={control}
                                 rules={{ required: TEAM_ROLE_REQUIRED }}
                                 render={({ field }) => (
-                                  <Select
-                                    {...field}
-                                    error={!!errors.members?.[index]?.role}
-                                  >
-                                    <option value="">{TEAM_SELECT_ROLE}</option>
-                                    <option value="Employee">
-                                      {TEAM_SELECT_EMPLOYEE}
-                                    </option>
-                                    <option value="Admin">
-                                      {TEAM_SELECT_ADMIN}
-                                    </option>
-                                    <option value="Manager">
-                                      {TEAM_SELECT_MANAGER}
-                                    </option>
-                                  </Select>
+                                  <div className="relative">
+                                    <Select
+                                      {...field}
+                                      error={!!errors.members?.[index]?.role}
+                                      className="h-10"
+                                    >
+                                      <option value="">{TEAM_SELECT_ROLE}</option>
+                                      <option value="Employee">
+                                        {TEAM_SELECT_EMPLOYEE}
+                                      </option>
+                                      <option value="Admin">
+                                        {TEAM_SELECT_ADMIN}
+                                      </option>
+                                      <option value="Manager">
+                                        {TEAM_SELECT_MANAGER}
+                                      </option>
+                                    </Select>
+                                    {errors.members?.[index]?.role && (
+                                      <p className="absolute -bottom-5 left-0 text-destructive text-xs">
+                                        {errors.members[index].role.message}
+                                      </p>
+                                    )}
+                                  </div>
                                 )}
                               />
                             </FormItem>

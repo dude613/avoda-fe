@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { NavigationLink } from "@/components/ui/navigation-link";
 import { FormDivider } from "@/components/ui/form-divider";
 import { Toaster } from "@/components/ui/toaster";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login: React.FC = () => {
   const {
@@ -46,6 +47,7 @@ const Login: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: any) => {
     const { email, password } = data;
@@ -150,33 +152,52 @@ const Login: React.FC = () => {
                     type="email"
                     label="Email"
                     placeholder="Enter your email"
-                    error={errors.email?.message? true: false}
+                    error={errors.email?.message ? true : false}
                     {...field}
                   />
                 )}
               />
+              {errors.email && (
+                <p className="text-destructive text-xs mt-1">
+                  {errors.email.message as string}
+                </p>
+              )}
 
-              <Controller
-                name="password"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: { value: true, message: REQUIRED_PASSWORD_ERROR },
-                  pattern: {
-                    value: PASSWORD_REGEX,
-                    message: INVALID_PASSWORD_ERROR,
-                  },
-                }}
-                render={({ field }) => (
-                  <Input
-                    type="password"
-                    label="Password"
-                    placeholder={PASSWORD_PLACEHOLDER}
-                    error={errors.password?.message? true :false }
-                    {...field}
-                  />
-                )}
-              />
+              <div className="relative">
+                <Controller
+                  name="password"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: { value: true, message: REQUIRED_PASSWORD_ERROR },
+                    pattern: {
+                      value: PASSWORD_REGEX,
+                      message: INVALID_PASSWORD_ERROR,
+                    },
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      label="Password"
+                      placeholder={PASSWORD_PLACEHOLDER}
+                      error={errors.password?.message ? true : false}
+                      {...field}
+                    />
+                  )}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-destructive text-xs mt-1">
+                  {errors.password.message as string}
+                </p>
+              )}
 
               <Button
                 className="w-full"

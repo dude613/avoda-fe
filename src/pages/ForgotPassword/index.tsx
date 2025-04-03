@@ -18,7 +18,7 @@ const ForgotPassword: React.FC = () => {
     titles: { FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE },
     buttons: { RESET_PASSWORD_BUTTON_TEXT },
     messages: { BACK_TO_LOGIN_TEXT },
-    errors: { INVALID_EMAIL_ERROR },
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR },
     regex: { EMAIL_REGEX },
   } = constants;
 
@@ -69,7 +69,7 @@ const ForgotPassword: React.FC = () => {
             name="email"
             control={control}
             rules={{
-              required: INVALID_EMAIL_ERROR,
+              required: { value: true, message: REQUIRED_EMAIL_ERROR },
               pattern: {
                 value: EMAIL_REGEX,
                 message: INVALID_EMAIL_ERROR,
@@ -80,11 +80,16 @@ const ForgotPassword: React.FC = () => {
                 label="Email"
                 type="email"
                 placeholder="Enter your email"
-                error={errors.email?.message ? true :false}
+                error={errors.email?.message ? true : false}
                 {...field}
               />
             )}
           />
+          {errors.email && (
+            <p className="text-destructive text-xs mt-1">
+              {errors.email.message as string}
+            </p>
+          )}
 
           <Button className="w-full" type="submit">
             {RESET_PASSWORD_BUTTON_TEXT}
