@@ -18,20 +18,6 @@ Sentry.init({
       blockAllMedia: false,
     })
   ],
-  // Log before sending event to Sentry
-  beforeSend(event, hint) {
-    console.log('--- Sentry Event Captured ---');
-    console.log('Event ID:', event.event_id);
-    const error = hint.originalException;
-    if (error instanceof Error) {
-      console.log('Error Message:', error.message);
-      console.log('Error Stack:', error.stack);
-    } else {
-      console.log('Captured Event (non-Error):', event);
-    }
-    console.log('-----------------------------');
-    return event; // Allow event sending
-  },
   // Tracing
   tracesSampleRate: 1.0,
   tracePropagationTargets: ["localhost", /^https:\/\/avoda-fe\.vercel\.app\//],
