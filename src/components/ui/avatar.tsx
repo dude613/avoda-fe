@@ -24,35 +24,57 @@ const avatarVariants = cva(
 )
 
 interface AvatarProps
-  extends React.ImgHTMLAttributes<HTMLImageElement>,
+  extends React.HTMLAttributes<HTMLDivElement>, // Change to HTMLDivElement as the outer element is a div
     VariantProps<typeof avatarVariants> {
-  fallback?: string
+  src?: string; // Make src optional as it's handled conditionally
+  alt?: string; // Make alt optional
+  fallback?: string;
+  imgProps?: React.ImgHTMLAttributes<HTMLImageElement>; // Separate props for the img element
+  ref?: React.Ref<HTMLDivElement>; // Ref for the outer div
 }
 
-const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
-  ({ className, variant, size, src, alt, fallback, ...props }, ref) => {
-    const [error, setError] = React.useState(false)
-    
-    return (
-      <div className={cn(avatarVariants({ variant, size, className }))}>
-        {src && !error ? (
-          <img
-            ref={ref}
-            src={src}
-            alt={alt}
-            className="h-full w-full object-cover"
-            onError={() => setError(true)}
-            {...props}
-          />
+function Avatar({
+  className,
+  variant,
+  size,
+  src,
+  alt,
+  fallback,
+  imgProps, // Destructure imgProps
+  ref, // Destructure ref
+  ...props // Remaining props apply to the outer div
+}: AvatarProps) {
+  const [error, setError] = React.useState(false);
+
+  // Use effect to reset error state if src changes
+  React.useEffect(() => {
+    if (src) {
+      setError(false);
+    }
+  }, [src]);
+
+  return (
+    <div
+      ref={ref} // Apply ref to the outer div
+      className={cn(avatarVariants({ variant, size, className }))}
+      {...props} // Spread remaining props here
+    >
+      {src && !error ? (
+        <img
+          src={src}
+          alt={alt}
+          className="h-full w-full object-cover"
+          onError={() => setError(true)}
+          {...imgProps} // Spread imgProps to the img element
+        />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-accent font-medium text-accent-foreground">
             {fallback?.[0]?.toUpperCase() || "U"}
           </div>
         )}
       </div>
-    )
-  }
-)
-Avatar.displayName = "Avatar"
+    );
+}
+Avatar.displayName = "Avatar";
 
-export { Avatar, avatarVariants }
+export { Avatar, avatarVariants };
