@@ -25,3 +25,9 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
+.qodo
+<<<<<<< Updated upstream
+
+*storybook.log
+=======
+>>>>>>> Stashed changes
