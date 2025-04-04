@@ -27,6 +27,7 @@ import { Card } from "../../components/ui/card";
 import { Avatar } from "../../components/ui/avatar";
 import { Select } from "../../components/ui/select";
 import { useMediaQuery } from "react-responsive";
+import { Toaster } from "@/components/ui/toaster";
 
 interface TeamMember {
   _id: string;
@@ -63,7 +64,7 @@ export default function TeamMembers() {
   const [selectedRole, setSelectedRole] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [editId, setEditId] = useState(null);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
@@ -81,7 +82,7 @@ export default function TeamMembers() {
   const openAddModal = () => {
     setFormData({ name: "", email: "", role: "" }); // Reset form
     setIsEditing(false);
-    setEditId(null);
+
     setShowAddModal(true);
   };
 
@@ -90,7 +91,7 @@ export default function TeamMembers() {
     console.log(member);
     setFormData(member);
     setIsEditing(true);
-    setEditId(member.id);
+
     setShowAddModal(true);
   };
 
@@ -271,7 +272,7 @@ export default function TeamMembers() {
           const status = row.original.status;
           return (
             <span
-              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${
+              className={`px-2.5  text-sm rounded-full font-semibold ${
                 status === "Active"
                   ? "bg-green-100 text-green-800"
                   : "bg-red-100 text-red-800"
@@ -288,25 +289,23 @@ export default function TeamMembers() {
         cell: ({ row }) => {
           const id = row.original._id;
           return (
-            <div className=" inline-block">
-              <div className=" mt-2 ">
-                <div className="py-1">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => openEditModal(row.original)}
-                  >
-                    <Pencil size={16} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-red-600"
-                    onClick={() => handleDeleteClick(id)}
-                  >
-                    <Trash size={16} />
-                  </Button>
-                </div>
-              </div>
+            <div className="">
+              <Button
+                size="icon"
+                variant="ghost"
+                className=" "
+                onClick={() => openEditModal(row.original)}
+              >
+                <Pencil size={16} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="  text-red-600"
+                onClick={() => handleDeleteClick(id)}
+              >
+                <Trash size={16} />
+              </Button>
             </div>
           );
         },
@@ -340,11 +339,12 @@ export default function TeamMembers() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() =>
+              onClick={() => {
+                console.log(row.original._id);
                 setOpenDropdown(
                   openDropdown === row.original._id ? null : row.original._id
-                )
-              }
+                );
+              }}
             >
               <HiOutlineDotsHorizontal className="h-5 w-5" />
             </Button>
@@ -367,6 +367,26 @@ export default function TeamMembers() {
               </p>
             </div>
           </div>
+          {openDropdown === row.original._id && (
+            <div className="">
+              <Button
+                size="icon"
+                variant="ghost"
+                className=" "
+                onClick={() => openEditModal(row.original)}
+              >
+                <Pencil size={16} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="  text-red-600"
+                onClick={() => handleDeleteClick(row.original._id)}
+              >
+                <Trash size={16} />
+              </Button>
+            </div>
+          )}
         </Card>
       ))}
     </div>
@@ -374,6 +394,7 @@ export default function TeamMembers() {
 
   return (
     <div className="flex justify-center items-center min-h-screen w-full">
+      <Toaster />
       <div className="p-4 md:p-8 text-center w-full">
         <div className="mb-6 mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold">Team Members</h1>
@@ -384,7 +405,7 @@ export default function TeamMembers() {
 
         <Card size="full" layout="responsive">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            <div className="flex flex-col md:flex-row gap-4 w-full md:w-[60%]">
+            <div className="flex flex-col md:flex-row gap-4  md:w-[60%]">
               <Input
                 type="search"
                 placeholder="Search team members..."
@@ -396,7 +417,7 @@ export default function TeamMembers() {
               <Select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full sm:w-[200px]"
+                className="w-full text-center sm:w-[200px]"
               >
                 <option value="">All Roles</option>
                 <option value="admin">Admin</option>
@@ -459,7 +480,7 @@ export default function TeamMembers() {
                             {row.getVisibleCells().map((cell) => (
                               <td
                                 key={cell.id}
-                                className="px-6 py-3 whitespace-nowrap text-sm text-gray-600 relative"
+                                className="px-6 py-3 text-left whitespace-nowrap text-sm text-gray-600"
                                 style={{
                                   width:
                                     cell.column.id === "select"
@@ -553,8 +574,8 @@ export default function TeamMembers() {
                 {isEditing ? "Edit Team Member" : "Add Team Member"}
               </h2>
 
-              <div className="space-y-4">
-                <div>
+              <div className="space-y-4 text-left">
+                <div className="">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Name
                   </label>
