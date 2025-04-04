@@ -1,43 +1,56 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+import { useForm, Controller } from "react-hook-form";
+import { Button, Input } from "@/components/ui";
+import {Card} from "@/components/ui";
+import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
+import { Eye, EyeOff } from "lucide-react";
+
+interface FormData {
+  password: string;
+  confirmPassword: string;
+}
 
 const SetPassword: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state || {};
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const queryParams = new URLSearchParams(location.search);
+  const emailFromQuery = queryParams.get("email");
+  const emailFromState = location.state?.email;
+  const roleFromQuery = queryParams.get("role");
+  const roleFromState = location.state?.role;
+  const email = emailFromQuery || emailFromState || localStorage.getItem("email");
+  const role = roleFromQuery || roleFromState || 'admin';
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
-  const emailLocalStorage = localStorage.getItem("email");
-  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
-    console.log(emailLocalStorage);
-    if (!email || !emailLocalStorage) {
+    if (!email) {
       navigate("/register");
     }
-  }, [email, emailLocalStorage]);
+  }, [email, navigate]);
 
-  const validatePassword = () => {
-    if (!password) return "Please enter your password.";
-    if (password.length < 8) return "Password must be at least 8 characters.";
-    if (!/[A-Z]/.test(password)) return "Must include an uppercase letter.";
-    if (!/[0-9]/.test(password)) return "Must include a number.";
-    if (!/[!@#$%^&*]/.test(password))
-      return "Must include a special character.";
-    if (password !== confirmPassword) return "Passwords do not match.";
-    return "";
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors: formErrors },
+    watch,
+  } = useForm<FormData>({
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onChange"
+  });
 
-  const handleCreateAccount = async () => {
-    const errorMsg = validatePassword();
-    if (errorMsg) {
-      setError(errorMsg);
+  const handleCreateAccount = async (data: FormData) => {
+    if (!email) {
+      toast.error(toasts.INVALID_EMAIL_TOAST, { duration: 2000 });
+      navigate("/register");
       return;
     }
     setLoading(true);
@@ -49,23 +62,23 @@ const SetPassword: React.FC = () => {
         },
         body: JSON.stringify({
           email: email,
-          password: password,
+          password: data.password,
+          role: role,
         }),
       });
-      if (response.ok) {
-        toast.success("User registered successfully", {
-          position: "bottom-center",
-        });
+      const responseData = await response.json();
+      if (response.ok && responseData.success === true) {
+        toast.success(responseData?.message || toasts.REGISTER_SUCCESS_TOAST);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
       } else if (response.status === 400) {
-        toast.error("User already exists", { position: "bottom-center" });
+        toast.error(responseData?.error || "User already exists");
       } else {
-        toast.error("Server error", { position: "bottom-center" });
+        toast.error(responseData?.error || toasts.SERVER_ERROR_TOAST);
       }
     } catch (error) {
-      toast.error("Server error", { position: "bottom-center" });
+      toast.error(toasts.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
@@ -74,67 +87,102 @@ const SetPassword: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Set your password
-          </h2>
-          <p className="text-xs text-gray-500 mb-4 text-center">
-            Choose a secure password for your account
-          </p>
+      <Card>
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
+          {titles.SET_PASSWORD_TITLE}
+        </h2>
+        <p className="text-xs text-gray-500 mb-4 text-center">
+          {titles.SET_PASSWORD_SUBTITLE}
+        </p>
 
-          <input
-            type="email"
-            placeholder="name@example.com"
-            className="border text-xs p-2 w-full mb-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={email}
-            disabled
+        <div className="relative mb-4">
+          <Controller
+            name="password"
+            control={control}
+            rules={{
+              required: { value: true, message: errors.EMPTY_PASSWORD_ERROR },
+              pattern: {
+                value: regex.PASSWORD_REGEX,
+                message: errors.INVALID_PASSWORD_ERROR,
+              },
+            }}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  placeholder={placeholders.PASSWORD_PLACEHOLDER}
+                  error={formErrors.password?.message ? true : false}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.password && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.password.message as string}
+                  </p>
+                )}
+              </div>
+            )}
           />
-          <p className="text-red-500 text-[10px] opacity-80 mb-2">
-            Go back to edit your email
-          </p>
-
-          <div className="relative mb-4">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          <div className="relative mb-4">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              className="border text-xs p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <span
-              className="absolute right-3 top-3 cursor-pointer"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-          <button
-            onClick={handleCreateAccount}
-            className="bg-gray-500 text-white py-2 w-full rounded mt-2"
-          >
-            {loading ? "Creating Account" : "Create Account"}
-          </button>
         </div>
-      </div>
+
+        <div className="relative mb-4">
+          <Controller
+            name="confirmPassword"
+            control={control}
+            rules={{
+              required: { value: true, message: errors.PASSWORDS_MISMATCH_ERROR },
+              validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR,
+            }}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type={showConfirmPassword ? "text" : "password"}
+                  label="Confirm Password"
+                  placeholder={placeholders.CONFIRM_PASSWORD_PLACEHOLDER}
+                  error={formErrors.confirmPassword?.message ? true : false}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.confirmPassword && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.confirmPassword.message as string}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        </div>
+
+        <Button 
+          onClick={handleSubmit(handleCreateAccount)}
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="inline-flex items-center gap-1">
+              <span className="animate-pulse">{messages.CREATING_ACCOUNT_TEXT}</span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
+              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
+            </span>
+          ) : (
+            buttons.CREATE_ACCOUNT_BUTTON_TEXT
+          )}
+        </Button>
+      </Card>
     </>
   );
 };

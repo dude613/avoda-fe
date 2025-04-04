@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
 
 html,
 body {
@@ -8,5 +10,130 @@ body {
   padding: 0;
   width: 100%;
   height: 100vh;
-  overflow: hidden; 
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #242424;
+  --card: #ffffff;
+  --card-foreground: #242424;
+  --popover: #ffffff;
+  --popover-foreground: #242424;
+  --primary: #343434;
+  --primary-foreground: #fcfcfc;
+  --secondary: #f7f7f7;
+  --secondary-foreground: #343434;
+  --muted: #f7f7f7;
+  --muted-foreground: #8e8e8e;
+  --accent: #f7f7f7;
+  --accent-foreground: #343434;
+  --success: #4ade80;
+  --destructive: #d14457;
+  --hover: #031ab12b;
+  --hover-foreground: #fcfcfc;
+  --border: #ebebeb;
+  --input: #ebebeb;
+  --ring: #b5b5b5;
+  --chart-1: #a2c6e1;
+  --chart-2: #92b89a;
+  --chart-3: #667275;
+  --chart-4: #d4e1a5;
+  --chart-5: #d8b09d;
+  --sidebar: #fcfcfc;
+  --sidebar-foreground: #242424;
+  --sidebar-primary: #343434;
+  --sidebar-primary-foreground: #fcfcfc;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #343434;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #b5b5b5;
+}
+
+.dark {
+  --background: #242424;
+  --foreground: #fcfcfc;
+  --card: #343434;
+  --card-foreground: #fcfcfc;
+  --popover: #343434;
+  --popover-foreground: #fcfcfc;
+  --primary: #ebebeb;
+  --primary-foreground: #343434;
+  --secondary: #444444;
+  --secondary-foreground: #fcfcfc;
+  --muted: #444444;
+  --muted-foreground: #b5b5b5;
+  --accent: #444444;
+  --accent-foreground: #fcfcfc;
+  --success: #4ade80;
+  --destructive: #c75249;
+  --hover: #031ab12b;
+  --hover-foreground: #343434;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #8e8e8e;
+  --chart-1: #78a2e1;
+  --chart-2: #b2c5a9;
+  --chart-3: #d8b09d;
+  --chart-4: #a0a6e1;
+  --chart-5: #a29de1;
+  --sidebar: #343434;
+  --sidebar-foreground: #fcfcfc;
+  --sidebar-primary: #78a2e1;
+  --sidebar-primary-foreground: #fcfcfc;
+  --sidebar-accent: #444444;
+  --sidebar-accent-foreground: #fcfcfc;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #8e8e8e;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-hover: var(--hover); /* Add hover color */
+  --color-hover-foreground: var(--hover-foreground); /* Add hover foreground */
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring); 
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50; 
+  }
+  body {
+    @apply bg-background text-foreground; 
+  } 
 }

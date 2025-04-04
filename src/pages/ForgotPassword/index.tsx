@@ -1,86 +1,113 @@
-import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { FiLock } from "react-icons/fi";
+import * as constants from "@/constants/Auth";
+import {
+  Button,
+  Input,
+  Card,
+  NavigationLink,
+  FormDivider,
+  IconContainer
+} from "@/components/ui";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
 const ForgotPassword: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    titles: { FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE },
+    buttons: { RESET_PASSWORD_BUTTON_TEXT },
+    messages: { BACK_TO_LOGIN_TEXT },
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+  } = constants;
+
   const navigate = useNavigate();
-  const [emailInput, setEmailInput] = useState(
-    localStorage.getItem("email") || ""
-  );
-  const [error, setError] = useState("");
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      email: localStorage.getItem("email") || "",
+    },
+  });
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const onSubmit = async (data: { email: string }) => {
+    try {
+      const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      });
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    setEmailInput(email);
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-    } else {
-      setError("");
-    }
-  };
-
-  const handleEnter = (e: any) => {
-    if (e.key === "Enter") {
-      handleResetPassword();
-    }
-  };
-
-  const handleResetPassword = () => {
-    if (!validateEmail(emailInput)) {
-      setError("Please enter a valid email address.");
-    } else {
+      const resData = await response.json();
+      if (resData.success) {
+        toast.success(resData.message || "Reset link sent to your email.");
+        navigate(`/forgot-resend?email=${encodeURIComponent(data.email)}`);
+      } else {
+        toast.error(resData.error);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reset password.");
     }
   };
 
   return (
     <>
       <Toaster />
-      <Header />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            Forgot your password?
-          </h2>
-          <p className="text-xs text-gray-500 mb-4 text-center">
-            No worries, we'll send you reset instructions
-          </p>
-
-          {/* Email Input */}
-          <input
-            type="email"
-            placeholder="name@example.com"
-            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={emailInput}
-            onChange={handleEmailChange}
-            onKeyDown={handleEnter}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-
-          {/* Continue with Email */}
-          <button
-            onClick={handleResetPassword}
-            className="bg-black text-xs mt-3 text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
-          >
-            Reset Password
-          </button>
-
-          <p className="text-black text-sm text-center mt-5">
-            <Link to={"/login"} className="hover:underline">
-              Back to Login
-            </Link>
+      <Card size="md" layout="centeredAndSpaced">
+        <div className="text-center space-y-2">
+          <IconContainer>
+            <FiLock className="text-2xl" />
+          </IconContainer>
+          <h2 className="text-2xl font-bold">{FORGOT_PASSWORD_TITLE}</h2>
+          <p className="text-muted-foreground text-sm">
+            {FORGOT_PASSWORD_SUBTITLE}
           </p>
         </div>
-      </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              required: { value: true, message: REQUIRED_EMAIL_ERROR },
+              pattern: {
+                value: EMAIL_REGEX,
+                message: INVALID_EMAIL_ERROR,
+              },
+            }}
+            render={({ field }) => (
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                error={errors.email?.message ? true : false}
+                {...field}
+              />
+            )}
+          />
+          {errors.email && (
+            <p className="text-destructive text-xs mt-1">
+              {errors.email.message as string}
+            </p>
+          )}
+
+          <Button className="w-full" type="submit">
+            {RESET_PASSWORD_BUTTON_TEXT}
+          </Button>
+        </form>
+
+        <FormDivider text="or" />
+        
+        <div className="text-center">
+          <NavigationLink 
+            to="/login" 
+            variant="ghost" 
+            className="text-sm"
+          >
+            {BACK_TO_LOGIN_TEXT}
+          </NavigationLink>
+        </div>
+      </Card>
     </>
   );
 };
