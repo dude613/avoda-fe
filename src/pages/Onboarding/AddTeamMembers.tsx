@@ -8,15 +8,15 @@ import {
   NavigationLink,
   Tabs,
   Select,
-  Card
+  Card,
 } from "@/components/ui";
-import {FileUploader} from "@/components/file-uploader";
+import { FileUploader } from "@/components/file-uploader";
 import {
   FormDescription,
   FormItem,
   FormLabel,
   Form,
-  FormRow
+  FormRow,
 } from "@/components/form";
 import {
   Controller,
@@ -34,6 +34,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { teamContent } from "@/constants/AddTeamMembers";
 import Email from "../../components/form/email";
 import { FaArrowRight } from "react-icons/fa";
+import { Trash } from "lucide-react";
 
 interface FormData {
   members: { name: string; email: string; role: string }[];
@@ -86,7 +87,10 @@ const AddTeamMembers = () => {
     watch,
   } = form;
 
-  const { fields, append } = useFieldArray({ control, name: "members" });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "members",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -165,9 +169,7 @@ const AddTeamMembers = () => {
         navigate("team", { replace: true });
       } else {
         toast.error(
-          res?.error ||
-            res?.response?.data?.error ||
-            TEAM_FAILED_ERROR,
+          res?.error || res?.response?.data?.error || TEAM_FAILED_ERROR,
           { duration: 2000 }
         );
       }
@@ -181,188 +183,211 @@ const AddTeamMembers = () => {
     <>
       <Toaster />
       <Card variant="elevated" size="lg">
-            <Form {...form}>
-              <ProgressBar
-                currentStep={2}
-                totalSteps={2}
-                label={TEAM_STEP}
-                statusText={TEAM_TITLE}
-                className="mb-8"
-              />
+        <Form {...form}>
+          <ProgressBar
+            currentStep={2}
+            totalSteps={2}
+            label={TEAM_STEP}
+            statusText={TEAM_TITLE}
+            className="mb-8"
+          />
 
-              <div className="flex items-center justify-between mb-8">
-                <NavigationLink
-                  to="/create-organization"
-                  variant="link"
-                  size="sm"
-                  className="text-muted-foreground hover:text-primary/80"
-                >
-                  <BsArrowLeft className="mr-1 h-4 w-4" />
-                  {TEAM_BACK_BTN}
-                </NavigationLink>
-                <NavigationLink
-                  to="/dashboard"
-                  variant="link"
-                  size="sm"
-                  className="text-muted-foreground hover:text-primary/80"
-                  onClick={handleSkipOnBoarding}
-                >
-                  {TEAM_SKIP_BTN}
-                </NavigationLink>
+          <div className="flex items-center justify-between mb-8">
+            <NavigationLink
+              to="/create-organization"
+              variant="link"
+              size="sm"
+              className="text-muted-foreground hover:text-primary/80"
+            >
+              <BsArrowLeft className="mr-1 h-4 w-4" />
+              {TEAM_BACK_BTN}
+            </NavigationLink>
+            <NavigationLink
+              to="/dashboard"
+              variant="link"
+              size="sm"
+              className="text-muted-foreground hover:text-primary/80"
+              onClick={handleSkipOnBoarding}
+            >
+              {TEAM_SKIP_BTN}
+            </NavigationLink>
+          </div>
+
+          <div className="box-shadow">
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-1">
+                <LuUserPlus className="text-xl" />
+                <h2 className="text-xl font-bold">{TEAM_ADD_MEMBERS}</h2>
               </div>
+              <FormDescription className="text-textPrimary opacity-70">
+                {TEAM_TEXT}
+              </FormDescription>
+            </div>
 
-              <div className="box-shadow">
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <LuUserPlus className="text-xl" />
-                    <h2 className="text-xl font-bold">{TEAM_ADD_MEMBERS}</h2>
-                  </div>
-                  <FormDescription className="text-textPrimary opacity-70">
-                    {TEAM_TEXT}
-                  </FormDescription>
-                </div>
+            <Tabs
+              tabs={[
+                { value: "email", label: TEAM_EMAIL_INVITE },
+                { value: "bulk", label: TEAM_BULK_UPLOAD },
+              ]}
+              activeTab={tab}
+              onTabChange={handleTabChange}
+              className="mb-8"
+            />
 
-                <Tabs
-                  tabs={[
-                    { value: "email", label: TEAM_EMAIL_INVITE },
-                    { value: "bulk", label: TEAM_BULK_UPLOAD },
-                  ]}
-                  activeTab={tab}
-                  onTabChange={handleTabChange}
-                  className="mb-8"
-                />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {tab === "email" ? (
+                <div className="mb-8 space-y-6 w-full max-h-[50vh] overflow-y-auto">
+                  {fields.map((field, index) => {
+                    return (
+                      <div key={field.id} className="w-full">
+                        <FormItem className="mb-8">
+                          <FormLabel>Name</FormLabel>
+                          <Controller
+                            name={`members.${index}.name`}
+                            control={control}
+                            rules={{
+                              required: TEAM_REQUIRED,
+                              pattern: {
+                                value: TEAM_NAME_REGEX,
+                                message: TEAM_INVALID_NAME,
+                              },
+                            }}
+                            render={({ field }) => (
+                              <div className="relative">
+                                <Input
+                                  {...field}
+                                  placeholder={TEAM_NAME_PLACEHOLDER}
+                                  error={
+                                    errors.members?.[index]?.name?.message
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {errors.members?.[index]?.name && (
+                                  <p className="absolute -bottom-5 left-0 text-destructive text-xs">
+                                    {errors.members[index].name.message}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          />
+                        </FormItem>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  {tab === "email" ? (
-                    <div className="mb-8 space-y-6 w-full">
-                      {fields.map((field, index) => (
-                        <div key={field.id} className="w-full">
-                          <FormItem className="mb-8">
-                            <FormLabel>Name</FormLabel>
+                        <FormRow>
+                          <FormItem className="w-1/2">
+                            <FormLabel>Email</FormLabel>
                             <Controller
-                              name={`members.${index}.name`}
+                              name={`members.${index}.email`}
                               control={control}
                               rules={{
-                                required: TEAM_REQUIRED,
+                                required: TEAM_EMAIL_REQUIRED,
                                 pattern: {
-                                  value: TEAM_NAME_REGEX,
-                                  message: TEAM_INVALID_NAME,
+                                  value:
+                                    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                                  message: TEAM_INVALID_EMAIL,
                                 },
                               }}
                               render={({ field }) => (
+                                <Email
+                                  {...field}
+                                  error={
+                                    errors.members?.[index]?.email?.message
+                                  }
+                                />
+                              )}
+                            />
+                          </FormItem>
+
+                          <FormItem className="w-1/2">
+                            <FormLabel>Role</FormLabel>
+                            <Controller
+                              name={`members.${index}.role`}
+                              control={control}
+                              rules={{ required: TEAM_ROLE_REQUIRED }}
+                              render={({ field }) => (
                                 <div className="relative">
-                                  <Input
+                                  <Select
                                     {...field}
-                                    placeholder={TEAM_NAME_PLACEHOLDER}
-                                    error={errors.members?.[index]?.name?.message ? true : false}
-                                  />
-                                  {errors.members?.[index]?.name && (
+                                    error={!!errors.members?.[index]?.role}
+                                    className="h-10"
+                                  >
+                                    <option value="">{TEAM_SELECT_ROLE}</option>
+                                    <option value="Employee">
+                                      {TEAM_SELECT_EMPLOYEE}
+                                    </option>
+                                    <option value="Admin">
+                                      {TEAM_SELECT_ADMIN}
+                                    </option>
+                                    <option value="Manager">
+                                      {TEAM_SELECT_MANAGER}
+                                    </option>
+                                  </Select>
+                                  {errors.members?.[index]?.role && (
                                     <p className="absolute -bottom-5 left-0 text-destructive text-xs">
-                                      {errors.members[index].name.message}
+                                      {errors.members[index].role.message}
                                     </p>
                                   )}
                                 </div>
                               )}
                             />
                           </FormItem>
-
-                          <FormRow>
-                            <FormItem className="w-1/2">
-                              <FormLabel>Email</FormLabel>
-                              <Controller
-                                name={`members.${index}.email`}
-                                control={control}
-                                rules={{
-                                  required: TEAM_EMAIL_REQUIRED,
-                                  pattern: {
-                                    value: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
-                                    message: TEAM_INVALID_EMAIL,
-                                  },
-                                }}
-                                render={({ field }) => (
-                                  <Email
-                                    {...field}
-                                    error={
-                                      errors.members?.[index]?.email?.message
-                                    }
-                                  />
-                                )}
-                              />
-                            </FormItem>
-
-                            <FormItem className="w-1/2">
-                              <FormLabel>Role</FormLabel>
-                              <Controller
-                                name={`members.${index}.role`}
-                                control={control}
-                                rules={{ required: TEAM_ROLE_REQUIRED }}
-                                render={({ field }) => (
-                                  <div className="relative">
-                                    <Select
-                                      {...field}
-                                      error={!!errors.members?.[index]?.role}
-                                      className="h-10"
-                                    >
-                                      <option value="">{TEAM_SELECT_ROLE}</option>
-                                      <option value="Employee">
-                                        {TEAM_SELECT_EMPLOYEE}
-                                      </option>
-                                      <option value="Admin">
-                                        {TEAM_SELECT_ADMIN}
-                                      </option>
-                                      <option value="Manager">
-                                        {TEAM_SELECT_MANAGER}
-                                      </option>
-                                    </Select>
-                                    {errors.members?.[index]?.role && (
-                                      <p className="absolute -bottom-5 left-0 text-destructive text-xs">
-                                        {errors.members[index].role.message}
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-                              />
-                            </FormItem>
-                          </FormRow>
-                        </div>
-                      ))}
-
-                      <Button
-                        variant="ghostOutline"
-                        className="gap-2 w-fit mt-8"
-                        onClick={handleAddMember}
-                        disabled={!canAddAnother}
-                      >
-                        <LuUserPlus />
-                        {TEAM_ADD_ANOTHER_BTN}
-                      </Button>
-                    </div>
-                  ) : (
-                    <FileUploader
-                      mode="csv"
-                      allowedTypes={["text/csv"]}
-                      onUpload={(data) => setValue("members", data)}
-                    />
-                  )}
+                          <FormItem>
+                            {fields.length > 1 &&
+                              index !== 0 && (
+                                <div className="flex justify-end mt-6">
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    onClick={() => remove(index)}
+                                    className="text-sm"
+                                  >
+                                    <Trash size={16} />
+                                  </Button>
+                                </div>
+                              )}
+                          </FormItem>
+                        </FormRow>
+                      </div>
+                    );
+                  })}
 
                   <Button
-                    type="submit"
-                    variant="create"
-                    isLoading={loading}
-                    loadingText={TEAM_INVITATION_BTN_LOADER}
-                    icon={<FaArrowRight />}
-                    className="mt-6"
+                    variant="ghostOutline"
+                    className="gap-2 w-fit mt-9"
+                    onClick={handleAddMember}
+                    disabled={!canAddAnother}
                   >
-                    {TEAM_SEND_INVITATION_BTN}
+                    <LuUserPlus />
+                    {TEAM_ADD_ANOTHER_BTN}
                   </Button>
+                </div>
+              ) : (
+                <FileUploader
+                  mode="csv"
+                  allowedTypes={["text/csv"]}
+                  onUpload={(data) => setValue("members", data)}
+                />
+              )}
 
-                  <FormDescription className="text-center mt-5">
-                    {TEAM_FOOTER_TEXT}
-                  </FormDescription>
-                </form>
-              </div>
-            </Form>
-          </Card>
+              <Button
+                type="submit"
+                variant="create"
+                isLoading={loading}
+                loadingText={TEAM_INVITATION_BTN_LOADER}
+                icon={<FaArrowRight />}
+                className="mt-6"
+              >
+                {TEAM_SEND_INVITATION_BTN}
+              </Button>
+
+              <FormDescription className="text-center mt-5">
+                {TEAM_FOOTER_TEXT}
+              </FormDescription>
+            </form>
+          </div>
+        </Form>
+      </Card>
     </>
   );
 };

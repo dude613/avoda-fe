@@ -20,14 +20,14 @@ import {
   EditTeamMemberAPI,
   fetchOrganization,
 } from "@/service/api";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card } from "../../components/ui/card";
 import { Avatar } from "../../components/ui/avatar";
 import { Select } from "../../components/ui/select";
 import { useMediaQuery } from "react-responsive";
-import { Toaster } from "@/components/ui/toaster";
+
 
 interface TeamMember {
   _id: string;

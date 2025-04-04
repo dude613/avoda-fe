@@ -25,5 +25,6 @@ export const userProfileContent = {
     FAILED_UPLOAD_PROFILE : "Failed to update profile",
     SUCCESS_IMAGE_UPLOAD : "Image uploaded successfully",
     PROFILE_UPDATE_SUCCESS : "User profile updated successfully",
+    LOGOUT:"LOGOUT"
 
 }
