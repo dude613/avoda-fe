@@ -197,7 +197,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
         setIsLogout(false);
       }
     } catch (error) {
-      console.log(error);
       toast.error(SERVER_ERROR_TOAST);
       setIsLogout(false);
     } finally {
@@ -224,13 +223,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
             >
               {LOGOUT}
             </Button>
-            {/* <button
-              className="hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-              onClick={() => setShowProfile(false)}
-              aria-label="Close profile"
-            >
-              <X className="w-5 h-5" />
-            </button> */}
           </div>
 
           <div className="flex justify-center mb-8 relative">

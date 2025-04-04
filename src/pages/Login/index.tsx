@@ -65,10 +65,10 @@ const Login: React.FC = () => {
           : "/team";
         navigate(destination, { replace: true });
       } else {
-        console.log(response.error)
+        console.log(response.error);
         toast.error(response.error || USER_NOT_FOUND_TOAST, { duration: 2000 });
       }
-    } catch {
+    } catch (error) {
       toast.error(SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);

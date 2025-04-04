@@ -164,7 +164,7 @@ export async function EditTeamMemberAPI(formData: any) {
   }
 }
 
-export async function LogoutAPI(formData: {userId: string }) {
+export async function LogoutAPI(formData: { userId: string }) {
   try {
     const response = await fetch(LOGOUT_API, {
       method: "POST",
