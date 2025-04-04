@@ -161,7 +161,7 @@ const AddTeamMembers = () => {
     }
     try {
       const res = await SkipOnboardingAPI(organizationId);
-      if (res?.success === true) {
+      if (res?.success === true || res?.code === 404) {
         navigate("team", { replace: true });
       } else {
         toast.error(

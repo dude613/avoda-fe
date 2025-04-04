@@ -165,7 +165,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
 
                     <div className="flex justify-center mb-8 relative">
                         <div className="relative w-32 h-32 rounded-full overflow-hidden border border-border shadow-md group">
-                            {typeof image === "string" ? (
+                            {/* {typeof image === "string" ? (
                                 <img
                                     src={image || "/placeholder.svg"}
                                     alt="Profile"
@@ -179,7 +179,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
                                 <div className="flex items-center justify-center w-full h-full bg-primary-foreground text-primary text-xl rounded-full">
                                     {profileData.userName?.[0]?.toUpperCase() || "A"}
                                 </div>
-                            )}
+                            )} */}
                             <label className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center transition-all duration-200 cursor-pointer">
                                 <div className="opacity-0 group-hover:opacity-100 text-primary flex flex-col items-center transition-opacity">
                                     <Upload className="w-6 h-6 mb-1" />

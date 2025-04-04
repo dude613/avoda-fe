@@ -20,7 +20,10 @@ const SetPassword: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const emailFromQuery = queryParams.get("email");
   const emailFromState = location.state?.email;
+  const roleFromQuery = queryParams.get("role");
+  const roleFromState = location.state?.role;
   const email = emailFromQuery || emailFromState || localStorage.getItem("email");
+  const role = roleFromQuery || roleFromState || 'admin';
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -60,6 +63,7 @@ const SetPassword: React.FC = () => {
         body: JSON.stringify({
           email: email,
           password: data.password,
+          role: role,
         }),
       });
       const responseData = await response.json();

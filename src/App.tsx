@@ -20,6 +20,8 @@ import Header from "./components/Header";
 import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
 import TeamMembers from "./pages/Team";
 import DebugPage from "./pages/Debug"; // Import the new DebugPage
+import Unauthorized from "./pages/Unauthorized";
+
 function App() {
   const location = useLocation();
 
@@ -49,6 +51,7 @@ function App() {
         <Route path="/register/setPassword" element={<SetPassword />} />
         <Route path="/register/verifyCode" element={<VerifyCode />} />
         <Route path="/new-password" element={<ResetNewPassword />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/create-organization" element={<CreateOrganization />} />
           <Route path="/add-employee" element={<AddTeamMembers />} />
