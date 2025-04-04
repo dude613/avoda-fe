@@ -82,7 +82,7 @@ const VerifyCode: React.FC = () => {
         toast.success(toasts.CODE_SENT_TOAST, { position: "bottom-center" });
       } else if (response.status === 201) {
         toast.success(toasts.USER_EXISTS_TOAST, { duration: 2000 });
-        navigate("/dashboard", { replace: true });
+        navigate("/team", { replace: true });
       } else {
         toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
       }

@@ -41,7 +41,7 @@ const Register: React.FC = () => {
         const response = await fetch(`${baseUrl}/api/auth/google-register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken: tokenResponse.access_token }),
+          body: JSON.stringify({ idToken: tokenResponse.access_token,role: "admin" }),
         });
         
         const responseData = await response.json();
@@ -49,6 +49,7 @@ const Register: React.FC = () => {
         if (responseData.success) {
           localStorage.setItem("userId", responseData.data.user._id);
           localStorage.setItem("accessToken", responseData.data.accessToken);
+          localStorage.setItem("userRole", responseData.data.user.role);  
           toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
           navigate("/create-organization", { replace: true });
         } else {

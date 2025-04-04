@@ -90,7 +90,7 @@ const Login: React.FC = () => {
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("userRole", data.user.role);
           toast.success(LOGIN_SUCCESS_TOAST, { position: "bottom-center" });
-          setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
+          setTimeout(() => navigate("/team", { replace: true }), 1000);
         } else {
           toast.error(
             response.status === 400 ? USER_NOT_FOUND_TOAST : SERVER_ERROR_TOAST,
