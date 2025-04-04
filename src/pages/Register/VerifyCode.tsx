@@ -97,7 +97,7 @@ const VerifyCode: React.FC = () => {
       <Toaster />
       <div className="flex items-center justify-center min-h-screen px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibld text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
             {titles.VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">

@@ -217,7 +217,12 @@ export function FileUploader({
                         <h3 className="text-lg font-semibold tracking-tight">
                             {TEAM_BULK_REPORT_TEXT}
                         </h3>
-                        <Button onClick={removeFile}>Cancel</Button>
+                        <button 
+                            onClick={removeFile}
+                            className="text-gray-500 hover:text-gray-700 transition-colors flex items-center"
+                        >
+                            <IoCloseCircle size={20} />
+                        </button>
                     </div>
                     <table className="min-w-full border-collapse border border-gray-300 mt-2">
                         <thead>
@@ -269,9 +274,15 @@ export function FileUploader({
                             <p className="text-sm text-gray-700 font-medium">
                                 {TEAM_BULK_FILE_SUCCESS}
                             </p>
-                            <Button onClick={removeFile} className="mb-4 text-xl">
-                                <IoCloseCircle size={24} />
-                            </Button>
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFile();
+                                }} 
+                                className="absolute -right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors flex items-center"
+                            >
+                                <IoCloseCircle size={20} />
+                            </button>
                         </div>
 
                     ) : (
