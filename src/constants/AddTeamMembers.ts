@@ -17,7 +17,7 @@ export const teamContent = {
     TEAM_SELECT_ADMIN: "Admin",
     TEAM_SELECT_MANAGER: "Manager",
     TEAM_ADD_ANOTHER_BTN: "Add another",
-    TEAM_INVITATION_BTN_LOADER: "Invitations Sending...",
+    TEAM_INVITATION_BTN_LOADER: "Sending invitations...",
     TEAM_SEND_INVITATION_BTN: "Send Invitations",
     TEAM_FOOTER_TEXT: "Invitations will be sent via email with instructions to join your organization.",
     TEAM_BULK_REPORT_TEXT: "Data Validation Report",

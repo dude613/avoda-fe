@@ -62,7 +62,7 @@ const Login: React.FC = () => {
         });
         const destination = response?.onboardingSkipped
           ? "/create-organization"
-          : "/dashboard";
+          : "/team";
         navigate(destination, { replace: true });
       } else {
         toast.error(response.error || USER_NOT_FOUND_TOAST, { duration: 2000 });
