@@ -34,6 +34,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { teamContent } from "@/constants/AddTeamMembers";
 import Email from "../../components/form/email";
 import { FaArrowRight } from "react-icons/fa";
+import { Trash } from "lucide-react";
 
 interface FormData {
   members: { name: string; email: string; role: string }[];
@@ -86,7 +87,13 @@ const AddTeamMembers = () => {
     watch,
   } = form;
 
-  const { fields, append } = useFieldArray({ control, name: "members" });
+  const { fields, append, remove } = useFieldArray({
+
+    control,
+
+    name: "members",
+
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -316,6 +323,35 @@ const AddTeamMembers = () => {
                                 )}
                               />
                             </FormItem>
+                            <FormItem>
+
+                            {fields.length > 1 && index !== 0 && (
+
+                              <div className="flex justify-end mt-6">
+
+                                <Button
+
+                                  type="button"
+
+                                  variant="destructive"
+
+                                  size="icon"
+
+                                  onClick={() => remove(index)}
+
+                                  className="text-sm"
+
+                                >
+
+                                  <Trash size={16} />
+
+                                </Button>
+
+                              </div>
+
+                            )}
+
+                          </FormItem>
                           </FormRow>
                         </div>
                       ))}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from "@react-oauth/google";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
 import { Card } from "@/components/ui";
 import { LoginAPI } from "@/service/api";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NavigationLink } from "@/components/ui/navigation-link";
 import { FormDivider } from "@/components/ui/form-divider";
-import { Toaster } from "@/components/ui/toaster";
 import { Eye, EyeOff } from "lucide-react";
 
 const Login: React.FC = () => {
