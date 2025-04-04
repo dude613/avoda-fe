@@ -26,8 +26,5 @@ package-lock.json
 *.sln
 *.sw?
 .qodo
-<<<<<<< Updated upstream
 
 *storybook.log
-=======
->>>>>>> Stashed changes
