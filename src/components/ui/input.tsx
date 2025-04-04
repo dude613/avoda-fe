@@ -23,21 +23,30 @@ interface InputProps
   error?: boolean // For styling the input border
   errorMessage?: string // For displaying the error text
   label?: string
+  ref?: React.Ref<HTMLInputElement>; // Add ref prop
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, error, errorMessage, label, variant, ...props }, ref) => {
-    return (
-      <div className="space-y-1">
-        {label && (
+function Input({
+  className,
+  type,
+  error,
+  errorMessage,
+  label,
+  variant,
+  ref, // Destructure ref
+  ...props
+}: InputProps) {
+  return (
+    <div className="space-y-1">
+      {label && (
           <Label className="block text-sm font-medium text-foreground">
             {label}
           </Label>
         )}
-        <input
-          type={type}
-          data-slot="input"
-          ref={ref}
+      <input
+        type={type}
+        data-slot="input"
+        ref={ref} // Apply ref directly
           className={cn(
             inputVariants({ variant, className }),
             error && "border-destructive focus-visible:border-destructive"
@@ -48,10 +57,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {errorMessage && (
           <p className="text-sm text-destructive mt-1">{errorMessage}</p>
         )}
-      </div>
-    )
-  }
-)
-Input.displayName = "Input"
+    </div>
+  );
+}
+Input.displayName = "Input";
 
-export { Input, inputVariants }
+export { Input, inputVariants };

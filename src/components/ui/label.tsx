@@ -18,21 +18,26 @@ const labelVariants = cva(
 )
 
 interface LabelProps
-  extends React.ComponentProps<typeof LabelPrimitive.Root>,
-  VariantProps<typeof labelVariants> { }
-//TODO: Update ElementRef to RefObject in React 19.0.0+
-const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, LabelProps>(
-  ({ className, variant, ...props }, ref) => {
-    return (
-      <LabelPrimitive.Root
-        ref={ref}
+  extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, // Use ComponentPropsWithoutRef
+    VariantProps<typeof labelVariants> {
+  ref?: React.Ref<React.ElementRef<typeof LabelPrimitive.Root>>; // Add ref prop with correct type
+}
+
+function Label({
+  className,
+  variant,
+  ref, // Destructure ref
+  ...props
+}: LabelProps) {
+  return (
+    <LabelPrimitive.Root
+      ref={ref} // Apply ref directly
         data-slot="label"
         className={cn(labelVariants({ variant, className }))}
         {...props}
       />
-    )
-  }
-)
-Label.displayName = "Label"
+    );
+}
+Label.displayName = "Label";
 
-export { Label, labelVariants }
+export { Label, labelVariants };

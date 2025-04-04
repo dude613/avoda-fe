@@ -21,21 +21,27 @@ interface SelectProps
   extends React.SelectHTMLAttributes<HTMLSelectElement>,
     VariantProps<typeof selectVariants> {
   error?: boolean
+  ref?: React.Ref<HTMLSelectElement>; // Add ref prop
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, error, variant, ...props }, ref) => (
+function Select({
+  className,
+  error,
+  variant,
+  ref, // Destructure ref
+  ...props
+}: SelectProps) {
+  return (
     <select
-      ref={ref}
+      ref={ref} // Apply ref directly
       className={cn(
         selectVariants({ variant: error ? "error" : variant }),
         className
       )}
       {...props}
     />
-  )
-)
+  );
+}
+Select.displayName = "Select";
 
-Select.displayName = "Select"
-
-export { selectVariants }
+export { Select, selectVariants }; // Export Select component as well
