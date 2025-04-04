@@ -20,12 +20,13 @@ const inputVariants = cva(
 interface InputProps 
   extends React.InputHTMLAttributes<HTMLInputElement>,
     VariantProps<typeof inputVariants> {
-  error?: boolean
+  error?: boolean // For styling the input border
+  errorMessage?: string // For displaying the error text
   label?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, error, label, variant, ...props }, ref) => {
+  ({ className, type, error, errorMessage, label, variant, ...props }, ref) => {
     return (
       <div className="space-y-1">
         {label && (
@@ -43,8 +44,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           {...props}
         />
-        {error && (
-          <p className="text-sm text-destructive mt-1">{error}</p>
+        {/* Display errorMessage if provided */}
+        {errorMessage && (
+          <p className="text-sm text-destructive mt-1">{errorMessage}</p>
         )}
       </div>
     )
