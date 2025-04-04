@@ -51,8 +51,9 @@ const VerifyCode: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         if (data.user && data.accessToken) {
-          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("userRole", data.user.role);
           toast.success(data?.message || toasts.USER_VERIFIED_TOAST, { duration: 2000 });
           setTimeout(() => {
             navigate("/create-organization", { replace: true });
@@ -81,7 +82,7 @@ const VerifyCode: React.FC = () => {
         toast.success(toasts.CODE_SENT_TOAST, { position: "bottom-center" });
       } else if (response.status === 201) {
         toast.success(toasts.USER_EXISTS_TOAST, { duration: 2000 });
-        navigate("/dashboard", { replace: true });
+        navigate("/team", { replace: true });
       } else {
         toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
       }

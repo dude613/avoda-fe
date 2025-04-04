@@ -57,8 +57,8 @@ export async function SkipOnboardingAPI(organizationId: string) {
                 headers: getAuthHeaders(),
             }
         );
-        const data = response.data;
-        return data;
+    
+        return response;
     } catch (error) {
         return { success: false, error: "Failed to connect to server" }
     }

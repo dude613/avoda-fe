@@ -118,7 +118,7 @@ const AddTeamMembers = () => {
           duration: 2000,
         });
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate("/team", { replace: true });
         }, 500);
       } else {
         toast.error(response?.error || response?.response?.data?.error);
@@ -161,16 +161,9 @@ const AddTeamMembers = () => {
     }
     try {
       const res = await SkipOnboardingAPI(organizationId);
-      if (res?.success === true) {
-        navigate("team", { replace: true });
-      } else {
-        toast.error(
-          res?.error ||
-            res?.response?.data?.error ||
-            TEAM_FAILED_ERROR,
-          { duration: 2000 }
-        );
-      }
+      if (res?.success === true || res?.code === 404) {
+        navigate("/team", { replace: true });
+      } 
     } catch (error) {
       console.log("error Skip On Boarding", error);
       toast.error(TEAM_FAILED_ERROR, { duration: 2000 });
@@ -201,7 +194,7 @@ const AddTeamMembers = () => {
                   {TEAM_BACK_BTN}
                 </NavigationLink>
                 <NavigationLink
-                  to="/dashboard"
+                  to="/team"
                   variant="link"
                   size="sm"
                   className="text-muted-foreground hover:text-primary/80"
