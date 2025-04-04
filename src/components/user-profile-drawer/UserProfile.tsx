@@ -13,13 +13,14 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "@/components/ui/button";
 import Email from "../form/email";
-import { UpdateProfile, UploadUserPicture } from "@/service/api";
+import { LogoutAPI, UpdateProfile, UploadUserPicture } from "@/service/api";
 import { Toaster, toast } from "react-hot-toast";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 import type { AppDispatch, RootState } from "@/redux/Store";
 import { X, Upload, Save, User, Shield } from "lucide-react";
 import { userProfileContent } from "@/constants/UserProfile";
 import { useNavigate } from "react-router-dom";
+import * as constants from "@/constants/Auth";
 
 interface ProfileFormData {
   name: string;
@@ -58,8 +59,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     FAILED_UPLOAD_PROFILE,
     SUCCESS_IMAGE_UPLOAD,
     PROFILE_UPDATE_SUCCESS,
-    LOGOUT
+    LOGOUT,
   } = userProfileContent;
+
+  const {
+    toasts: { USER_LOGOUT_SUCCESS, SERVER_ERROR_TOAST },
+  } = constants;
   const dispatch = useDispatch<AppDispatch>();
   const userId = localStorage.getItem("userId");
   const { userProfile } = useSelector((state: RootState) => state.userProfile);
@@ -77,6 +82,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
   const [imageError, setImageError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const [isLogout, setIsLogout] = useState(false);
   useEffect(() => {
     if (userId) {
       startTransition(() => {
@@ -177,12 +183,26 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     );
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("accessToken");
-    setShowProfile(false);
-    toast.success("Logged out successfully", { duration: 2000 });
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    if (!userId) return;
+    try {
+      setIsLogout(true);
+      const response = await LogoutAPI({ userId });
+      if (response.success) {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("accessToken");
+        setShowProfile(false);
+        toast.success(USER_LOGOUT_SUCCESS, { duration: 2000 });
+        navigate("/login", { replace: true });
+        setIsLogout(false);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(SERVER_ERROR_TOAST);
+      setIsLogout(false);
+    } finally {
+      setIsLogout(false);
+    }
   };
 
   return (
@@ -200,8 +220,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
               variant="destructive"
               size="lg"
               onClick={handleLogout}
+              disabled={isLogout}
             >
-             { LOGOUT}
+              {LOGOUT}
             </Button>
             {/* <button
               className="hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"

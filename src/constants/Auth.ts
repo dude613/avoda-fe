@@ -82,6 +82,7 @@ export const toasts = {
   RESET_LINK_SENT_TOAST: "Reset link sent to your email.",
   PASSWORD_RESET_FAILED: "Failed to reset password.",
   INVALID_EMAIL_TOAST: "Invalid email",
+  USER_LOGOUT_SUCCESS: "User logged out successfully",
 };
 
 // Regular expression

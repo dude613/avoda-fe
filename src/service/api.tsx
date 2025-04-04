@@ -1,155 +1,193 @@
 import axios from "axios";
-import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE, UPDATE_USER_PROFILE_PICTURE, USER_ARCHIVED, EDIT_TEAM_MEMBER } from "../Config"
-
-
+import {
+  CREATE_ORGANIZATION,
+  ORGANIZATION_LIST,
+  ADD_TEAM_MEMBER,
+  LOGIN_API,
+  SKIP_ORGANIZATION,
+  UPDATE_USER_PROFILE,
+  UPDATE_USER_PROFILE_PICTURE,
+  USER_ARCHIVED,
+  EDIT_TEAM_MEMBER,
+  LOGOUT_API,
+} from "../Config";
 
 const getAuthHeaders = () => ({
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
 });
 
 export async function LoginAPI(formData: { email: string; password: string }) {
-    try {
-        const response = await fetch(LOGIN_API, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            return { success: false, error: data.error || `Error: ${response.status} ${response.statusText}` };
-        }
-        return data;
-    } catch (e) {
-        console.error(e);
-        return { success: false, error: `Failed to connect to server: ${e instanceof Error ? e.message : String(e)}` };
+  try {
+    const response = await fetch(LOGIN_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error || `Error: ${response.status} ${response.statusText}`,
+      };
     }
+    return data;
+  } catch (e) {
+    console.error(e);
+    return {
+      success: false,
+      error: `Failed to connect to server: ${
+        e instanceof Error ? e.message : String(e)
+      }`,
+    };
+  }
 }
 
 export async function CreateOrganizationAPI(formData: any) {
-    try {
-        const userId = localStorage.getItem("userId");
-        const body = {
-            ...formData,
-            userId: userId,
-        };
-        const response = await axios.post(
-            CREATE_ORGANIZATION, body,
-            {
-                headers: getAuthHeaders(),
-            }
-        );
-        const data = response.data;
-        return data;
-    } catch (e) {
-        console.log("error message Create Organization", e)
-        return e;
-    }
+  try {
+    const userId = localStorage.getItem("userId");
+    const body = {
+      ...formData,
+      userId: userId,
+    };
+    const response = await axios.post(CREATE_ORGANIZATION, body, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (e) {
+    console.log("error message Create Organization", e);
+    return e;
+  }
 }
 
 export async function SkipOnboardingAPI(organizationId: string) {
-    try {
-        const response = await axios.post(
-            SKIP_ORGANIZATION, { OrgId: organizationId },
-            {
-                headers: getAuthHeaders(),
-            }
-        );
-        const data = response.data;
-        return data;
-    } catch (error) {
-        return { success: false, error: "Failed to connect to server" }
-    }
+  try {
+    const response = await axios.post(
+      SKIP_ORGANIZATION,
+      { OrgId: organizationId },
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    const data = response.data;
+    return data;
+  } catch (error) {
+    return { success: false, error: "Failed to connect to server" };
+  }
 }
 export async function fetchOrganization() {
-    try {
-        const userId = localStorage.getItem("userId");
-        const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
-            headers: getAuthHeaders(),
-        });
-        const data = response.data;
-        return data;
-    } catch (error) {
-        console.log("error fetch organization", error)
-        return error
-    }
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`${ORGANIZATION_LIST}/${userId}`, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("error fetch organization", error);
+    return error;
+  }
 }
 
 export async function AddTeamMemberAPI(formData: any) {
-    try {
-        const response = await axios.post(
-            ADD_TEAM_MEMBER, formData,
-            {
-                headers: getAuthHeaders(),
-            }
-        );
-        const data = response.data;
-        return data;
-    } catch (e) {
-        console.log("error message Create Organization", e)
-        return e;
-    }
+  try {
+    const response = await axios.post(ADD_TEAM_MEMBER, formData, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (e) {
+    console.log("error message Create Organization", e);
+    return e;
+  }
 }
 
-
 export async function UpdateProfile(formData: any) {
-    try {
-        const response = await axios.put(UPDATE_USER_PROFILE, formData, {
-            headers: getAuthHeaders(),
-        });
-        const data = response.data;
-        return data;
-    } catch (error) {
-        console.log("error message Create Organization", error)
-        return error;
-    }
+  try {
+    const response = await axios.put(UPDATE_USER_PROFILE, formData, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("error message Create Organization", error);
+    return error;
+  }
 }
 
 export async function UploadUserPicture(formData: any) {
-    try {
-        const response = await axios.post(UPDATE_USER_PROFILE_PICTURE, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Authorization": `Bearer ${localStorage.getItem("accessToken") || ""}`,
-            }
-        })
-        const data = response.data;
-        return data
-    } catch (error) {
-        console.error("Error during API call:", error);
-        return error;
-    }
-}   
-
-export async function ArchivedUser(userId: string) {
-    try {
-        const response = await axios.post(
-            USER_ARCHIVED, 
-            { userId },
-            {
-                headers: getAuthHeaders(),
-            }
-        );
-
-        return response.data;
-    } catch (error) {
-        console.error("Error during API call:", error);
-        return null; 
-    }
+  try {
+    const response = await axios.post(UPDATE_USER_PROFILE_PICTURE, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
+      },
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.error("Error during API call:", error);
+    return error;
+  }
 }
 
+export async function ArchivedUser(userId: string) {
+  try {
+    const response = await axios.post(
+      USER_ARCHIVED,
+      { userId },
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during API call:", error);
+    return null;
+  }
+}
 
 export async function EditTeamMemberAPI(formData: any) {
-    try {
-        const response = await axios.put(EDIT_TEAM_MEMBER, formData, {
-            headers: getAuthHeaders(),
-        });
-        const data = response.data;
-        return data;
-    } catch (error) {
-        console.log("error message Create Organization", error)
-        return error;
+  try {
+    const response = await axios.put(EDIT_TEAM_MEMBER, formData, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("error message Create Organization", error);
+    return error;
+  }
+}
+
+export async function LogoutAPI(formData: {userId: string }) {
+  try {
+    const response = await fetch(LOGOUT_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error || `Error: ${response.status} ${response.statusText}`,
+      };
     }
+    return data;
+  } catch (e) {
+    console.error(e);
+    return {
+      success: false,
+      error: `Failed to connect to server: ${
+        e instanceof Error ? e.message : String(e)
+      }`,
+    };
+  }
 }
