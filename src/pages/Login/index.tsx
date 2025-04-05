@@ -14,6 +14,11 @@ import { NavigationLink } from "@/components/ui/navigation-link";
 import { FormDivider } from "@/components/ui/form-divider";
 import { Eye, EyeOff } from "lucide-react";
 
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 const Login: React.FC = () => {
   const {
     titles: { LOGIN_PAGE_TITLE, LOGIN_PAGE_SUBTITLE },
@@ -40,7 +45,7 @@ const Login: React.FC = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<LoginFormData>({
     mode: "onChange",
   });
 
@@ -48,7 +53,7 @@ const Login: React.FC = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: LoginFormData) => {
     const { email, password } = data;
     setLoading(true);
     try {

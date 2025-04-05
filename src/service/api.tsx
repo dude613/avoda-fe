@@ -13,6 +13,30 @@ import {
   All_USER_INFO,
 } from "../Config";
 
+interface OrganizationFormData {
+  organizationName: string;
+  industry?: string;
+  companySize: string;
+}
+interface MemberFormData {
+  members: { name: string; email: string; role: string }[];
+}
+
+export interface TeamMemberEditPayload {
+  name: string;
+  email: string;
+  role: string;
+  orgId: string;
+  id?: string;
+}
+
+interface ProfileFormData {
+  name: string;
+  email: string;
+  role: string;
+  userId:string
+}
+
 const getAuthHeaders = () => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
@@ -46,7 +70,7 @@ export async function LoginAPI(formData: { email: string; password: string }) {
   }
 }
 
-export async function CreateOrganizationAPI(formData: any) {
+export async function CreateOrganizationAPI(formData: OrganizationFormData) {
   try {
     const userId = localStorage.getItem("userId");
     const body = {
@@ -94,7 +118,7 @@ export async function fetchOrganization() {
   }
 }
 
-export async function AddTeamMemberAPI(formData: any) {
+export async function AddTeamMemberAPI(formData: MemberFormData) {
   try {
     const response = await axios.post(ADD_TEAM_MEMBER, formData, {
       headers: getAuthHeaders(),
@@ -107,7 +131,7 @@ export async function AddTeamMemberAPI(formData: any) {
   }
 }
 
-export async function UpdateProfile(formData: any) {
+export async function UpdateProfile(formData: ProfileFormData) {
   try {
     const response = await axios.put(UPDATE_USER_PROFILE, formData, {
       headers: getAuthHeaders(),
@@ -120,7 +144,7 @@ export async function UpdateProfile(formData: any) {
   }
 }
 
-export async function UploadUserPicture(formData: any) {
+export async function UploadUserPicture(formData: FormData) {
   try {
     const response = await axios.post(UPDATE_USER_PROFILE_PICTURE, formData, {
       headers: {
@@ -153,7 +177,7 @@ export async function ArchivedUser(userId: string) {
   }
 }
 
-export async function EditTeamMemberAPI(formData: any) {
+export async function EditTeamMemberAPI(formData: TeamMemberEditPayload) {
   try {
     const response = await axios.put(EDIT_TEAM_MEMBER, formData, {
       headers: getAuthHeaders(),

@@ -9,7 +9,7 @@ import {
   Card,
   NavigationLink,
   FormDivider,
-  IconContainer
+  IconContainer,
 } from "@/components/ui";
 
 const ForgotPassword: React.FC = () => {
@@ -23,7 +23,11 @@ const ForgotPassword: React.FC = () => {
   } = constants;
 
   const navigate = useNavigate();
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     defaultValues: {
       email: localStorage.getItem("email") || "",
@@ -45,8 +49,9 @@ const ForgotPassword: React.FC = () => {
       } else {
         toast.error(resData.error);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to reset password.");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || "Failed to reset password.");
     }
   };
 
@@ -97,13 +102,9 @@ const ForgotPassword: React.FC = () => {
         </form>
 
         <FormDivider text="or" />
-        
+
         <div className="text-center">
-          <NavigationLink 
-            to="/login" 
-            variant="ghost" 
-            className="text-sm"
-          >
+          <NavigationLink to="/login" variant="ghost" className="text-sm">
             {BACK_TO_LOGIN_TEXT}
           </NavigationLink>
         </div>
