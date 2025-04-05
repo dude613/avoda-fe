@@ -157,7 +157,7 @@ export default function TeamMembers() {
   const addTeamMember = async () => {
     setIsLoading(true);
     if (!validateForm()) {
-      setIsLoading(true);
+      setIsLoading(false);
       return;
     }
     if (isEditing) {
