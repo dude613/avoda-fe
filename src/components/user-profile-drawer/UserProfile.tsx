@@ -142,14 +142,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
   const onSubmit = async (data: ProfileFormData) => {
     setIsSubmitting(true);
     try {
-      const formData = new FormData();
-      Object.entries({ ...data, userId: userId || "" }).forEach(
-        ([key, value]) => {
-          formData.append(key, value);
-        }
-      );
-
-      const updateResponse = await UpdateProfile(formData);
+      const updateResponse = await UpdateProfile({
+        ...data,
+        userId: userId || "",
+      });
       if (updateResponse?.success) {
         toast.success(updateResponse?.message || PROFILE_UPDATE_SUCCESS, {
           duration: 2000,
@@ -206,7 +202,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="max-h-full overflow-y-auto">
+      <div className="p:4 sm:p-6 w-full max-h-[90vh] overflow-y-auto">
         <div className="max-w-3xl mx-auto p-6 text-black bg-white">
           <div className="flex justify-between items-center mb-6 pb-4 border-b">
             <div className="text-black">
