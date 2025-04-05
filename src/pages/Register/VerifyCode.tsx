@@ -51,9 +51,6 @@ const VerifyCode: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         if (data.user && data.accessToken) {
-          console.log("User ID:", data.user?.id);
-          console.log("Access Token:", data.accessToken);
-
           localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("userRole", data.user.role);
