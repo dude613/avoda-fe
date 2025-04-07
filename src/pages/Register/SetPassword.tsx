@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Button, Input } from "@/components/ui";
 import {Card} from "@/components/ui";
 import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
 
 interface FormData {
   password: string;
@@ -173,14 +173,16 @@ const SetPassword: React.FC = () => {
         >
           {loading ? (
             <span className="inline-flex items-center gap-1">
-              <span className="animate-pulse">{messages.CREATING_ACCOUNT_TEXT}</span>
-              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
-              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
-              <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
+              <LoaderCircleIcon
+                className="-ms-1 animate-spin"
+                size={16}
+                aria-hidden="true"
+              />
             </span>
           ) : (
             buttons.CREATE_ACCOUNT_BUTTON_TEXT
-          )}
+          )
+        }
         </Button>
       </Card>
     </>
