@@ -1,4 +1,4 @@
-name: React and TypeScript Build
+name: Build
 
 permissions:
   contents: read
