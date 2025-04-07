@@ -58,7 +58,10 @@ const VerifyCode: React.FC = () => {
             duration: 2000,
           });
           setTimeout(() => {
-            navigate("/team", { replace: true });
+            navigate(
+              data.user.role === "admin" ? "/create-organization" : "/team",
+              { replace: true }
+            );
           }, 1000);
         }
       } else {
