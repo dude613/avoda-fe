@@ -1,4 +1,4 @@
-name: Build
+name: React and TypeScript Build
 
 permissions:
   contents: read
@@ -6,7 +6,7 @@ permissions:
 
 on:
   pull_request:
-    types: opened
+    types: [opened, synchronize]
     branches:
       - main
       - staging
@@ -22,13 +22,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"  # Use the appropriate version for your project
+          node-version: "22"  # Use the appropriate version for your project
+
+      - name: Install Dependencies
+        run: yarn install
 
       - name: Run Build
         id: build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
+        run: yarn build
         continue-on-error: true
 
       - name: Set Build Status (Build Success)
