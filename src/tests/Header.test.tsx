@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react'; // Import act
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -37,6 +37,12 @@ const createMockStore = (preloadedState?: RootState) => {
 // For this test, we'll assume the component handles the case where accessToken is null.
 
 describe('Header component', () => {
+  // Reset mocks before each test in this suite
+  beforeEach(() => {
+      vi.restoreAllMocks(); // Clears localStorage mocks etc.
+      mockedAxios.get.mockReset(); // Resets axios mock calls/implementations
+  });
+
   it('should render the application name when not logged in', () => {
     const store = createMockStore(); // Create store with default empty state
 
@@ -56,14 +62,8 @@ describe('Header component', () => {
     expect(screen.getByRole('link', { name: /Register/i })).toBeInTheDocument();
   });
 
-  it('should render the user avatar button when logged in', () => {
-     // Mock localStorage for logged-in state
-    // Reset mocks before each test
-    beforeEach(() => {
-        vi.restoreAllMocks(); // Clears localStorage mocks etc.
-        mockedAxios.get.mockReset(); // Resets axios mock calls/implementations
-    });
-
+  // Make the test async to use await act
+  it('should render the user avatar button when logged in', async () => { 
      // Mock localStorage for logged-in state
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
       if (key === 'accessToken') return 'fake-token';
@@ -112,13 +112,16 @@ describe('Header component', () => {
         } as UserProfile['data'] // Cast to ensure type match
     });
 
-    render(
-      <Provider store={store}>
-        <Router>
-          <Header />
-        </Router>
-      </Provider>
-    );
+    // Wrap the render call causing state updates in act
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <Router>
+            <Header />
+          </Router>
+        </Provider>
+      );
+    });
     
     // Check for the application name again
     expect(screen.getByText('avoda')).toBeInTheDocument();
@@ -127,7 +130,6 @@ describe('Header component', () => {
     // Using aria-label as defined in the component
     expect(screen.getByRole('button', { name: /Open profile/i })).toBeInTheDocument(); 
 
-    // Clean up mock
-    vi.restoreAllMocks(); 
+    // No need for manual cleanup here as beforeEach handles it
   });
 });
