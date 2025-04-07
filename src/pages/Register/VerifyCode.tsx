@@ -57,15 +57,12 @@ const VerifyCode: React.FC = () => {
           toast.success(data?.message || toasts.USER_VERIFIED_TOAST, {
             duration: 2000,
           });
-          if (data.user.role === "admin") {
-            setTimeout(() => {
-              navigate("/create-organization", { replace: true });
-            }, 1000);
-          } else {
-            setTimeout(() => {
-              navigate("/team", { replace: true });
-            }, 1000);
-          }
+          setTimeout(() => {
+            navigate(
+              data.user.role === "admin" ? "/create-organization" : "/team",
+              { replace: true }
+            );
+          }, 1000);
         }
       } else {
         toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, {
