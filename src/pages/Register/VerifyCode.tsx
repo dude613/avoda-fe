@@ -54,13 +54,20 @@ const VerifyCode: React.FC = () => {
           localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("userRole", data.user.role);
-          toast.success(data?.message || toasts.USER_VERIFIED_TOAST, { duration: 2000 });
+          toast.success(data?.message || toasts.USER_VERIFIED_TOAST, {
+            duration: 2000,
+          });
           setTimeout(() => {
-            navigate("/create-organization", { replace: true });
+            navigate(
+              data.user.role === "admin" ? "/create-organization" : "/team",
+              { replace: true }
+            );
           }, 1000);
         }
       } else {
-        toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, { duration: 2000 });
+        toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, {
+          duration: 2000,
+        });
       }
     } catch (error) {
       toast.error(toasts.SERVER_ERROR_TOAST);
@@ -111,14 +118,12 @@ const VerifyCode: React.FC = () => {
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
 
-          <Button
-            onClick={handleVerify}
-            className="w-full"
-            disabled={loading}
-          >
+          <Button onClick={handleVerify} className="w-full" disabled={loading}>
             {loading ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">{messages.CREATING_ACCOUNT_TEXT}</span>
+                <span className="animate-pulse">
+                  {messages.CREATING_ACCOUNT_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
@@ -137,7 +142,9 @@ const VerifyCode: React.FC = () => {
           >
             {resending ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">{messages.RESENDING_CODE_TEXT}</span>
+                <span className="animate-pulse">
+                  {messages.RESENDING_CODE_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>

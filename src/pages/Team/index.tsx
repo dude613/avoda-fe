@@ -86,7 +86,7 @@ export default function TeamMembers() {
   };
 
   // Open modal for editing an existing member
-  const openEditModal = (member) => {
+  const openEditModal = (member: TeamMember) => {
     setFormData(member);
     setIsEditing(true);
 
@@ -156,11 +156,14 @@ export default function TeamMembers() {
 
   const addTeamMember = async () => {
     setIsLoading(true);
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
     if (isEditing) {
       const payload = { ...formData, orgId: organizationId };
       try {
-        const response = await EditTeamMemberAPI({ members: payload });
+        const response = await EditTeamMemberAPI(payload);
         if (response?.success === true) {
           toast.success(response?.message, {
             duration: 2000,
@@ -218,7 +221,6 @@ export default function TeamMembers() {
         toast.success(res?.message || "User archived successfully", {
           duration: 2000,
         });
-        dispatch(fetchOrganizations(userId as string));
       } else {
         toast.error(res?.error || "Something went wrong", { duration: 2000 });
         console.error("Failed to delete user:", res);
@@ -226,6 +228,7 @@ export default function TeamMembers() {
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {
+      dispatch(fetchOrganizations(userId as string));
       setShowModal(false);
     }
   };
@@ -390,7 +393,7 @@ export default function TeamMembers() {
   );
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full">
+    <div className="flex justify-center items-center  w-full">
       <Toaster />
       <div className="p-4 md:p-8 text-center w-full">
         <div className="mb-6 mx-auto">
@@ -401,20 +404,20 @@ export default function TeamMembers() {
         </div>
 
         <Card size="full" layout="responsive">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            <div className="flex flex-col md:flex-row gap-4  md:w-[60%]">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 w-full">
+            {/* Search + Filter */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-[60%]">
               <Input
                 type="search"
                 placeholder="Search team members..."
                 value={globalFilter}
                 onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full md:w-[250px]"
+                className="w-full sm:w-[250px]"
               />
-
               <Select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full text-center sm:w-[200px]"
+                className="w-full sm:w-[200px] text-center"
               >
                 <option value="">All Roles</option>
                 <option value="admin">Admin</option>
@@ -422,12 +425,14 @@ export default function TeamMembers() {
                 <option value="employee">Employee</option>
               </Select>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
-              <Button variant="outline" className="sm:w-[120px] w-full">
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto md:ml-auto">
+              <Button variant="outline" className="w-full sm:w-[120px]">
                 <VscSettings className="mr-2" />
                 View
               </Button>
-              <Button className="sm:w-[150px] w-full" onClick={openAddModal}>
+              <Button className="w-full sm:w-[150px]" onClick={openAddModal}>
                 <IoMdAddCircleOutline className="mr-2" />
                 Add Member
               </Button>

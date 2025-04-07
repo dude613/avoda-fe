@@ -10,8 +10,12 @@ import {
   Input,
   FormDivider,
   NavigationLink,
-  Card
+  Card,
 } from "@/components/ui";
+
+type EmailFormData = {
+  email: string;
+};
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -25,11 +29,15 @@ const Register: React.FC = () => {
   } = constants;
 
   const navigate = useNavigate();
-  const { control, handleSubmit, formState: { errors } } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EmailFormData>();
 
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: EmailFormData) => {
     localStorage.setItem("email", data.email);
     navigate("/register/setPassword", { state: { email: data.email } });
   };
@@ -41,19 +49,22 @@ const Register: React.FC = () => {
         const response = await fetch(`${baseUrl}/api/auth/google-register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken: tokenResponse.access_token,role: "admin" }),
+          body: JSON.stringify({
+            idToken: tokenResponse.access_token,
+            role: "admin",
+          }),
         });
-        
+
         const responseData = await response.json();
-        
+
         if (responseData.success) {
           localStorage.setItem("userId", responseData.data.user._id);
           localStorage.setItem("accessToken", responseData.data.accessToken);
-          localStorage.setItem("userRole", responseData.data.user.role);  
+          localStorage.setItem("userRole", responseData.data.user.role);
           toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
           navigate("/create-organization", { replace: true });
         } else {
-          console.error('Registration failed:', responseData.error);
+          console.error("Registration failed:", responseData.error);
           toast.error(responseData.error || SERVER_ERROR_TOAST);
         }
       } catch (error) {
@@ -67,7 +78,8 @@ const Register: React.FC = () => {
       console.error("Login Failed:", error);
       setGoogleLoading(false);
     },
-    scope: "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
+    scope:
+      "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
   return (
     <>
@@ -102,7 +114,7 @@ const Register: React.FC = () => {
               pattern: {
                 value: EMAIL_REGEX,
                 message: INVALID_EMAIL_ERROR,
-              }
+              },
             }}
             render={({ field }) => (
               <Input

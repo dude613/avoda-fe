@@ -16,7 +16,7 @@ export default function Email({ value, disabled, onChange, error }: EmailProps) 
     <div className="relative">
       <Input
         id={id}
-        className={`h-10 w-full ${error ? 'border-destructive' : ''}`}
+        className={`h-10 w-full pr-9 ${error ? 'border-destructive' : ''}`}
         type="email"
         value={value}
         disabled={disabled}
