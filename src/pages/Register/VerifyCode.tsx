@@ -57,9 +57,15 @@ const VerifyCode: React.FC = () => {
           toast.success(data?.message || toasts.USER_VERIFIED_TOAST, {
             duration: 2000,
           });
-          setTimeout(() => {
-            navigate("/team", { replace: true });
-          }, 1000);
+          if (data.user.role === "employee") {
+            setTimeout(() => {
+              navigate("/team", { replace: true });
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              navigate("/dashboard", { replace: true });
+            }, 1000);
+          }
         }
       } else {
         toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, {
