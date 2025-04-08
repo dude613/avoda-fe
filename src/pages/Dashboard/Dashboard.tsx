@@ -73,7 +73,7 @@ export default function Dashboard() {
     }
   };
 
-  const columns: ColumnDef<TeamMember, unknown>[] = useMemo(
+  const columns: ColumnDef<TeamMember, any>[] = useMemo(
     () => [
       {
         id: "select",
@@ -93,7 +93,7 @@ export default function Dashboard() {
             className="cursor-pointer"
           />
         ),
-      } as ColumnDef<TeamMember, unknown>,
+      } as ColumnDef<TeamMember, any>, // Changed unknown to any
 
       { accessorKey: "_id", header: "ID" },
       { accessorKey: "name", header: "Name" },
@@ -179,7 +179,7 @@ export default function Dashboard() {
             </div>
           );
         },
-      } as ColumnDef<TeamMember, unknown>,
+      } as ColumnDef<TeamMember, any>, // Changed unknown to any
     ],
     [openDropdown]
   );

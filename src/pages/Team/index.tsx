@@ -233,7 +233,7 @@ export default function TeamMembers() {
     }
   };
 
-  const columns = useMemo<ColumnDef<TeamMember>[]>(
+  const columns = useMemo<ColumnDef<TeamMember, any>[]>(
     () => [
       {
         id: "select",
