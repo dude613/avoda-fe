@@ -25,7 +25,7 @@ const createMockStore = (preloadedState?: RootState) => {
       // Add other actual reducers here if Header depends on them
       // Ensure the keys here match exactly those in your actual store config
       // Correct mock for organization state structure
-      organization: (state = { teamMembers: [], loading: false, error: null }, action) => state, 
+      organization: (state = { teamMembers: [], loading: false, error: null }) => state,
     },
     preloadedState, // preloadedState should match RootState structure
   });
