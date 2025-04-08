@@ -11,8 +11,8 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { VscSettings } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/Store";
-import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
+import { AppDispatch, RootState } from "@/redux/Store";
+import { fetchOrganizations } from "@/redux/slice/OrganizationUser";
 import { Pencil, Trash } from "lucide-react";
 import {
   AddTeamMemberAPI,
@@ -21,29 +21,16 @@ import {
   fetchOrganization,
 } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Card } from "../../components/ui/card";
-import { Avatar } from "../../components/ui/avatar";
-import { Select } from "../../components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Select } from "@/components/ui/select";
 import { useMediaQuery } from "react-responsive";
+import type { TeamMember, FormData } from "@/type"; // Added import
 
-interface TeamMember {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  avatar?: string;
-  organizationName?: string;
-  address?: string;
-}
 
-interface FormData {
-  name: string;
-  email: string;
-  role: string;
-}
+
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
 export default function TeamMembers() {
@@ -253,9 +240,11 @@ export default function TeamMembers() {
             className="cursor-pointer"
           />
         ),
+        accessorFn: (row) => row._id, // Added accessorFn
       },
       {
-        accessorKey: "name",
+        id: "name", // Added id
+        accessorFn: (row) => row.name, // Changed accessorKey to accessorFn
         header: "Name",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
@@ -264,20 +253,20 @@ export default function TeamMembers() {
           </div>
         ),
       },
-      { accessorKey: "email", header: "Email" },
-      { accessorKey: "role", header: "Role" },
+      { id: "email", accessorFn: (row) => row.email, header: "Email" }, // Changed accessorKey to accessorFn, added id
+      { id: "role", accessorFn: (row) => row.role, header: "Role" }, // Changed accessorKey to accessorFn, added id
       {
-        accessorKey: "status",
+        id: "status", // Added id
+        accessorFn: (row) => row.status, // Changed accessorKey to accessorFn
         header: "Status",
         cell: ({ row }) => {
           const status = row.original.status;
           return (
             <span
-              className={`px-2.5  text-sm rounded-full font-semibold ${
-                status === "Active"
+              className={`px-2.5  text-sm rounded-full font-semibold ${status === "Active"
                   ? "bg-green-100 text-green-800"
                   : "bg-red-100 text-red-800"
-              }`}
+                }`}
             >
               {status}
             </span>
@@ -310,6 +299,7 @@ export default function TeamMembers() {
             </div>
           );
         },
+        accessorFn: (row) => row._id, // Added accessorFn
       },
     ],
     [openDropdown]
@@ -357,11 +347,10 @@ export default function TeamMembers() {
             <div>
               <span className="text-sm text-gray-500">Status</span>
               <p
-                className={`font-medium ${
-                  row.original.status === "Active"
+                className={`font-medium ${row.original.status === "Active"
                     ? "text-green-600"
                     : "text-red-600"
-                }`}
+                  }`}
               >
                 {row.original.status}
               </p>
@@ -462,8 +451,8 @@ export default function TeamMembers() {
                                   header.id === "select"
                                     ? "40px"
                                     : header.id === "actions"
-                                    ? "100px"
-                                    : "auto",
+                                      ? "100px"
+                                      : "auto",
                               }}
                             >
                               {flexRender(
@@ -488,8 +477,8 @@ export default function TeamMembers() {
                                     cell.column.id === "select"
                                       ? "40px"
                                       : cell.column.id === "actions"
-                                      ? "100px"
-                                      : "auto",
+                                        ? "100px"
+                                        : "auto",
                                 }}
                               >
                                 {flexRender(

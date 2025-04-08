@@ -18,16 +18,7 @@ import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import { ArchivedUser } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-
-interface TeamMember {
-  _id: string;
-  name: string;
-  email: string;
-  address?: string;
-  organizationName: string;
-  role: string;
-  status: string;
-}
+import type { TeamMember } from "@/type";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
@@ -111,11 +102,10 @@ export default function Dashboard() {
 
           return (
             <span
-              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${
-                status === "Active"
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active"
                   ? "bg-primary text-white"
                   : "text-primary border border-gray-300"
-              }`}
+                }`}
             >
               {formattedStatus}
             </span>
