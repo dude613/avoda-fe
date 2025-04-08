@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { CREATE_ORGANIZATION, ORGANIZATION_LIST, ADD_TEAM_MEMBER, LOGIN_API, SKIP_ORGANIZATION, UPDATE_USER_PROFILE, UPDATE_USER_PROFILE_PICTURE, USER_ARCHIVED } from "../Config"
 

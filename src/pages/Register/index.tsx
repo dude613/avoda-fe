@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
@@ -53,7 +54,7 @@ const Register: React.FC = () => {
         });
         const responseData = await response.json();
         if (response.ok) {
-          localStorage.setItem("userId", responseData.user._id);
+          localStorage.setItem("userId", responseData.user.id);
           localStorage.setItem("accessToken", responseData.accessToken);
           toast.success(toasts.REGISTER_SUCCESS, { duration: 2000 });
           navigate("/create-organization", { replace: true });

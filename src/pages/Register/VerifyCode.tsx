@@ -51,7 +51,7 @@ const VerifyCode: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         if (data.user && data.accessToken) {
-          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
           toast.success(data?.message || toasts.USER_VERIFIED, { duration: 2000 });
           setTimeout(() => {

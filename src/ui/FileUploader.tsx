@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useTransition, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { FiUpload } from "react-icons/fi";

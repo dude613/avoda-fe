@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     try {
       const response = await LoginAPI({ email, password });
       if (response.success) {
-        localStorage.setItem("userId", response.user._id);
+        localStorage.setItem("userId", response.user.id);
         localStorage.setItem("accessToken", response.accessToken);
         toast.success(response.message || toasts.LOGIN_SUCCESS, { duration: 2000 });
         const onboardingSkipped = response?.onboardingSkipped;
@@ -66,7 +66,7 @@ const Login: React.FC = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
           toast.success(toasts.LOGIN_SUCCESS, { position: "bottom-center" });
           setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
