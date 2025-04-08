@@ -63,7 +63,7 @@ export default function Dashboard() {
       setShowModal(false);
     }
   };
-
+//FIXME Switch from Any
   const columns: ColumnDef<TeamMember, any>[] = useMemo(
     () => [
       {
@@ -83,8 +83,8 @@ export default function Dashboard() {
             onChange={row.getToggleSelectedHandler()}
             className="cursor-pointer"
           />
-        ),
-      } as ColumnDef<TeamMember, any>, // Changed unknown to any
+        ),//FIXME Switch from Any
+      } as ColumnDef<TeamMember, any>, 
 
       { accessorKey: "_id", header: "ID" },
       { accessorKey: "name", header: "Name" },
@@ -168,8 +168,8 @@ export default function Dashboard() {
               )}
             </div>
           );
-        },
-      } as ColumnDef<TeamMember, any>, // Changed unknown to any
+        },//FIXME Switch from Any
+      } as ColumnDef<TeamMember, any>, 
     ],
     [openDropdown]
   );
