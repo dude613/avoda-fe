@@ -1,6 +1,6 @@
 import '../../index.css';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Label, labelVariants } from './label';
+import { Label } from './label'; // Assuming this structure
 
 const meta = {
   title: 'UI/Label',
