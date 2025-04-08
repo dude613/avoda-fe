@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Select } from './select';
-import { Label } from './label'; // Import Label for association
-import '../../index.css'; // Import base CSS
+import { Select } from '@/components/ui/select';
+import { Label } from '@/components/ui/label'; // Import Label for association
+import '@/index.css'; // Import base CSS
 
 const meta = {
   title: 'UI/Select',
