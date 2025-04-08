@@ -11,22 +11,29 @@ import {
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Pagination from "../../util/Pagination";
-import {Button} from "../../components/ui/button";
+import { Button } from "../../components/ui/button";
 import { VscSettings } from "react-icons/vsc";
 import { Input } from "../../components/ui/input";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import { ArchivedUser } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import { titles, buttons } from "@/constants/Auth";
+
+interface TeamMember {
+  _id: string;
+  name: string;
+  email: string;
+  address?: string;
+  organizationName: string;
+  role: string;
+  status: string;
+}
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
-  const userId = localStorage.getItem("userId")
-  const { teamMembers } = useSelector(
-    (state: RootState) => state.organization
-  );
+  const userId = localStorage.getItem("userId");
+  const { teamMembers } = useSelector((state: RootState) => state.organization);
 
   useEffect(() => {
     if (userId) {
@@ -53,7 +60,9 @@ export default function Dashboard() {
       }
       const res = await ArchivedUser(selectedUserId);
       if (res?.success === true) {
-        toast.success(res?.message || "User archived successfully", { duration: 2000 });
+        toast.success(res?.message || "User archived successfully", {
+          duration: 2000,
+        });
       } else {
         toast.error(res?.error || "Something went wrong", { duration: 2000 });
         console.error("Failed to delete user:", res);
@@ -65,8 +74,7 @@ export default function Dashboard() {
     }
   };
 
-
-  const columns = useMemo<ColumnDef<any>[]>(
+  const columns: ColumnDef<TeamMember, unknown>[] = useMemo(
     () => [
       {
         id: "select",
@@ -86,7 +94,8 @@ export default function Dashboard() {
             className="cursor-pointer"
           />
         ),
-      },
+      } as ColumnDef<TeamMember, unknown>,
+
       { accessorKey: "_id", header: "ID" },
       { accessorKey: "name", header: "Name" },
       { accessorKey: "email", header: "Email" },
@@ -98,12 +107,16 @@ export default function Dashboard() {
         header: "Status",
         cell: ({ row }) => {
           const status = row.original.status;
-          const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+          const formattedStatus =
+            status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
           return (
             <span
-              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active" ? "bg-primary text-white" : "text-primary border border-gray-300"
-                }`}
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${
+                status === "Active"
+                  ? "bg-primary text-white"
+                  : "text-primary border border-gray-300"
+              }`}
             >
               {formattedStatus}
             </span>
@@ -116,40 +129,49 @@ export default function Dashboard() {
         cell: ({ row }) => {
           const id = row.original._id;
           return (
-            <div className="relative inline-block text-left">
+            <div className="relative">
               <HiOutlineDotsHorizontal
                 className="cursor-pointer text-primary text-xl mr-4"
                 role="menu"
-                id="menu-button" aria-expanded="true" aria-haspopup="true"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
                 tabIndex={-1}
-                onClick={() => setOpenDropdown(openDropdown === id ? null : id)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling
+                  setOpenDropdown(openDropdown === id ? null : id);
+                }}
               />
               {openDropdown === id && (
-                <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5"
-                  role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-                  <button
-                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
-                  >
+                <div
+                  className="absolute right-0 z-[9999] mt-2 w-56 bg-white shadow-lg"
+                  style={{
+                    top: "100%",
+                    zIndex: 1000,
+                  }}
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                >
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
                     Edit
                   </button>
-                  <button
-                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
-                  >
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
                     Make a Copy
                   </button>
-                  <button
-                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
-                  >
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
                     Favorite
                   </button>
-                  <button
-                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
-                  >
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
                     Labels
                   </button>
                   <button
                     className="block px-4 py-2 text-left w-full hover:bg-gray-100"
-                    onClick={() => handleDeleteClick(id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(id);
+                      setOpenDropdown(null); // Close dropdown after clicking
+                    }}
                   >
                     Delete
                   </button>
@@ -158,7 +180,7 @@ export default function Dashboard() {
             </div>
           );
         },
-      },
+      } as ColumnDef<TeamMember, unknown>,
     ],
     [openDropdown]
   );
@@ -176,45 +198,58 @@ export default function Dashboard() {
   return (
     <>
       <Toaster />
-      <div className="p-8">
-        <div className="flex mb-4 w-full">
+      <div className="p-4 sm:p-6 md:p-8 w-full">
+        <div className="flex flex-col mb-4 w-full text-center">
           <div className=" mb-4 w-full">
-            <h1 className="text-3xl font-bold">Users</h1>
-            <p className="text-primary text-sm leading-5 font-semibold">Here's list to all users in your organization</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Users</h1>
+            <p className="text-primary text-sm leading-5 font-semibold">
+              Here's list to all users in your organization
+            </p>
           </div>
         </div>
 
-        <div className="flex justify-between items-center gap-4 mb-4">
-          <div className="flex justify-start items-start gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row justify-start items-stretch gap-4 w-full md:w-auto">
             <Input
               type="search"
               placeholder="Filter users..."
+              className="w-full sm:w-64"
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
 
-            <Button
-            >{<IoMdAddCircleOutline size={20} />}{"Role"}</Button>
-            <Button
-            >{<IoMdAddCircleOutline size={20} />}{"Status"}</Button>
+            <Button>
+              {<IoMdAddCircleOutline size={20} />}
+              {"Role"}
+            </Button>
+            <Button>
+              {<IoMdAddCircleOutline size={20} />}
+              {"Status"}
+            </Button>
           </div>
-          <div className="flex justify-end items-center gap-2">
-            <Button
-            >{"View"}</Button>
-            <Button
-            >{<VscSettings size={20} />}{"Invite User"}</Button>
+          <div className="flex justify-end items-center gap-2 w-full md:w-auto">
+            <Button className="w-full sm:w-auto">{"View"}</Button>
+            <Button className="w-full sm:w-auto">
+              {<VscSettings size={20} />}
+              {"Invite User"}
+            </Button>
           </div>
-
         </div>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="bg-white shadow-md rounded-lg overflow-x-auto relative">
           {table.getRowModel().rows.length > 0 ? (
-            <table className="w-full text-left border-collapse border border-gray-400">
+            <table className="w-full text-left border-collapse border border-gray-400 relative">
               <thead className="border border-gray-300">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
-                      <th key={header.id} className="py-4 px-4 text-[#444444] font-semibold text-sm">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                      <th
+                        key={header.id}
+                        className="py-4 px-4 text-[#444444] font-semibold text-sm"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                       </th>
                     ))}
                   </tr>
@@ -222,10 +257,16 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border border-gray-300 hover:bg-gray-100 transition">
+                  <tr
+                    key={row.id}
+                    className="border border-gray-300 hover:bg-gray-100 transition"
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="py-4 px-4">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -239,7 +280,7 @@ export default function Dashboard() {
         <Pagination table={table} />
 
         {showModal && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center p-4">
             <div className="bg-white p-6 rounded-md shadow-md">
               <h2 className="text-xl font-bold mb-2">Confirm Deletion</h2>
               <p>Are you sure you want to Archive this user?</p>
@@ -247,16 +288,16 @@ export default function Dashboard() {
                 <Button
                   onClick={() => setShowModal(false)}
                   variant={"destructive"}
-                >{"Cancel"}</Button>
-                <Button
-                  onClick={handleConfirmDelete}
-                  variant={"outline"}
-                >{"Archive"}</Button>
+                >
+                  {"Cancel"}
+                </Button>
+                <Button onClick={handleConfirmDelete} variant={"outline"}>
+                  {"Archive"}
+                </Button>
               </div>
             </div>
           </div>
         )}
-
       </div>
     </>
   );

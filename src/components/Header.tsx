@@ -1,99 +1,106 @@
-"use client"
-import type React from "react"
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import { headerContent } from "@/constants/Header"
+import { useState, useEffect } from "react"
+import { Link, useLocation } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Avatar, NavigationLink } from "@/components/ui"
+import { Drawer } from "@/components/drawer"
 import UserProfile from "./user-profile-drawer/UserProfile"
+import { headerContent } from "@/constants/Header"
 import { useDispatch, useSelector } from "react-redux"
-import type { AppDispatch, RootState } from "@/redux/Store"
-import { ThemeToggle } from "./ThemeToggle" // Added import
 import { getUserProfile } from "@/redux/slice/UserProfile"
+import type { AppDispatch, RootState } from "@/redux/Store"// Import your store types
 
-const Header: React.FC = () => {
+const Header = () => {
   const { APP_NAME, LOGIN_LINK_TEXT, REGISTER_LINK_TEXT } = headerContent
-  const accessToken = localStorage.getItem("accessToken")
-  const [showProfile, setShowProfile] = useState<boolean>(false)
-  const dispatch = useDispatch<AppDispatch>()
+  const [showProfile, setShowProfile] = useState(false)
+  const { userProfile } = useSelector((state: RootState) => state.userProfile) // Add RootState type
+  const dispatch = useDispatch<AppDispatch>() // Add AppDispatch type
   const userId = localStorage.getItem("userId")
-  const { userProfile } = useSelector((state: RootState) => state.userProfile)
+  const accessToken = localStorage.getItem("accessToken")
+  const location = useLocation()
 
   useEffect(() => {
-    if (userId) {
-      dispatch(getUserProfile(userId as string))
-    }
-  }, [dispatch , userId]);
+    if (userId) dispatch(getUserProfile(userId))
+  }, [dispatch, userId])
 
-  const handleProfileClick = () => {
-    setShowProfile(!showProfile)
-  }
+  const isLoginPage = location.pathname === "/login"
+  const isRegisterPage = location.pathname === "/register"
+
 
   return (
-    <div className="bg-primary text-white py-3 px-4 sm:px-6 flex justify-between items-center shadow-md relative z-10">
-      <h1 className="text-xl font-bold tracking-tight">
-        <Link to="/" className="hover:opacity-90 transition-opacity flex items-center">
-          {APP_NAME}
-        </Link>
-      </h1>
+    <header className="bg-primary text-primary-foreground shadow-md relative z-10 flex h-14 items-center justify-between px-4 sm:px-6">
+      <Link
+        to="/"
+        className="text-xl font-bold tracking-tight hover:opacity-90"
+      >
+        {APP_NAME}
+      </Link>
 
-      <nav className="flex items-center space-x-2"> {/* Added space-x-2 for spacing */}
-        <ThemeToggle /> {/* Added ThemeToggle component */}
+      <nav>
         {accessToken ? (
           <div className="relative">
-            <button
-              onClick={handleProfileClick}
-              className="flex items-center space-x-2 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-white/10 focus:ring-white/50"
+              onClick={() => setShowProfile(!showProfile)}
               aria-label="Open profile"
             >
-              <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/30 shadow-sm">
-                {userProfile?.data?.picture ? (
-                  <img
-                    className="w-full h-full object-cover"
-                    src={userProfile.data.picture || "/placeholder.svg"}
-                    alt="Profile"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/placeholder.svg";
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-primary-foreground flex items-center justify-center text-primary font-medium">
-                    {userProfile?.data?.userName?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )}
-              </div>
-            </button>
+              <Avatar
+                variant="default"
+                src={userProfile?.data?.picture}
+                fallback={userProfile?.data?.userName || "User"}
+                className="border-white/30"
+              />
+            </Button>
 
-            {showProfile && (
+            <Drawer
+              isOpen={showProfile}
+              onClose={() => setShowProfile(false)}
+              className="max-h-[85vh]"
+            >
+              <UserProfile setShowProfile={setShowProfile} />
+            </Drawer>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            {isLoginPage ? (
+              <NavigationLink
+                to="/register"
+                variant="outline"
+                className="bg-white/10 hover:bg-white/20"
+              >
+                {REGISTER_LINK_TEXT}
+              </NavigationLink>
+            ) : isRegisterPage ? (
+              <NavigationLink 
+                to="/login"
+                variant="outline"
+                className="bg-white/10 hover:bg-white/20"
+              >
+                {LOGIN_LINK_TEXT}
+              </NavigationLink>
+            ) : (
               <>
-                <div
-                  className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
-                  onClick={() => setShowProfile(false)}
-                ></div>
-                <div
-                  className="fixed bottom-0 left-0 right-0 bg-white text-black border-t-2 border-border shadow-2xl transition-all ease-in-out duration-300 transform z-40 rounded-t-3xl overflow-hidden"
-                  style={{
-                    maxHeight: "85vh",
-                    height: showProfile ? "85vh" : "0",
-                    touchAction: "none",
-                  }}
+                <NavigationLink 
+                  to="/login"
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20"
                 >
-                  <UserProfile setShowProfile={setShowProfile} />
-                </div>
+                  {LOGIN_LINK_TEXT}
+                </NavigationLink>
+                <NavigationLink
+                  to="/register"
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20"
+                >
+                  {REGISTER_LINK_TEXT}
+                </NavigationLink>
               </>
             )}
           </div>
-        ) : (
-          <div className="flex items-center space-x-4">
-            <Link to="/login" className="px-3 py-1.5 hover:bg-white/10 rounded-md transition-colors">
-              {LOGIN_LINK_TEXT}
-            </Link>
-            <Link to="/register" className="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-md transition-colors">
-              {REGISTER_LINK_TEXT}
-            </Link>
-          </div>
         )}
       </nav>
-    </div>
+    </header>
   )
 }
 

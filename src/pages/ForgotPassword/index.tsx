@@ -1,34 +1,44 @@
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
-import Email from "@/components/form/email";
-import {Button} from "@/components/ui/button";
-import { titles, buttons, messages, errors, regex } from "@/constants/Auth";
-import Card from "@/ui/Card";
+import * as constants from "@/constants/Auth";
+import {
+  Button,
+  Input,
+  Card,
+  NavigationLink,
+  FormDivider,
+  IconContainer,
+} from "@/components/ui";
 
 const ForgotPassword: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    titles: { FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE },
+    buttons: { RESET_PASSWORD_BUTTON_TEXT },
+    messages: { BACK_TO_LOGIN_TEXT },
+    errors: { INVALID_EMAIL_ERROR, REQUIRED_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+  } = constants;
 
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
-    formState: { errors: formErrors },
+    formState: { errors },
   } = useForm({
     mode: "onChange",
     defaultValues: {
       email: localStorage.getItem("email") || "",
     },
   });
+
   const onSubmit = async (data: { email: string }) => {
     try {
       const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email }),
       });
 
@@ -39,58 +49,65 @@ const ForgotPassword: React.FC = () => {
       } else {
         toast.error(resData.error);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to reset password.");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || "Failed to reset password.");
     }
   };
 
   return (
     <>
       <Toaster />
-      <Card>
-        <div className="flex items-center justify-center">
-          <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
-            <FiLock className="text-4xl" />
-          </div>
+      <Card size="md" layout="centeredAndSpaced">
+        <div className="text-center space-y-2">
+          <IconContainer>
+            <FiLock className="text-2xl" />
+          </IconContainer>
+          <h2 className="text-2xl font-bold">{FORGOT_PASSWORD_TITLE}</h2>
+          <p className="text-muted-foreground text-sm">
+            {FORGOT_PASSWORD_SUBTITLE}
+          </p>
         </div>
 
-        <h2 className="mt-8 text-xl font-semibold text-gray-800 mb-2 text-center">
-          {titles.FORGOT_PASSWORD_TITLE}
-        </h2>
-        <p className="text-xs text-gray-500 mb-4 text-center">
-          {titles.FORGOT_PASSWORD_SUBTITLE}
-        </p>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Controller
             name="email"
             control={control}
             rules={{
-              required: errors.INVALID_EMAIL,
+              required: { value: true, message: REQUIRED_EMAIL_ERROR },
               pattern: {
-                value: regex.EMAIL,
-                message: errors.INVALID_EMAIL,
+                value: EMAIL_REGEX,
+                message: INVALID_EMAIL_ERROR,
               },
             }}
             render={({ field }) => (
-              <Email
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                error={errors.email?.message ? true : false}
                 {...field}
-                error={formErrors.email?.message?.toString()}
               />
             )}
           />
+          {errors.email && (
+            <p className="text-destructive text-xs mt-1">
+              {errors.email.message as string}
+            </p>
+          )}
 
-          <Button
-            type="submit"
-            className="py-3 mt-2 hover:bg-gray-900 transition cursor-pointer flex items-center justify-center"
-          >{buttons.RESET_PASSWORD}</Button>
+          <Button className="w-full" type="submit">
+            {RESET_PASSWORD_BUTTON_TEXT}
+          </Button>
         </form>
 
-        <p className="text-black text-sm text-center mt-5">
-          <Link to="/login" className="hover:underline">
-            {messages.BACK_TO_LOGIN_TEXT}
-          </Link>
-        </p>
+        <FormDivider text="or" />
+
+        <div className="text-center">
+          <NavigationLink to="/login" variant="ghost" className="text-sm">
+            {BACK_TO_LOGIN_TEXT}
+          </NavigationLink>
+        </div>
       </Card>
     </>
   );

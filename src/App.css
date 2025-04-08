@@ -12,74 +12,6 @@ body {
   height: 100vh;
 }
 
-@layer base {
-  :root {
-    --background: #ffffff;
-    --foreground: #0a0a0a;
-    --card: #ffffff;
-    --card-foreground: #0a0a0a;
-    --popover: #ffffff;
-    --popover-foreground: #0a0a0a;
-    --primary: #171717;
-    --primary-foreground: #fafafa;
-    --secondary: #f5f5f5;
-    --secondary-foreground: #171717;
-    --muted: #f5f5f5;
-    --muted-foreground: #737373;
-    --hover: #0707bb;
-    --hover-foreground: #0707bb;
-    --accent: #f5f5f5;
-    --accent-foreground: #171717;
-    --destructive: #f04438;
-    --destructive-foreground: #fafafa;
-    --border: #e3e3e3;
-    --input: #e3e3e3;
-    --ring: #0a0a0a;
-    --chart-1: #99c2e0;
-    --chart-2: #62a394;
-    --chart-3: #3f6061;
-    --chart-4: #c9e099;
-    --chart-5: #e09994;
-    --radius: .5rem;
-  }
-  
-  .dark {
-    --background: #0a0a0a;
-    --foreground: #fafafa;
-    --card: #0a0a0a;
-    --card-foreground: #fafafa;
-    --popover: #0a0a0a;
-    --popover-foreground: #fafafa;
-    --primary: #fafafa;
-    --primary-foreground: #171717;
-    --secondary: #262626;
-    --secondary-foreground: #fafafa;
-    --muted: #262626;
-    --muted-foreground: #a3a3a3;
-    --accent: #262626;
-    --accent-foreground: #fafafa;
-    --destructive: #a8261e;
-    --destructive-foreground: #fafafa;
-    --border: #262626;
-    --input: #262626;
-    --ring: #d4d4d4;
-    --chart-1: #66a3e0;
-    --chart-2: #4da38a;
-    --chart-3: #e0664d;
-    --chart-4: #a366e0;
-    --chart-5: #e066a3;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border; 
-  }
-  body {
-    @apply bg-background text-foreground; 
-  } 
-}
-
 :root {
   --radius: 0.625rem;
   --background: #ffffff;
@@ -96,6 +28,7 @@ body {
   --muted-foreground: #8e8e8e;
   --accent: #f7f7f7;
   --accent-foreground: #343434;
+  --success: #4ade80;
   --destructive: #d14457;
   --hover: #031ab12b;
   --hover-foreground: #fcfcfc;
@@ -132,6 +65,7 @@ body {
   --muted-foreground: #b5b5b5;
   --accent: #444444;
   --accent-foreground: #fcfcfc;
+  --success: #4ade80;
   --destructive: #c75249;
   --hover: #031ab12b;
   --hover-foreground: #343434;
@@ -183,6 +117,10 @@ body {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);

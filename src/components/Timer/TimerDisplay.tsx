@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Card } from "../ui/card"
+import { Card } from "../ui/card-b"
 
 export default function TimerDisplay({ startTime }: { startTime: string }) {
   const [elapsed, setElapsed] = useState(0)

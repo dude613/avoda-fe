@@ -53,16 +53,24 @@ const VerifyCode: React.FC = () => {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
-          toast.success(data?.message || toasts.USER_VERIFIED, { duration: 2000 });
+          localStorage.setItem("userRole", data.user.role);
+          toast.success(data?.message || toasts.USER_VERIFIED_TOAST, {
+            duration: 2000,
+          });
           setTimeout(() => {
-            navigate("/create-organization", { replace: true });
+            navigate(
+              data.user.role === "admin" ? "/create-organization" : "/team",
+              { replace: true }
+            );
           }, 1000);
         }
       } else {
-        toast.error(data?.error || toasts.USER_NOT_FOUND, { duration: 2000 });
+        toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, {
+          duration: 2000,
+        });
       }
     } catch (error) {
-      toast.error(toasts.SERVER_ERROR);
+      toast.error(toasts.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
@@ -78,15 +86,15 @@ const VerifyCode: React.FC = () => {
         body: JSON.stringify({ email }),
       });
       if (response.ok && response.status === 200) {
-        toast.success(toasts.CODE_SENT, { position: "bottom-center" });
+        toast.success(toasts.CODE_SENT_TOAST, { position: "bottom-center" });
       } else if (response.status === 201) {
-        toast.success(toasts.USER_EXISTS, { duration: 2000 });
-        navigate("/dashboard", { replace: true });
+        toast.success(toasts.USER_EXISTS_TOAST, { duration: 2000 });
+        navigate("/team", { replace: true });
       } else {
-        toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+        toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(toasts.SERVER_ERROR, { duration: 2000 });
+      toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
     } finally {
       setResending(false);
     }
@@ -95,9 +103,9 @@ const VerifyCode: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibld text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
             {titles.VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -110,25 +118,23 @@ const VerifyCode: React.FC = () => {
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
 
-          <Button
-            onClick={handleVerify}
-            className="bg-black text-white py-2 w-full rounded flex items-center justify-center gap-2"
-            disabled={loading}
-          >
+          <Button onClick={handleVerify} className="w-full" disabled={loading}>
             {loading ? (
-              <>
-                <span className="animate-pulse">{messages.VERIFYING_CODE_TEXT}</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="animate-pulse">
+                  {messages.CREATING_ACCOUNT_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
-              </>
+              </span>
             ) : (
               "Verify Code"
             )}
           </Button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            {messages.NOT_RECEIVE_CODE_TEXT}{" "}
+            {messages.CODE_NOT_RECEIVED_TEXT}{" "}
           </p>
           <p
             className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
@@ -136,7 +142,9 @@ const VerifyCode: React.FC = () => {
           >
             {resending ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">{messages.RESENDING_CODE_TEXT}</span>
+                <span className="animate-pulse">
+                  {messages.RESENDING_CODE_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>

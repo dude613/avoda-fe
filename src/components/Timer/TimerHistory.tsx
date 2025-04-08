@@ -11,7 +11,7 @@ import {
   selectTimerPagination,
 } from "../../redux/slice/Timer"
 import type { Timer } from "../../service/timerApi"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card-b"
 import { ChevronLeftIcon, ChevronRightIcon, ClockIcon } from 'lucide-react'
 import { Button } from "../ui/button"
 import { Skeleton } from "../ui/skeleton"

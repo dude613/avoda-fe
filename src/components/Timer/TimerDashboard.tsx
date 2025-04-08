@@ -12,7 +12,7 @@ import {
   selectActiveTimer,
   selectTimerLoading,
 } from "../../redux/slice/Timer"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card-b"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
