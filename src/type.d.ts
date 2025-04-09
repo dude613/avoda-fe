@@ -1,14 +1,15 @@
-export interface UserProfile {
-    data?: {
-      userName: string;
-      email: string;
-      verified: string;
-      picture: string;
-      role : string;
-    };
-  }
+export type UserProfile = {
+  data?: {
+    userName: string;
+    email: string;
+    verified: string;
+    picture?: string;
+    role : string;
+    avatar?: string;
+  };
+}
 
-  export interface TeamMember {
+export type TeamMember = {
     _id: string;
     name: string;
     email: string;
@@ -18,17 +19,17 @@ export interface UserProfile {
     organizationName?: string;
     address?: string;
   }
-
-  export interface FormData {
+  
+  export type FormData = {
     name: string;
     email: string;
     role: string;
   }
 
-  interface LoginFormData {
+  export type LoginFormData = {
     email: string;
     password: string;
   }
-  interface EmailFormData {
+  export type EmailFormData = {
     email: string;
   };
