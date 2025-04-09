@@ -1,3 +1,4 @@
+//src/pages/ForgotPassword/index.tsx
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";

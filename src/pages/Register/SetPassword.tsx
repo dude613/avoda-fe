@@ -1,9 +1,10 @@
+//src/pages/Register/SetPassword.tsx
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Input } from "@/components/ui";
-import {Card} from "@/components/ui";
+import { Card } from "@/components/ui";
 import { titles, buttons, placeholders, errors, regex, toasts } from "@/constants/Auth";
 import { Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
 
@@ -166,7 +167,7 @@ const SetPassword: React.FC = () => {
           />
         </div>
 
-        <Button 
+        <Button
           onClick={handleSubmit(handleCreateAccount)}
           className="w-full"
           disabled={loading}
@@ -182,7 +183,7 @@ const SetPassword: React.FC = () => {
           ) : (
             buttons.CREATE_ACCOUNT_BUTTON_TEXT
           )
-        }
+          }
         </Button>
       </Card>
     </>

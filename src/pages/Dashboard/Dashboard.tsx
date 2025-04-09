@@ -1,3 +1,4 @@
+//src/pages/Dashboard/Dashboard.tsx
 import { useState, useMemo, useEffect } from "react";
 import {
   useReactTable,
@@ -63,7 +64,7 @@ export default function Dashboard() {
       setShowModal(false);
     }
   };
-//FIXME Switch from Any
+  //FIXME Switch from Any
   const columns: ColumnDef<TeamMember, any>[] = useMemo(
     () => [
       {
@@ -84,7 +85,7 @@ export default function Dashboard() {
             className="cursor-pointer"
           />
         ),//FIXME Switch from Any
-      } as ColumnDef<TeamMember, any>, 
+      } as ColumnDef<TeamMember, any>,
 
       { accessorKey: "_id", header: "ID" },
       { accessorKey: "name", header: "Name" },
@@ -103,8 +104,8 @@ export default function Dashboard() {
           return (
             <span
               className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active"
-                  ? "bg-primary text-white"
-                  : "text-primary border border-gray-300"
+                ? "bg-primary text-white"
+                : "text-primary border border-gray-300"
                 }`}
             >
               {formattedStatus}
@@ -169,7 +170,7 @@ export default function Dashboard() {
             </div>
           );
         },//FIXME Switch from Any
-      } as ColumnDef<TeamMember, any>, 
+      } as ColumnDef<TeamMember, any>,
     ],
     [openDropdown]
   );

@@ -1,3 +1,4 @@
+//src/pages/Team/index.tsx
 import { useState, useMemo, useEffect } from "react";
 import {
   useReactTable,
@@ -219,7 +220,7 @@ export default function TeamMembers() {
       setShowModal(false);
     }
   };
-//FIXME Switch from Any
+  //FIXME Switch from Any
   const columns = useMemo<ColumnDef<TeamMember, any>[]>(
     () => [
       {
@@ -264,8 +265,8 @@ export default function TeamMembers() {
           return (
             <span
               className={`px-2.5  text-sm rounded-full font-semibold ${status === "Active"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
                 }`}
             >
               {status}
@@ -348,8 +349,8 @@ export default function TeamMembers() {
               <span className="text-sm text-gray-500">Status</span>
               <p
                 className={`font-medium ${row.original.status === "Active"
-                    ? "text-green-600"
-                    : "text-red-600"
+                  ? "text-green-600"
+                  : "text-red-600"
                   }`}
               >
                 {row.original.status}

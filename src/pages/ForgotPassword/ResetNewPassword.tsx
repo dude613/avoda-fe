@@ -1,3 +1,4 @@
+//src/pages/ForgotPassword/ResetNewPassword.tsx
 import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ export default function ResetNewPassword() {
         handleSubmit,
         watch,
         // Rename formState errors to avoid conflict with imported constants
-        formState: { errors: formErrors }, 
+        formState: { errors: formErrors },
     } = useForm<formData>({
         mode: "onChange",
     });
@@ -82,9 +83,9 @@ export default function ResetNewPassword() {
                                 name="password"
                                 control={control}
                                 rules={{
-                                    required: errors.PASSWORD_REQUIRED_ERROR, 
+                                    required: errors.PASSWORD_REQUIRED_ERROR,
                                     pattern: {
-                                        value: regex.PASSWORD_REGEX, 
+                                        value: regex.PASSWORD_REGEX,
                                         message: errors.INVALID_PASSWORD_ERROR, // Use imported constants
                                     },
                                 }}
@@ -106,9 +107,9 @@ export default function ResetNewPassword() {
                                 control={control}
                                 rules={{
                                     // Use imported constants
-                                    required: errors.PASSWORD_REQUIRED_ERROR, 
+                                    required: errors.PASSWORD_REQUIRED_ERROR,
                                     // Use imported constants
-                                    validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR, 
+                                    validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR,
                                 }}
                                 render={({ field }) => (
                                     <Password
@@ -123,7 +124,7 @@ export default function ResetNewPassword() {
                             />
                         </div>
                         <Button
-                            >{buttons.RESET_PASSWORD_BUTTON_TEXT}</Button>
+                        >{buttons.RESET_PASSWORD_BUTTON_TEXT}</Button>
                     </form>
 
                     <p className="text-gray-800 text-sm text-center mt-5">

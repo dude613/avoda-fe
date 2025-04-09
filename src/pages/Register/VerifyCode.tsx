@@ -1,3 +1,4 @@
+//src/pages/Register/VerifyCode.tsx
 import OTP from "@/components/form/otp";
 import { Button } from "@/components/ui/button";
 import { titles, messages, toasts } from "@/constants/Auth";
