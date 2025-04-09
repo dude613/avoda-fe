@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
-  ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
 import { IoMdAddCircleOutline } from "react-icons/io";
@@ -28,10 +27,24 @@ import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Select } from "@/components/ui/select";
 import { useMediaQuery } from "react-responsive";
-import type { TeamMember, FormData } from "@/type"; // Added import
+import { ColumnDef } from "@tanstack/react-table";
 
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  avatar?: string;
+  organizationName?: string;
+  address?: string;
+}
 
-
+interface FormData {
+  name: string;
+  email: string;
+  role: string;
+}
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
 export default function TeamMembers() {
@@ -86,7 +99,7 @@ export default function TeamMembers() {
       try {
         const data = await fetchOrganization();
         if (data && data.success && data.data.length > 0) {
-          const orgId = data.data[0]._id;
+          const orgId = data.data[0].id;
           setOrganizationId(orgId);
         }
       } catch (error) {
@@ -220,9 +233,10 @@ export default function TeamMembers() {
       setShowModal(false);
     }
   };
-  //FIXME Switch from Any
-  const columns = useMemo<ColumnDef<TeamMember, any>[]>(
-    () => [
+
+  const columns: ColumnDef<TeamMember>[] = useMemo(
+    () => {
+      const cols: ColumnDef<TeamMember>[] = [
       {
         id: "select",
         header: ({ table }) => (
@@ -241,7 +255,7 @@ export default function TeamMembers() {
             className="cursor-pointer"
           />
         ),
-        accessorFn: (row) => row._id, // Added accessorFn
+        accessorFn: (row) => row.id, // Added accessorFn
       },
       {
         id: "name", // Added id
@@ -278,7 +292,7 @@ export default function TeamMembers() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-          const id = row.original._id;
+          const id = row.original.id;
           return (
             <div className="">
               <Button
@@ -300,13 +314,14 @@ export default function TeamMembers() {
             </div>
           );
         },
-        accessorFn: (row) => row._id, // Added accessorFn
+        accessorFn: (row) => row.id, // Added accessorFn
       },
-    ],
-    [openDropdown]
+    ];
+    return cols;
+  }, [openDropdown]
   );
 
-  const table = useReactTable({
+  const table = useReactTable<TeamMember>({
     data: teamMembers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -333,7 +348,7 @@ export default function TeamMembers() {
               size="icon"
               onClick={() => {
                 setOpenDropdown(
-                  openDropdown === row.original._id ? null : row.original._id
+                  openDropdown === row.original.id ? null : row.original.id
                 );
               }}
             >
@@ -357,7 +372,7 @@ export default function TeamMembers() {
               </p>
             </div>
           </div>
-          {openDropdown === row.original._id && (
+          {openDropdown === row.original.id && (
             <div className="">
               <Button
                 size="icon"
@@ -371,7 +386,7 @@ export default function TeamMembers() {
                 size="icon"
                 variant="ghost"
                 className="  text-red-600"
-                onClick={() => handleDeleteClick(row.original._id)}
+                onClick={() => handleDeleteClick(row.original.id)}
               >
                 <Trash size={16} />
               </Button>

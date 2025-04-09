@@ -56,7 +56,7 @@ const Login: React.FC = () => {
     try {
       const response = await LoginAPI({ email, password });
       if (response.success) {
-        localStorage.setItem("userId", response.user._id);
+        localStorage.setItem("userId", response.user.id);
         localStorage.setItem("accessToken", response.accessToken);
         localStorage.setItem("userRole", response.user.role);
         toast.success(response.message || LOGIN_SUCCESS_TOAST, {
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("userId", data.user.id);
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("userRole", data.user.role);
           toast.success(LOGIN_SUCCESS_TOAST, { position: "bottom-center" });

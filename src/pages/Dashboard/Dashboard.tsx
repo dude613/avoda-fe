@@ -1,25 +1,29 @@
+"use client"
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 //src/pages/Dashboard/Dashboard.tsx
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react"
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
-  ColumnDef,
   flexRender,
-} from "@tanstack/react-table";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import Pagination from "../../util/Pagination";
-import { Button } from "../../components/ui/button";
-import { VscSettings } from "react-icons/vsc";
-import { Input } from "../../components/ui/input";
+} from "@tanstack/react-table"
+import { IoMdAddCircleOutline } from "react-icons/io"
+import { HiOutlineDotsHorizontal } from "react-icons/hi"
+import Pagination from "../../util/Pagination"
+import { Button } from "../../components/ui/button"
+import { VscSettings } from "react-icons/vsc"
+import { Input } from "../../components/ui/input"
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/Store";
+import type { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import { ArchivedUser } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import type { TeamMember } from "@/type";
+
+import { TeamMember } from "../../types/TeamMember";
+import { ColumnDef } from "@tanstack/react-table";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
@@ -64,9 +68,9 @@ export default function Dashboard() {
       setShowModal(false);
     }
   };
-  //FIXME Switch from Any
-  const columns: ColumnDef<TeamMember, any>[] = useMemo(
-    () => [
+
+  const columns: ColumnDef<TeamMember>[] = useMemo(() => {
+    const cols: ColumnDef<TeamMember>[] = [
       {
         id: "select",
         header: ({ table }) => (
@@ -84,15 +88,32 @@ export default function Dashboard() {
             onChange={row.getToggleSelectedHandler()}
             className="cursor-pointer"
           />
-        ),//FIXME Switch from Any
-      } as ColumnDef<TeamMember, any>,
-
-      { accessorKey: "_id", header: "ID" },
-      { accessorKey: "name", header: "Name" },
-      { accessorKey: "email", header: "Email" },
-      { accessorKey: "address", header: "Address" },
-      { accessorKey: "organizationName", header: "Organization" },
-      { accessorKey: "role", header: "Role" },
+        ),
+      },
+      {
+        accessorKey: "id",
+        header: "ID",
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+      },
+      {
+        accessorKey: "organizationName",
+        header: "Organization",
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+      },
       {
         accessorKey: "status",
         header: "Status",
@@ -117,7 +138,7 @@ export default function Dashboard() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-          const id = row.original._id;
+          const id = row.original.id;
           return (
             <div className="relative">
               <HiOutlineDotsHorizontal
@@ -169,13 +190,13 @@ export default function Dashboard() {
               )}
             </div>
           );
-        },//FIXME Switch from Any
-      } as ColumnDef<TeamMember, any>,
-    ],
-    [openDropdown]
-  );
+        },
+      },
+    ];
+    return cols;
+  }, [openDropdown]);
 
-  const table = useReactTable({
+  const table = useReactTable<TeamMember>({
     data: teamMembers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),

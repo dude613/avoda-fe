@@ -57,7 +57,7 @@ const Register: React.FC = () => {
         const responseData = await response.json();
 
         if (responseData.success) {
-          localStorage.setItem("userId", responseData.data.user._id);
+          localStorage.setItem("userId", responseData.data.user.id);
           localStorage.setItem("accessToken", responseData.data.accessToken);
           localStorage.setItem("userRole", responseData.data.user.role);
           toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });

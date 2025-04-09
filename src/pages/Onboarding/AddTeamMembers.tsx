@@ -93,7 +93,7 @@ const AddTeamMembers = () => {
       try {
         const data = await fetchOrganization();
         if (data && data.success && data.data.length > 0) {
-          const orgId = data.data[0]._id;
+          const orgId = data.data[0].id;
           setOrganizationId(orgId);
         }
       } catch (error) {
