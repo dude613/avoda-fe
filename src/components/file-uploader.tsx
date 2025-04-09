@@ -152,6 +152,7 @@ export function FileUploader({
       const validFiles = files.filter((file) =>
         allowedTypes.includes(file.type)
       );
+      //TODO switch to a different alert
       if (!validFiles.length) return alert(TEAM_BULK_INVALID_FILE);
       if (mode === "csv") {
         setIsFileUploaded(true);
