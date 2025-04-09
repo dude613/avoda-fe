@@ -1,3 +1,4 @@
+//src/pages/Register/index.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -13,9 +14,7 @@ import {
   Card,
 } from "@/components/ui";
 
-type EmailFormData = {
-  email: string;
-};
+import { EmailFormData } from "@/type";
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
@@ -84,7 +83,7 @@ const Register: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card size="md" layout="centeredAndSpaced">
+      <Card layout="centeredAndSpaced">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold">{REGISTER_PAGE_TITLE}</h2>
           <p className="text-muted-foreground text-sm">
@@ -136,7 +135,7 @@ const Register: React.FC = () => {
             {EMAIL_BUTTON_TEXT}
           </Button>
         </form>
-
+        {/*TODO Make buttons same as /login*/}
         <div className="text-center text-sm text-muted-foreground">
           {EXISTING_ACCOUNT_TEXT}{" "}
           <NavigationLink to="/login" variant="link" underline>

@@ -10,7 +10,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { teamContent } from "@/constants/AddTeamMembers";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 
 type NormalizedRow = {
   name: string;

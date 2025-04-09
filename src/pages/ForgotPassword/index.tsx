@@ -1,3 +1,4 @@
+//src/pages/ForgotPassword/index.tsx
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Toaster, toast } from "react-hot-toast";
@@ -58,7 +59,7 @@ const ForgotPassword: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card size="md" layout="centeredAndSpaced">
+      <Card layout="centeredAndSpaced">
         <div className="text-center space-y-2">
           <IconContainer>
             <FiLock className="text-2xl" />
@@ -84,7 +85,7 @@ const ForgotPassword: React.FC = () => {
               <Input
                 label="Email"
                 type="email"
-                placeholder="Enter your email"
+                labelAnimation
                 error={errors.email?.message ? true : false}
                 {...field}
               />
@@ -104,7 +105,7 @@ const ForgotPassword: React.FC = () => {
         <FormDivider text="or" />
 
         <div className="text-center">
-          <NavigationLink to="/login" variant="ghost" className="text-sm">
+          <NavigationLink to="/login" variant="ghost" className="text-sm hover:text-success">
             {BACK_TO_LOGIN_TEXT}
           </NavigationLink>
         </div>

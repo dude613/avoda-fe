@@ -1,3 +1,4 @@
+//src/pages/Login/index.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
@@ -13,11 +14,7 @@ import { Input } from "@/components/ui/input";
 import { NavigationLink } from "@/components/ui/navigation-link";
 import { FormDivider } from "@/components/ui/form-divider";
 import { Eye, EyeOff } from "lucide-react";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+import { LoginFormData } from "@/type";
 
 const Login: React.FC = () => {
   const {
@@ -118,7 +115,7 @@ const Login: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card size="md" layout="centeredAndSpaced">
+      <Card layout="centeredAndSpaced">
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">{LOGIN_PAGE_TITLE}</h2>
@@ -216,17 +213,23 @@ const Login: React.FC = () => {
             </form>
 
             <div className="text-center space-y-2 pt-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm">
                 {NO_ACCOUNT_TEXT}{" "}
-                <NavigationLink to="/register" variant="link" underline>
+                <NavigationLink
+                  to="/register"
+                  variant="ghost"
+                  underline
+                  className="text-sm"
+                >
                   {SIGNUP_BUTTON_TEXT}
                 </NavigationLink>
               </p>
+
               <NavigationLink
                 to="/forgot-password"
-                variant="ghost"
-                size="default"
-                className="text-sm"
+                variant="link"
+                underline
+                className="text-muted-foreground mt-2"
               >
                 {FORGOT_PASSWORD_BUTTON_TEXT}
               </NavigationLink>

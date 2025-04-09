@@ -1,10 +1,10 @@
-import '../../index.css';
+import '@/index.css';
 import type { Meta, StoryObj } from '@storybook/react';
 // Temporarily remove icon import
 // import { CheckIcon } from 'lucide-react';
 
 // Import the component and the variant config
-import { Badge } from './badge';
+import { Badge } from '@/components/ui/badge';
 
 const meta = {
   title: 'UI/Badge',

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Button } from './button'; // Button to trigger the toast
-import { Toaster } from './toaster'; // Toaster to display toasts
-import { ToastAction } from './toast'; // Action component for the toast
+import { Button } from '@/components/ui/button'; // Button to trigger the toast
+import { Toaster } from '@/components/ui/toaster'; // Toaster to display toasts
+import { ToastAction } from '@/components/ui/toast'; // Action component for the toast
 import { toast } from '@/hooks/use-toast'; // Hook to trigger toasts
-import '../../index.css'; // Import base CSS
+import '@/index.css'; // Import base CSS
 
 const meta = {
   title: 'UI/Toast',

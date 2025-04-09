@@ -1,3 +1,4 @@
+//src/pages/Debug.tsx
 import React from 'react';
 import SentryTestButton from '@/components/SentryTestButton'; // Assuming this path is correct based on project structure
 

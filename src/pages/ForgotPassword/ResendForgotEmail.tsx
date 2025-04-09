@@ -1,10 +1,11 @@
+//src/pages/ForgotPassword/ResendForgotEmail.tsx
 import { useEffect, useState } from "react";
 import { LuPlane } from "react-icons/lu";
 import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import {Card} from "@/components/ui";
-import { titles, buttons} from "@/constants/Auth";
-import {Button} from "@/components/ui/button";
+import { Card } from "@/components/ui";
+import { titles, buttons } from "@/constants/Auth";
+import { Button } from "@/components/ui/button";
 
 export default function ResendForgotEmail() {
     const baseUrl = import.meta.env.VITE_BACKEND_URL;

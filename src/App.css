@@ -1,3 +1,5 @@
+/* Using Mostly - https://ui.shadcn.com/colors#colors -500
+ */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
@@ -28,8 +30,8 @@ body {
   --muted-foreground: #8e8e8e;
   --accent: #f7f7f7;
   --accent-foreground: #343434;
-  --success: #4ade80;
-  --destructive: #d14457;
+  --success: #22c55e;
+  --destructive: #ef4444;
   --hover: #031ab12b;
   --hover-foreground: #fcfcfc;
   --border: #ebebeb;

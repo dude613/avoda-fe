@@ -1,6 +1,7 @@
 "use client"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+//src/pages/Dashboard/Dashboard.tsx
 import { useState, useMemo, useEffect } from "react"
 import {
   useReactTable,
@@ -123,11 +124,10 @@ export default function Dashboard() {
 
           return (
             <span
-              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${
-                status === "Active"
-                  ? "bg-primary text-white"
-                  : "text-primary border border-gray-300"
-              }`}
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active"
+                ? "bg-primary text-white"
+                : "text-primary border border-gray-300"
+                }`}
             >
               {formattedStatus}
             </span>
