@@ -13,11 +13,7 @@ import { Input } from "@/components/ui/input";
 import { NavigationLink } from "@/components/ui/navigation-link";
 import { FormDivider } from "@/components/ui/form-divider";
 import { Eye, EyeOff } from "lucide-react";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+import { LoginFormData } from "@/type";
 
 const Login: React.FC = () => {
   const {

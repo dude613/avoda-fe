@@ -24,3 +24,11 @@ export interface UserProfile {
     email: string;
     role: string;
   }
+
+  interface LoginFormData {
+    email: string;
+    password: string;
+  }
+  interface EmailFormData {
+    email: string;
+  };

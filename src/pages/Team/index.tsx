@@ -219,7 +219,7 @@ export default function TeamMembers() {
       setShowModal(false);
     }
   };
-
+//FIXME Switch from Any
   const columns = useMemo<ColumnDef<TeamMember, any>[]>(
     () => [
       {

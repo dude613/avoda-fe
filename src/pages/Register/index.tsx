@@ -13,9 +13,7 @@ import {
   Card,
 } from "@/components/ui";
 
-type EmailFormData = {
-  email: string;
-};
+import { EmailFormData } from "@/type";
 
 const Register: React.FC = () => {
   const baseUrl = import.meta.env.VITE_BACKEND_URL;
