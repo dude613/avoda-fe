@@ -4,7 +4,6 @@ import { updateActiveTimer, clearActiveTimer, addTimerToHistory } from "../redux
 import type { AppDispatch } from "../redux/Store"
 import type { Timer } from "./timerApi"
 import toast from "react-hot-toast"
-import { url as baseUrl } from "@/Config"
 
 let socket: Socket | null = null
 let dispatch: AppDispatch | null = null

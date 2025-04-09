@@ -25,7 +25,7 @@ const Register: React.FC = () => {
     messages: { DIVIDER_TEXT, EXISTING_ACCOUNT_TEXT },
     errors: { INVALID_EMAIL_ERROR },
     regex: { EMAIL_REGEX },
-    toasts: { REGISTER_SUCCESS_TOAST, USER_EXISTS_TOAST, SERVER_ERROR_TOAST },
+    toasts: { REGISTER_SUCCESS_TOAST, SERVER_ERROR_TOAST },
   } = constants;
 
   const navigate = useNavigate();

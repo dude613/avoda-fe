@@ -2,10 +2,9 @@ import '../../index.css';
 import type { Meta, StoryObj } from '@storybook/react';
 // Temporarily remove icon import
 // import { CheckIcon } from 'lucide-react';
-import React from 'react'; // Import React
 
 // Import the component and the variant config
-import { Badge, badgeVariants } from './badge';
+import { Badge } from './badge';
 
 const meta = {
   title: 'UI/Badge',

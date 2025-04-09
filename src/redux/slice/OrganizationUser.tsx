@@ -3,6 +3,7 @@ import axios from "axios";
 import { LIST_TEAMMEMBER } from "../../Config";
 
 interface TeamMember {
+  avatar: string | undefined;
   id: string;
   organizationName: string;
   name: string;

@@ -4,7 +4,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
-  ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
 import { IoMdAddCircleOutline } from "react-icons/io";
@@ -27,9 +26,10 @@ import { Card } from "../../components/ui/card";
 import { Avatar } from "../../components/ui/avatar";
 import { Select } from "../../components/ui/select";
 import { useMediaQuery } from "react-responsive";
+import { ColumnDef } from "@tanstack/react-table";
 
 interface TeamMember {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -98,7 +98,7 @@ export default function TeamMembers() {
       try {
         const data = await fetchOrganization();
         if (data && data.success && data.data.length > 0) {
-          const orgId = data.data[0]._id;
+          const orgId = data.data[0].id;
           setOrganizationId(orgId);
         }
       } catch (error) {
@@ -233,8 +233,9 @@ export default function TeamMembers() {
     }
   };
 
-  const columns = useMemo<ColumnDef<TeamMember>[]>(
-    () => [
+  const columns: ColumnDef<TeamMember>[] = useMemo(
+    () => {
+      const cols: ColumnDef<TeamMember>[] = [
       {
         id: "select",
         header: ({ table }) => (
@@ -288,7 +289,7 @@ export default function TeamMembers() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-          const id = row.original._id;
+          const id = row.original.id;
           return (
             <div className="">
               <Button
@@ -311,11 +312,12 @@ export default function TeamMembers() {
           );
         },
       },
-    ],
-    [openDropdown]
+    ];
+    return cols;
+  }, [openDropdown]
   );
 
-  const table = useReactTable({
+  const table = useReactTable<TeamMember>({
     data: teamMembers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -342,7 +344,7 @@ export default function TeamMembers() {
               size="icon"
               onClick={() => {
                 setOpenDropdown(
-                  openDropdown === row.original._id ? null : row.original._id
+                  openDropdown === row.original.id ? null : row.original.id
                 );
               }}
             >
@@ -367,7 +369,7 @@ export default function TeamMembers() {
               </p>
             </div>
           </div>
-          {openDropdown === row.original._id && (
+          {openDropdown === row.original.id && (
             <div className="">
               <Button
                 size="icon"
@@ -381,7 +383,7 @@ export default function TeamMembers() {
                 size="icon"
                 variant="ghost"
                 className="  text-red-600"
-                onClick={() => handleDeleteClick(row.original._id)}
+                onClick={() => handleDeleteClick(row.original.id)}
               >
                 <Trash size={16} />
               </Button>

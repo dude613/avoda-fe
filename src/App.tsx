@@ -35,7 +35,7 @@ function App() {
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] w-full px-4">
+      {/* <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] w-full px-4"> */}
       <Routes>
         <Route
           path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
@@ -64,7 +64,7 @@ function App() {
         <Route path="/debug" element={<DebugPage />} />
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
-      </div>
+      {/* </div> */}
     </>
   );
 }

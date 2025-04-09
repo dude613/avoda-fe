@@ -10,12 +10,11 @@ import {
   selectHistoryLoading,
   selectTimerPagination,
 } from "../../redux/slice/Timer"
-import type { Timer } from "../../service/timerApi"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card-b"
 import { ChevronLeftIcon, ChevronRightIcon, ClockIcon } from 'lucide-react'
 import { Button } from "../ui/button"
 import { Skeleton } from "../ui/skeleton"
-import { useReactTable, getCoreRowModel, flexRender, createColumnHelper, type ColumnDef } from "@tanstack/react-table"
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from "@tanstack/react-table"
 
 export default function TimerHistory() {
   const dispatch = useDispatch<AppDispatch>()
