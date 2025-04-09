@@ -84,7 +84,7 @@ const ForgotPassword: React.FC = () => {
               <Input
                 label="Email"
                 type="email"
-                placeholder="Enter your email"
+                labelAnimation
                 error={errors.email?.message ? true : false}
                 {...field}
               />
