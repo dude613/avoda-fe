@@ -4,7 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Input } from "@/components/ui";
 import {Card} from "@/components/ui";
-import { titles, buttons, messages, placeholders, errors, regex, toasts } from "@/constants/Auth";
+import { titles, buttons, placeholders, errors, regex, toasts } from "@/constants/Auth";
 import { Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
 
 interface FormData {

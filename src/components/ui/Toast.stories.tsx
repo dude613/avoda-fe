@@ -1,4 +1,3 @@
-import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from './button'; // Button to trigger the toast

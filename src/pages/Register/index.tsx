@@ -25,7 +25,7 @@ const Register: React.FC = () => {
     messages: { DIVIDER_TEXT, EXISTING_ACCOUNT_TEXT },
     errors: { INVALID_EMAIL_ERROR },
     regex: { EMAIL_REGEX },
-    toasts: { REGISTER_SUCCESS_TOAST, USER_EXISTS_TOAST, SERVER_ERROR_TOAST },
+    toasts: { REGISTER_SUCCESS_TOAST, SERVER_ERROR_TOAST },
   } = constants;
 
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const Register: React.FC = () => {
         const responseData = await response.json();
 
         if (responseData.success) {
-          localStorage.setItem("userId", responseData.data.user._id);
+          localStorage.setItem("userId", responseData.data.user.id);
           localStorage.setItem("accessToken", responseData.data.accessToken);
           localStorage.setItem("userRole", responseData.data.user.role);
           toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });

@@ -17,7 +17,7 @@ import { LogoutAPI, UpdateProfile, UploadUserPicture } from "@/service/api";
 import { Toaster, toast } from "react-hot-toast";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 import type { AppDispatch, RootState } from "@/redux/Store";
-import { X, Upload, Save, User, Shield } from "lucide-react";
+import { Upload, Save, User, Shield } from "lucide-react";
 import { userProfileContent } from "@/constants/UserProfile";
 import { useNavigate } from "react-router-dom";
 import * as constants from "@/constants/Auth";

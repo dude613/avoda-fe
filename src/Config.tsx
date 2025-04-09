@@ -1,6 +1,6 @@
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
-const url = `${baseUrl}/api`;
+export const url = `${baseUrl}/api`;
 
 
 //.................Organization API endpoints................\\
@@ -19,5 +19,13 @@ export const GET_USER_PROFILE = `${url}/auth/get-profile`;
 export const LOGIN_API = `${url}/auth/login`;
 export const UPDATE_USER_PROFILE = `${url}/auth/update-profile`;
 export const UPDATE_USER_PROFILE_PICTURE = `${url}/auth/upload-image`;
+
 export const LOGOUT_API = `${url}/auth/logout`;
 export const All_USER_INFO=`${url}/auth/allUserInfo`
+
+
+//..................Timer API Endpoints....................\\
+export const TIMER_START = `${url}/timers/start`
+export const TIMER_STOP = `${url}/timers/stop`
+export const TIMER_ACTIVE = `${url}/timers/active`
+export const TIMER_HISTORY = `${url}/timers`
