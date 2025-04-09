@@ -8,8 +8,8 @@ export function useTheme() {
       // Default theme for server-side rendering or environments without window
       return 'light';
     }
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
       return savedTheme;
     }
     // Check system preference
