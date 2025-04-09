@@ -58,7 +58,7 @@ const ForgotPassword: React.FC = () => {
   return (
     <>
       <Toaster />
-      <Card size="md" layout="centeredAndSpaced">
+      <Card layout="centeredAndSpaced">
         <div className="text-center space-y-2">
           <IconContainer>
             <FiLock className="text-2xl" />
@@ -104,7 +104,7 @@ const ForgotPassword: React.FC = () => {
         <FormDivider text="or" />
 
         <div className="text-center">
-          <NavigationLink to="/login" variant="ghost" className="text-sm">
+          <NavigationLink to="/login" variant="ghost" className="text-sm hover:text-success">
             {BACK_TO_LOGIN_TEXT}
           </NavigationLink>
         </div>

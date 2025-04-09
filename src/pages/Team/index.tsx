@@ -391,7 +391,7 @@ export default function TeamMembers() {
             Manage your organization's team members
           </p>
         </div>
-
+        {/*TODO Check Card Size relative to login/register*/}
         <Card size="full" layout="responsive">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 w-full">
             {/* Search + Filter */}
