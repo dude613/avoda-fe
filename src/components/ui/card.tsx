@@ -21,7 +21,7 @@ const cardVariants = cva(
         centered: "mx-auto",
         spaced: "space-y-4",
         centeredAndSpaced: "mx-auto space-y-4",
-         responsive:"p-4 sm:p-6"
+        responsive: "p-4 sm:p-6"
       }
     },
     defaultVariants: {
