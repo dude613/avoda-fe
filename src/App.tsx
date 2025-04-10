@@ -69,9 +69,9 @@ function App() {
       {/* Standalone routes without specific layout */}
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/debug" element={<DebugPage />} />
+      {/* MediumTODO Need to make sure this is only on internal app - not external site. Need a 404 component for it.*/}
+      <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
 
-      {/* Catch-all 404 - Consider creating a dedicated 404 page/component */}
-      <Route path="*" element={<Navigate to="/login" />} /> {/* Or redirect to a proper 404 page */}
     </Routes>
   );
 }
