@@ -17,7 +17,7 @@ interface OTPProps {
 
 export default function OTP({
   value = "",
-  onChange = () => {},
+  onChange = () => { },
   maxLength = 6,
   containerClassName = "flex items-center gap-3 has-disabled:opacity-50",
   showLabel = false,

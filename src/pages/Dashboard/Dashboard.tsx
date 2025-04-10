@@ -1,162 +1,279 @@
-import React, { ReactNode, useMemo, useState } from 'react'
+"use client"
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+//src/pages/Dashboard/Dashboard.tsx
+import { useState, useMemo, useEffect } from "react"
 import {
-  createColumnHelper,
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
-  ColumnDef,
+  getFilteredRowModel,
   flexRender,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
+import { IoMdAddCircleOutline } from "react-icons/io"
+import { HiOutlineDotsHorizontal } from "react-icons/hi"
+import Pagination from "../../util/Pagination"
+import { Button } from "../../components/ui/button"
+import { VscSettings } from "react-icons/vsc"
+import { Input } from "../../components/ui/input"
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../redux/Store";
+import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
+import { ArchivedUser } from "@/service/api";
+import toast, { Toaster } from "react-hot-toast";
 
-const Dashboard: React.FC = () => {
+import { TeamMember } from "../../types/TeamMember";
+import { ColumnDef } from "@tanstack/react-table";
 
-  const [selectList, setSelectList] = useState<number[]>([]);
+export default function Dashboard() {
+  const dispatch = useDispatch<AppDispatch>();
+  const userId = localStorage.getItem("userId");
+  const { teamMembers } = useSelector((state: RootState) => state.organization);
 
-  const columnHelper = createColumnHelper<any>();
-  const columns: ColumnDef<any>[] = useMemo(
-    () => [
-      // columnHelper.accessor("CreatedAt", {
-      //   header: t("order_date"),
-      //   cell: (info) => info.getValue(),
-      // }),
-      // columnHelper.accessor("State", {
-      //   header: t("status"),
-      //   cell: (info) => {
-      //     const value = info.getValue();
-      //     return (
-      //       <div
-      //         className={`${
-      //           (statusMapping[value as number] || value) === "Paid"
-      //             ? "bg-green-600 opacity-85 text-white"
-      //             : "bg-yellow-100"
-      //         } px-2.5 py-1 rounded-md`}
-      //       >
-      //         {statusMapping[value as number] || (value as string)}
-      //       </div>
-      //     );
-      //   },
-      // }),
-    ],
-    [columnHelper]
-  );
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchOrganizations(userId as string));
+    }
+  }, [dispatch, userId]);
 
-  const table = useReactTable({
-    data: [],
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState({});
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedUserId(id);
+    setShowModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (!selectedUserId) {
+        toast.error("No user ID selected for Archived", { duration: 2000 });
+        return;
+      }
+      const res = await ArchivedUser(selectedUserId);
+      if (res?.success === true) {
+        toast.success(res?.message || "User archived successfully", {
+          duration: 2000,
+        });
+      } else {
+        toast.error(res?.error || "Something went wrong", { duration: 2000 });
+        console.error("Failed to delete user:", res);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    } finally {
+      setShowModal(false);
+    }
+  };
+
+  const columns: ColumnDef<TeamMember>[] = useMemo(() => {
+    const cols: ColumnDef<TeamMember>[] = [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            onChange={(e) => table.toggleAllRowsSelected(e.target.checked)}
+            checked={table.getIsAllRowsSelected()}
+            className="cursor-pointer"
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            className="cursor-pointer"
+          />
+        ),
+      },
+      {
+        accessorKey: "id",
+        header: "ID",
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+      },
+      {
+        accessorKey: "organizationName",
+        header: "Organization",
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status;
+          const formattedStatus =
+            status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+
+          return (
+            <span
+              className={`px-2.5 py-1.5 text-sm rounded-full font-semibold ${status === "Active"
+                ? "bg-primary text-white"
+                : "text-primary border border-gray-300"
+                }`}
+            >
+              {formattedStatus}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const id = row.original.id;
+          return (
+            <div className="relative">
+              <HiOutlineDotsHorizontal
+                className="cursor-pointer text-primary text-xl mr-4"
+                role="menu"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+                tabIndex={-1}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling
+                  setOpenDropdown(openDropdown === id ? null : id);
+                }}
+              />
+              {openDropdown === id && (
+                <div
+                  className="absolute right-0 z-[9999] mt-2 w-56 bg-white shadow-lg"
+                  style={{
+                    top: "100%",
+                    zIndex: 1000,
+                  }}
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                >
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                    Edit
+                  </button>
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                    Make a Copy
+                  </button>
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                    Favorite
+                  </button>
+                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                    Labels
+                  </button>
+                  <button
+                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(id);
+                      setOpenDropdown(null); // Close dropdown after clicking
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+    return cols;
+  }, [openDropdown]);
+
+  const table = useReactTable<TeamMember>({
+    data: teamMembers || [],
     columns,
-    // state: {
-    //   sorting: sortBy,
-    //   pagination: {
-    //     pageIndex: page - 1 || 0,
-    //     pageSize: pageSize || 10,
-    //   },
-    // },
-    // onSortingChange: (updater) => {
-    //   const updatedSortBy =
-    //     typeof updater === "function" ? updater(sortBy) : updater;
-    //   dispatch(setSortBy(updatedSortBy));
-    // },
-    onPaginationChange: (paginationState: any) => {
-      // dispatch(setPage(paginationState.pageIndex + 1));
-      // dispatch(setPageSize(paginationState.pageSize));
-    },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    // pageCount: pagination?.totalPages || 1,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { rowSelection, globalFilter },
+    onRowSelectionChange: setRowSelection,
   });
+
   return (
-    <div>
+    <>
+      <Toaster />
+      <div className="p-4 sm:p-6 md:p-8 w-full">
+        <div className="flex flex-col mb-4 w-full text-center">
+          <div className=" mb-4 w-full">
+            <h1 className="text-2xl sm:text-3xl font-bold">Users</h1>
+            <p className="text-primary text-sm leading-5 font-semibold">
+              Here's list to all users in your organization
+            </p>
+          </div>
+        </div>
 
-      <div>
-        <div className=" overflow-x-auto px-2 sm:px-4 lg:mt-1  mt-20 md:px-8">
-          <table className="datatable-table w-full table-auto border-collapse text-sm sm:text-base">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  <th className="px-2 py-2 border-t border-gray-300 text-center">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-1 w-1 text-blue-600 rounded scale-75"
-                      // onChange={handleHeaderClick}
-                      // checked={selectAll}
-                      />
-                    </div>
-                  </th>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="px-2 py-2 border-t border-gray-300 text-left text-gray-800 cursor-pointer"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <span className="flex items-center">
-                          {header.column.columnDef.header as ReactNode}
-                          {header.column.columnDef.header !== "Actions" && (
-                            <span className="ml-1 flex flex-col gap-1 justify-center">
-                              <svg
-                                className="fill-current"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 10 5"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M5 0L0 5H10L5 0Z" fill="" />
-                              </svg>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row justify-start items-stretch gap-4 w-full md:w-auto">
+            <Input
+              type="search"
+              placeholder="Filter users..."
+              className="w-full sm:w-64"
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
 
-                              <svg
-                                className="fill-current"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 10 5"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M5 5L10 0L0 0L5 5Z" fill="" />
-                              </svg>
-                            </span>
-                          )}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody>
-              {table.getRowModel().rows.map((row) => {
-                const isSelected = selectList.includes(
-                  row.original.BillBeeOrderId
-                );
-                return (
+            <Button>
+              {<IoMdAddCircleOutline size={20} />}
+              {"Role"}
+            </Button>
+            <Button>
+              {<IoMdAddCircleOutline size={20} />}
+              {"Status"}
+            </Button>
+          </div>
+          <div className="flex justify-end items-center gap-2 w-full md:w-auto">
+            <Button className="w-full sm:w-auto">{"View"}</Button>
+            <Button className="w-full sm:w-auto">
+              {<VscSettings size={20} />}
+              {"Invite User"}
+            </Button>
+          </div>
+        </div>
+        <div className="bg-white shadow-md rounded-lg overflow-x-auto relative">
+          {table.getRowModel().rows.length > 0 ? (
+            <table className="w-full text-left border-collapse border border-gray-400 relative">
+              <thead className="border border-gray-300">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="py-4 px-4 text-[#444444] font-semibold text-sm"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className={`${isSelected
-                        ? "bg-[#9ab8c1] text-black rounded-sm bottom-2"
-                        : "text-black rounded-sm"
-                      }`}
-                    onClick={() =>
-                      console.log('click')
-                      // handleRowClick(row.original.BillBeeOrderId)
-                    }
+                    className="border border-gray-300 hover:bg-gray-100 transition"
                   >
-                    <td className="px-4 py-2 border-t border-gray-300 text-center">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                        checked={isSelected}
-                        id={row.id}
-                      />
-                    </td>
                     {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="px-4 py-2 border-t border-gray-300  text-wrap break-words"
-                      >
+                      <td key={cell.id} className="py-4 px-4">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -164,29 +281,35 @@ const Dashboard: React.FC = () => {
                       </td>
                     ))}
                   </tr>
-                );
-              })}
-
-              {/* {loading && (
-                  <tr>
-                    <td colSpan={table.getVisibleFlatColumns().length}>
-                      <div className="absolute  top-4 left-0 right-0 bottom-0 flex items-center justify-center backdrop-blur-sm">
-                        <ClipLoader
-                          color={"#000"}
-                          loading={loading}
-                          size={35}
-                          speedMultiplier={1.1}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                )} */}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="p-4">No records found.</p>
+          )}
         </div>
-      </div>
-    </div>
-  )
-}
+        <Pagination table={table} />
 
-export default Dashboard
+        {showModal && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center p-4">
+            <div className="bg-white p-6 rounded-md shadow-md">
+              <h2 className="text-xl font-bold mb-2">Confirm Deletion</h2>
+              <p>Are you sure you want to Archive this user?</p>
+              <div className="flex justify-center mt-4 gap-4">
+                <Button
+                  onClick={() => setShowModal(false)}
+                  variant={"destructive"}
+                >
+                  {"Cancel"}
+                </Button>
+                <Button onClick={handleConfirmDelete} variant={"outline"}>
+                  {"Archive"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

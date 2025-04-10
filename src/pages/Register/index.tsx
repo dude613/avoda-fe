@@ -1,143 +1,148 @@
+//src/pages/Register/index.tsx
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Toaster, toast } from "react-hot-toast";
-import Button from "../../ui/Button";
-import Input from "../../ui/Input";
-import { Link } from "react-router-dom";
-import * as Constants from "../../constants/Register";
+import { useForm, Controller } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
+import * as constants from "@/constants/Auth";
+import {
+  Button,
+  Input,
+  FormDivider,
+  NavigationLink,
+  Card,
+} from "@/components/ui";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+import { EmailFormData } from "@/type";
+
 const Register: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+  const {
+    titles: { REGISTER_PAGE_TITLE, REGISTER_PAGE_SUBTITLE },
+    buttons: { GOOGLE_BUTTON_TEXT, EMAIL_BUTTON_TEXT, SIGN_IN_BUTTON_TEXT },
+    messages: { DIVIDER_TEXT, EXISTING_ACCOUNT_TEXT },
+    errors: { INVALID_EMAIL_ERROR },
+    regex: { EMAIL_REGEX },
+    toasts: { REGISTER_SUCCESS_TOAST, SERVER_ERROR_TOAST },
+  } = constants;
+
   const navigate = useNavigate();
-  const [emailInput, setEmailInput] = useState("");
-  const [error, setError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EmailFormData>();
 
-  const validateEmail = (email: string) => {
-    if (!email) return "Email is required.";
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) ? "" : "Please enter a valid email address.";
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const onSubmit = (data: EmailFormData) => {
+    localStorage.setItem("email", data.email);
+    navigate("/register/setPassword", { state: { email: data.email } });
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    setEmailInput(email);
-    if (!validateEmail(email)) {
-      setError(Constants.INVALID_EMAIL_ERROR);
-    } else {
-      setError("");
-    }
-  };
-
-  const handleEnter = (e: any) => {
-    if (e.key === "Enter") {
-      handleContinue();
-    }
-  };
-
-  const handleContinue = () => {
-    if (!validateEmail(emailInput)) {
-      setError(Constants.INVALID_EMAIL_ERROR);
-    } else {
-      localStorage.setItem("email", emailInput);
-      navigate("/register/setPassword", {
-        state: { email: emailInput },
-      });
-    }
-    localStorage.setItem("email", emailInput);
-    navigate("/register/setPassword", {
-      state: { email: emailInput },
-    });
-  };
-
-  const register = useGoogleLogin({
+  const registerWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const data = JSON.stringify({
-        idToken: tokenResponse.access_token,
-      });
+      setGoogleLoading(true);
       try {
         const response = await fetch(`${baseUrl}/api/auth/google-register`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: data,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken: tokenResponse.access_token,
+            role: "admin",
+          }),
         });
+
         const responseData = await response.json();
-        if (response.ok) {
-          localStorage.setItem("userId", responseData.user._id);
-          localStorage.setItem("accessToken", responseData.accessToken);
-          toast.success(Constants.REGISTER_SUCCESS_TOAST, {
-            position: "bottom-center",
-          });
-          setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-          }, 1000);
-        } else if (response.status === 404) {
-          toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
+
+        if (responseData.success) {
+          localStorage.setItem("userId", responseData.data.user.id);
+          localStorage.setItem("accessToken", responseData.data.accessToken);
+          localStorage.setItem("userRole", responseData.data.user.role);
+          toast.success(REGISTER_SUCCESS_TOAST, { duration: 2000 });
+          navigate("/create-organization", { replace: true });
         } else {
-          toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+          console.error("Registration failed:", responseData.error);
+          toast.error(responseData.error || SERVER_ERROR_TOAST);
         }
       } catch (error) {
-        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+        console.error("Google login error:", error);
+        toast.error(SERVER_ERROR_TOAST);
+      } finally {
+        setGoogleLoading(false);
       }
     },
-    onError: (error: any) => console.error("Login Failed:", error),
+    onError: (error) => {
+      console.error("Login Failed:", error);
+      setGoogleLoading(false);
+    },
     scope:
       "openid profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.metadata.readonly",
   });
-
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl text-background font-bold mb-2 text-center leading-tight">
-            {Constants.REGISTER_PAGE_TITLE}
-          </h2>
-          <p className="text-sm text-gray-500 font-semibold mb-4 text-center">
-            {Constants.REGISTER_PAGE_SUBTITLE}{" "}
-            <Link to={"/login"} className="hover:underline">
-              sign up
-            </Link>
+      <Card layout="centeredAndSpaced">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">{REGISTER_PAGE_TITLE}</h2>
+          <p className="text-muted-foreground text-sm">
+            {REGISTER_PAGE_SUBTITLE}
           </p>
-
-          <button
-            onClick={() => register()}
-            className="flex items-center justify-center border border-gray-300 w-full p-2 mb-4 rounded hover:bg-gray-100 transition"
-          >
-            <FcGoogle className="text-lg" />
-            <span className="text-xs pl-2">{Constants.GOOGLE_BUTTON_TEXT}</span>
-          </button>
-
-          <div className="flex items-center my-4">
-            <hr className="flex-grow border-gray-300" />
-            <span className="mx-2 text-gray-500 text-xs">{Constants.DIVIDER_TEXT}</span>
-            <hr className="flex-grow border-gray-300" />
-          </div>
-
-          {/* Email Input */}
-          {/* TODO Make the email input like the password input (components) */}
-          <input
-            type="email"
-            placeholder={Constants.EMAIL_PLACEHOLDER}
-            className="border text-xs p-2 w-full mb-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-            value={emailInput}
-            onChange={handleEmailChange}
-            onKeyDown={handleEnter}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-
-          {/* Continue with Email */}
-          <button
-            onClick={handleContinue}
-            className="bg-black text-xs text-white py-2 w-full rounded hover:bg-gray-800 transition cursor-pointer"
-          >
-            {Constants.EMAIL_BUTTON_TEXT}
-          </button>
         </div>
-      </div>
+
+        <Button
+          variant="outline"
+          className="w-full justify-center gap-2"
+          onClick={() => registerWithGoogle()}
+          isLoading={googleLoading}
+          loadingText="Signing up..."
+        >
+          <FcGoogle className="text-lg" />
+          {GOOGLE_BUTTON_TEXT}
+        </Button>
+
+        <FormDivider text={DIVIDER_TEXT} />
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              required: INVALID_EMAIL_ERROR,
+              pattern: {
+                value: EMAIL_REGEX,
+                message: INVALID_EMAIL_ERROR,
+              },
+            }}
+            render={({ field }) => (
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                error={errors.email?.message ? true : false}
+                {...field}
+              />
+            )}
+          />
+          {errors.email && (
+            <p className="text-destructive text-xs mt-1">
+              {errors.email.message as string}
+            </p>
+          )}
+
+          <Button className="w-full" type="submit">
+            {EMAIL_BUTTON_TEXT}
+          </Button>
+        </form>
+        {/*TODO Make buttons same as /login*/}
+        <div className="text-center text-sm text-muted-foreground">
+          {EXISTING_ACCOUNT_TEXT}{" "}
+          <NavigationLink to="/login" variant="link" underline>
+            {SIGN_IN_BUTTON_TEXT}
+          </NavigationLink>
+        </div>
+      </Card>
     </>
   );
 };

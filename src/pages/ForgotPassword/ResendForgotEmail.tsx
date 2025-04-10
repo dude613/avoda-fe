@@ -1,13 +1,14 @@
+//src/pages/ForgotPassword/ResendForgotEmail.tsx
 import { useEffect, useState } from "react";
 import { LuPlane } from "react-icons/lu";
 import { Toaster, toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import * as Constants from "../../constants/ForgotPassword";
-
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
-
+import { Card } from "@/components/ui";
+import { titles, buttons } from "@/constants/Auth";
+import { Button } from "@/components/ui/button";
 
 export default function ResendForgotEmail() {
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
     const [searchParams] = useSearchParams();
     const [email, setEmail] = useState("");
 
@@ -30,42 +31,38 @@ export default function ResendForgotEmail() {
                 },
                 body: JSON.stringify({ email }),
             });
-
             const data = await response.json();
             if (data.success) {
-                toast.success(data?.message || Constants.PASSWORD_RESET_SUCCESS_TOAST);
+                toast.success(data?.message || "Password reset successfully.");
             } else {
-                toast.error(data.error || Constants.PASSWORD_RESET_FAILED_TOAST);
+                toast.error(data.error || "Failed to reset password.");
             }
         } catch (error) {
-            toast.error(Constants.PASSWORD_RESET_FAILED_TOAST);
+            toast.error("Failed to reset password.");
         }
     }
     return (
         <>
             <Toaster />
-            <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-                <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-md text-center border border-gray-200">
-                    <div className="flex items-center justify-center">
-                        <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
-                            <LuPlane className="text-4xl" />
-                        </div>
+            <Card>
+                <div className="flex items-center justify-center">
+                    <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
+                        <LuPlane className="text-4xl" />
                     </div>
-
-                    <h2 className="mt-8 text-2xl font-bold text-gray-800 ">
-                        {Constants.CHECK_EMAIL_TITLE}
-                    </h2>
-
-                    <p className="text-gray-600 text-sm mt-4">
-                        {Constants.CHECK_EMAIL_SUBTITLE}
-                    </p>
-
-                    <button className="mt-6 w-full border-2 border-gray-200 py-2 rounded-lg hover:bg-gray-800 hover:text-white transition"
-                        onClick={handleSubmit}>
-                        {Constants.RESEND_EMAIL_BUTTON_TEXT}
-                    </button>
                 </div>
-            </div>
+
+                <h2 className="mt-8 text-2xl font-bold text-gray-800 ">
+                    {titles.CHECK_EMAIL_TITLE}
+                </h2>
+
+                <p className="text-gray-600 text-sm mt-4">
+                    {titles.CHECK_EMAIL_SUBTITLE}
+                </p>
+                <Button
+                    type="submit"
+                    onClick={handleSubmit}
+                >{buttons.RESEND_EMAIL_BUTTON_TEXT}</Button>
+            </Card>
         </>
     );
 }

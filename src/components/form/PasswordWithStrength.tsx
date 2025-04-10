@@ -11,6 +11,7 @@ interface PasswordWithStrengthProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   showLabel?: boolean;
   showStrengthIndicator?: boolean;
+  error?: string
 }
 
 export default function PasswordWithStrength({
@@ -18,7 +19,7 @@ export default function PasswordWithStrength({
   placeholder = "Password",
   onChange,
   showLabel = false,
-  showStrengthIndicator = true
+  showStrengthIndicator = true,
 }: PasswordWithStrengthProps) {
   const id = useId();
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -29,10 +30,9 @@ export default function PasswordWithStrength({
     const requirements = [
       { regex: /.{8,}/, text: "At least 8 characters" },
       { regex: /[0-9]/, text: "At least 1 number" },
-      { regex: /[a-z]/, text: "At least 1 lowercase letter" },
+      { regex: /[!@#$%^&*(),.?":{}|<>]/, text: "At least 1 special character" },
       { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
     ];
-
     return requirements.map((req) => ({
       met: req.regex.test(pass),
       text: req.text,
@@ -62,9 +62,8 @@ export default function PasswordWithStrength({
 
   return (
     <div>
-      {/* Password input field with toggle visibility button */}
       <div className="*:not-first:mt-2">
-        {showLabel && <Label htmlFor={id}>Input with password strength indicator</Label>}
+        {showLabel && <Label htmlFor={id}>Password</Label>}
         <div className="relative">
           <Input
             id={id}
@@ -77,7 +76,6 @@ export default function PasswordWithStrength({
           />
           <button
             className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-            type="button"
             onClick={toggleVisibility}
             aria-label={isVisible ? "Hide password" : "Show password"}
             aria-pressed={isVisible}

@@ -1,66 +1,59 @@
+//src/pages/Register/SetPassword.tsx
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import Input from "../../ui/Input";
-import Button from "../../ui/Button";
-import * as Constants from "@/constants/Register";
-import Email from "@/components/form/email";
-import PasswordWithStrength from "@/components/form/PasswordWithStrength";
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+import { useForm, Controller } from "react-hook-form";
+import { Button, Input } from "@/components/ui";
+import { Card } from "@/components/ui";
+import { titles, buttons, placeholders, errors, regex, toasts } from "@/constants/Auth";
+import { Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
+
+interface FormData {
+  password: string;
+  confirmPassword: string;
+}
 
 const SetPassword: React.FC = () => {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const emailFromQuery = queryParams.get("email");
   const emailFromState = location.state?.email;
-  const email = emailFromQuery || emailFromState;
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const roleFromQuery = queryParams.get("role");
+  const roleFromState = location.state?.role;
+  const email = emailFromQuery || emailFromState || localStorage.getItem("email");
+  const role = roleFromQuery || roleFromState || 'admin';
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [passwordMeetsRequirements, setPasswordMeetsRequirements] = useState(false);
-  const emailLocalStorage = localStorage.getItem("email");
-  const [loading, setLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   useEffect(() => {
-    if (!email || !emailLocalStorage) {
+    if (!email) {
       navigate("/register");
     }
-  }, [email, emailLocalStorage]);
+  }, [email, navigate]);
 
-  const validatePassword = () => {
-    if (!password) return Constants.EMPTY_PASSWORD_ERROR;
-    if (password.length < 8) return Constants.PASSWORD_LENGTH_ERROR;
-    if (!/[A-Z]/.test(password)) return Constants.PASSWORD_UPPERCASE_ERROR;
-    if (!/[0-9]/.test(password)) return Constants.PASSWORD_NUMBER_ERROR;
-    if (!/[!@#$%^&*]/.test(password))
-      return Constants.PASSWORD_SPECIAL_CHAR_ERROR;
-    if (password !== confirmPassword) return Constants.PASSWORDS_MISMATCH_ERROR;
-    return "";
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors: formErrors },
+    watch,
+  } = useForm<FormData>({
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onChange"
+  });
 
-  const handleCreateAccount = async () => {
-    if (!password) {
-      setPasswordError("Password is required.");
+  const handleCreateAccount = async (data: FormData) => {
+    if (!email) {
+      toast.error(toasts.INVALID_EMAIL_TOAST, { duration: 2000 });
+      navigate("/register");
       return;
     }
-    if (!validatePassword(password)) {
-      setPasswordError("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.");
-      return;
-    }
-    if (!confirmPassword) {
-      setConfirmPasswordError("Confirm password is required.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match.");
-      return;
-    }
-
     setLoading(true);
     try {
       const response = await fetch(`${baseUrl}/api/auth/register`, {
@@ -70,23 +63,23 @@ const SetPassword: React.FC = () => {
         },
         body: JSON.stringify({
           email: email,
-          password: password,
+          password: data.password,
+          role: role,
         }),
       });
-      if (response.ok) {
-        toast.success(Constants.REGISTER_SUCCESS_TOAST, {
-          position: "bottom-center",
-        });
+      const responseData = await response.json();
+      if (response.ok && responseData.success === true) {
+        toast.success(responseData?.message || toasts.REGISTER_SUCCESS_TOAST);
         navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
           replace: true,
         });
       } else if (response.status === 400) {
-        toast.error(Constants.USER_EXISTS_TOAST, { position: "bottom-center" });
+        toast.error(responseData?.error || "User already exists");
       } else {
-        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+        toast.error(responseData?.error || toasts.SERVER_ERROR_TOAST);
       }
     } catch (error) {
-      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      toast.error(toasts.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
@@ -95,64 +88,104 @@ const SetPassword: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-            {Constants.SET_PASSWORD_TITLE}
-          </h2>
-          <p className="text-xs text-gray-500 mb-4 text-center">
-            {Constants.SET_PASSWORD_SUBTITLE}
-          </p>
+      <Card>
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
+          {titles.SET_PASSWORD_TITLE}
+        </h2>
+        <p className="text-xs text-gray-500 mb-4 text-center">
+          {titles.SET_PASSWORD_SUBTITLE}
+        </p>
 
-          <Email 
-            value={email} 
-            disabled={true}
+        <div className="relative mb-4">
+          <Controller
+            name="password"
+            control={control}
+            rules={{
+              required: { value: true, message: errors.EMPTY_PASSWORD_ERROR },
+              pattern: {
+                value: regex.PASSWORD_REGEX,
+                message: errors.INVALID_PASSWORD_ERROR,
+              },
+            }}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  placeholder={placeholders.PASSWORD_PLACEHOLDER}
+                  error={formErrors.password?.message ? true : false}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.password && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.password.message as string}
+                  </p>
+                )}
+              </div>
+            )}
           />
-          <p className="text-red-500 text-[10px] opacity-80 mb-2">
-            {Constants.EDIT_EMAIL_MESSAGE}
-          </p>
-
-          <div className="mb-4">
-            <PasswordWithStrength
-              placeholder={Constants.PASSWORD_PLACEHOLDER}
-              value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const newPassword = e.target.value;
-                setPassword(newPassword);
-                
-                // Check if password meets all requirements
-                const requirements = [
-                  /.{8,}/,         // At least 8 characters
-                  /[0-9]/,         // At least 1 number
-                  /[a-z]/,         // At least 1 lowercase letter
-                  /[A-Z]/          // At least 1 uppercase letter
-                ];
-                
-                const allRequirementsMet = requirements.every(regex => regex.test(newPassword));
-                setPasswordMeetsRequirements(allRequirementsMet);
-              }}
-              showStrengthIndicator={!passwordMeetsRequirements}
-            />
-          </div>
-
-          <div className="mb-4">
-            <PasswordWithStrength
-              placeholder={Constants.CONFIRM_PASSWORD_PLACEHOLDER}
-              value={confirmPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-              showStrengthIndicator={false}
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-          <button
-            onClick={handleCreateAccount}
-            className="bg-gray-500 text-white py-2 w-full rounded mt-2"
-          >
-            {loading ? Constants.CREATING_ACCOUNT_TEXT : Constants.CREATE_ACCOUNT_BUTTON_TEXT}
-          </button>
         </div>
-      </div>
+
+        <div className="relative mb-4">
+          <Controller
+            name="confirmPassword"
+            control={control}
+            rules={{
+              required: { value: true, message: errors.PASSWORDS_MISMATCH_ERROR },
+              validate: (value) => value === watch("password") || errors.PASSWORDS_MISMATCH_ERROR,
+            }}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type={showConfirmPassword ? "text" : "password"}
+                  label="Confirm Password"
+                  placeholder={placeholders.CONFIRM_PASSWORD_PLACEHOLDER}
+                  error={formErrors.confirmPassword?.message ? true : false}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {formErrors.confirmPassword && (
+                  <p className="text-destructive text-xs mt-1">
+                    {formErrors.confirmPassword.message as string}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        </div>
+
+        <Button
+          onClick={handleSubmit(handleCreateAccount)}
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="inline-flex items-center gap-1">
+              <LoaderCircleIcon
+                className="-ms-1 animate-spin"
+                size={16}
+                aria-hidden="true"
+              />
+            </span>
+          ) : (
+            buttons.CREATE_ACCOUNT_BUTTON_TEXT
+          )
+          }
+        </Button>
+      </Card>
     </>
   );
 };

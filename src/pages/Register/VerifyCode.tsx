@@ -1,12 +1,15 @@
+//src/pages/Register/VerifyCode.tsx
+import OTP from "@/components/form/otp";
+import { Button } from "@/components/ui/button";
+import { titles, messages, toasts } from "@/constants/Auth";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import * as Constants from "../../constants/Register";
-import OTP from "@/components/form/otp";
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const VerifyCode: React.FC = () => {
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const [code, setCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -24,77 +27,75 @@ const VerifyCode: React.FC = () => {
 
   useEffect(() => {
     if (otp) {
-      const otpCode = otp.split("");
-      setCode(otpCode);
+      setCode(otp);
     }
   }, [otp, location.search]);
 
-  const handleVerify = async (code: string[]) => {
-    if (code.some((digit: string) => digit === "")) {
-      setError(Constants.EMPTY_CODE_ERROR);
+  const handleVerify = async () => {
+    if (code.length < 6) {
+      setError("Please fill in all the fields.");
+      return;
+    }
+
+    if (!/^\d+$/.test(code)) {
+      setError("Please enter a valid numeric code.");
       return;
     }
     setLoading(true);
     try {
-      const combinedCode = code.join("");
-      const otp = parseInt(combinedCode, 10);
+      const otpNumber = parseInt(code, 10);
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: otpNumber }),
       });
-      const responseData = await response.json();
-      if (response.ok && response.status === 200) {
-        localStorage.setItem("userId", responseData.user._id);
-        localStorage.setItem("accessToken", responseData.accessToken);
-        toast.success(Constants.USER_VERIFIED_TOAST, {
-          position: "bottom-center",
-        });
-        setTimeout(() => {
-          navigate("/create-organization", { replace: true });
-        }, 1000);
-      } else if (response.status === 201) {
-        toast.success(Constants.USER_ALREADY_VERIFIED_TOAST, { position: "bottom-center" });
-        setTimeout(() => {
-          navigate("/register", { replace: true });
-        }, 1000);
+      const data = await response.json();
+      if (data.success) {
+        if (data.user && data.accessToken) {
+          localStorage.setItem("userId", data.user.id);
+          localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("userRole", data.user.role);
+          toast.success(data?.message || toasts.USER_VERIFIED_TOAST, {
+            duration: 2000,
+          });
+          setTimeout(() => {
+            navigate(
+              data.user.role === "admin" ? "/create-organization" : "/team",
+              { replace: true }
+            );
+          }, 1000);
+        }
       } else {
-        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+        toast.error(data?.error || toasts.USER_NOT_FOUND_TOAST, {
+          duration: 2000,
+        });
       }
     } catch (error) {
-      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      toast.error(toasts.SERVER_ERROR_TOAST);
     } finally {
       setLoading(false);
     }
   };
 
-
   const handleResend = async () => {
     setResending(true);
+    setCode("");
     try {
       const response = await fetch(`${baseUrl}/api/auth/resend-otp`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
       if (response.ok && response.status === 200) {
-        toast.success(Constants.CODE_SENT_TOAST, {
-          position: "bottom-center",
-        });
+        toast.success(toasts.CODE_SENT_TOAST, { position: "bottom-center" });
       } else if (response.status === 201) {
-        toast.success(Constants.USER_ALREADY_VERIFIED_TOAST, { position: "bottom-center" });
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 1000);
+        toast.success(toasts.USER_EXISTS_TOAST, { duration: 2000 });
+        navigate("/team", { replace: true });
       } else {
-        toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+        toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
       }
     } catch (error) {
-      toast.error(Constants.SERVER_ERROR_TOAST, { position: "bottom-center" });
+      toast.error(toasts.SERVER_ERROR_TOAST, { duration: 2000 });
     } finally {
       setResending(false);
     }
@@ -103,50 +104,38 @@ const VerifyCode: React.FC = () => {
   return (
     <>
       <Toaster />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="flex items-center justify-center min-h-screen px-4">
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            {Constants.VERIFY_CODE_TITLE}
+            {titles.VERIFY_CODE_TITLE}
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            {Constants.VERIFY_CODE_SUBTITLE}{email}
+            {titles.VERIFY_CODE_SUBTITLE} {email}
           </p>
 
-          <div className="mb-4">
-            <OTP
-              value={code.join("")}
-              onChange={(value) => {
-                const newCode = value.split("");
-                // Create an array of exactly 6 elements
-                const fullCode = Array(6).fill("").map((_, i) => newCode[i] || "");
-                setCode(fullCode);
-              }}
-              maxLength={6}
-              containerClassName="flex justify-between w-full"
-            />
+          <div className="flex justify-center mb-4">
+            <OTP value={code} onChange={setCode} maxLength={6} />
           </div>
 
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
 
-          <button
-            onClick={() => handleVerify(code)}
-            className="bg-black text-white py-2 w-full rounded flex items-center justify-center gap-2"
-            disabled={loading}
-          >
+          <Button onClick={handleVerify} className="w-full" disabled={loading}>
             {loading ? (
-              <>
-                <span className="animate-pulse">{Constants.VERIFYING_CODE_TEXT}</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="animate-pulse">
+                  {messages.CREATING_ACCOUNT_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
-              </>
+              </span>
             ) : (
-              Constants.VERIFY_CODE_BUTTON_TEXT
+              "Verify Code"
             )}
-          </button>
+          </Button>
 
           <p className="text-gray-500 text-sm text-center mt-3">
-            {Constants.DIDNT_RECEIVE_CODE_TEXT}{" "}
+            {messages.CODE_NOT_RECEIVED_TEXT}{" "}
           </p>
           <p
             className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
@@ -154,13 +143,15 @@ const VerifyCode: React.FC = () => {
           >
             {resending ? (
               <span className="inline-flex items-center gap-1">
-                <span className="animate-pulse">{Constants.RESENDING_CODE_TEXT}</span>
+                <span className="animate-pulse">
+                  {messages.RESENDING_CODE_TEXT}
+                </span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.1s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
               </span>
             ) : (
-              Constants.RESEND_CODE_TEXT
+              messages.RESEND_CODE_TEXT
             )}
           </p>
         </div>
