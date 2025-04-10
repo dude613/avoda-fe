@@ -6,7 +6,7 @@ import os
 GITHUB_API_URL = "https://api.github.com"
 OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
 MODEL_NAME = "o3-mini"
-MIN_DIFF_SIZE = 100
+MIN_DIFF_SIZE = 75
 
 # Our base prompt without the diff.
 BASE_PROMPT = (
@@ -164,8 +164,15 @@ def main():
         return
 
     if total_diff_size < MIN_DIFF_SIZE:
-        print(f"Total diff size ({total_diff_size}) is less than {MIN_DIFF_SIZE}. Skipping AI review.")
-        return
+        print(f"Total diff size ({total_diff_size}) is less than {MIN_DIFF_SIZE}. Posting comment and skipping AI review.")
+        small_diff_comment = f"Skipping AI review: Total diff size ({total_diff_size} characters) is below the minimum threshold of {MIN_DIFF_SIZE} characters."
+        try:
+            # Optional: Add logic here to find and delete existing "too small" comments if needed
+            post_comment(small_diff_comment)
+            print("Posted comment indicating diff is too small.")
+        except Exception as e:
+            print(f"Error posting 'too small' comment: {e}")
+        return # Exit after posting the comment
 
     # Create the prompt for the entire PR
     prompt = BASE_PROMPT + aggregated_diff
