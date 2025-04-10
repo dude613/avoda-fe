@@ -280,7 +280,7 @@ export default function CreateOrganization() {
 
             <Button
               type="submit"
-              variant="create"
+              variant="default"
               isLoading={loading}
               loadingText={ORGANIZATION_BUTTON_LOADING_TEXT}
               className={`text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""
