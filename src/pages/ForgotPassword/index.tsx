@@ -60,7 +60,7 @@ const ForgotPassword: React.FC = () => {
     <>
       <Toaster />
       <Card layout="centeredAndSpaced">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 flex flex-col items-center justify-center h-full w-full">
           <IconContainer>
             <FiLock className="text-2xl" />
           </IconContainer>
