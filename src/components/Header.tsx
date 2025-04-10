@@ -27,7 +27,7 @@ const Header = () => {
 
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md relative z-10 flex h-14 items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-10 bg-primary text-primary-foreground shadow-md flex h-14 items-center justify-between px-4 sm:px-6"> {/* Apply sticky positioning */}
       <Link
         to="/"
         className="text-xl font-bold tracking-tight hover:opacity-90"
