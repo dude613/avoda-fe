@@ -46,7 +46,7 @@ export default function ResendForgotEmail() {
             <Toaster />
             <Card>
                 <div className="flex items-center justify-center">
-                    <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
+                    <div className="bg-gray-200 rounded-full w-16 h-14">
                         <LuPlane className="text-4xl" />
                     </div>
                 </div>
