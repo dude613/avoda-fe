@@ -61,7 +61,7 @@ const ForgotPassword: React.FC = () => {
       <Toaster />
       <Card layout="centeredAndSpaced">
         <div className="text-center space-y-2">
-          <IconContainer>
+          <IconContainer className="mx-auto"> {/* Added mx-auto */}
             <FiLock className="text-2xl" />
           </IconContainer>
           <h2 className="text-2xl font-bold">{FORGOT_PASSWORD_TITLE}</h2>
