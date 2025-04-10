@@ -27,5 +27,7 @@ export const All_USER_INFO=`${url}/auth/allUserInfo`
 //..................Timer API Endpoints....................\\
 export const TIMER_START = `${url}/timers/start`
 export const TIMER_STOP = `${url}/timers/stop`
+export const TIMER_PAUSE = `${url}/timers/pause`
+export const TIMER_RESUME = `${url}/timers/resume`
 export const TIMER_ACTIVE = `${url}/timers/active`
 export const TIMER_HISTORY = `${url}/timers`

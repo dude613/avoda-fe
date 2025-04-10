@@ -9,6 +9,8 @@ import {
   fetchActiveTimer,
   startTimer,
   stopTimer,
+  pauseTimer,
+  resumeTimer,
   selectActiveTimer,
   selectTimerLoading,
 } from "../../redux/slice/Timer"
@@ -19,7 +21,7 @@ import { Label } from "../ui/label"
 import TimerDisplay from "./TimerDisplay"
 import { initializeSocket, disconnectSocket } from "../../service/socketService"
 import toast from "react-hot-toast"
-import { PlayIcon, MonitorStopIcon as StopIcon, ClockIcon } from "lucide-react"
+import { PlayIcon, PauseIcon, MonitorStopIcon as StopIcon, ClockIcon, PlayCircleIcon } from "lucide-react"
 
 export default function TimerDashboard() {
   const dispatch = useDispatch<AppDispatch>()
@@ -96,6 +98,26 @@ export default function TimerDashboard() {
     }
   }
 
+  const handlePauseTimer = async () => {
+    if (activeTimer && !activeTimer.isPaused) {
+      try {
+        await dispatch(pauseTimer(activeTimer.id))
+      } catch (error) {
+        console.error("Failed to pause timer:", error)
+      }
+    }
+  }
+
+  const handleResumeTimer = async () => {
+    if (activeTimer && activeTimer.isPaused) {
+      try {
+        await dispatch(resumeTimer(activeTimer.id))
+      } catch (error) {
+        console.error("Failed to resume timer:", error)
+      }
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6">
@@ -132,7 +154,20 @@ export default function TimerDashboard() {
 
                 <hr className="my-4" />
 
-                <TimerDisplay startTime={activeTimer.startTime} />
+                <TimerDisplay
+                  startTime={activeTimer.startTime}
+                  isPaused={activeTimer.isPaused}
+                  pausedAt={activeTimer.pausedAt}
+                  totalPausedTime={activeTimer.totalPausedTime}
+                />
+
+                {activeTimer.isPaused && (
+                  <div className="mt-2 text-center">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      Timer Paused
+                    </span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-center text-gray-500">
@@ -142,12 +177,25 @@ export default function TimerDashboard() {
               </div>
             )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-wrap gap-2">
             {activeTimer ? (
-              <Button variant="destructive" className="w-full" onClick={handleStopTimer} disabled={loading}>
-                <StopIcon className="mr-2 h-4 w-4" />
-                Stop Timer
-              </Button>
+              <>
+                {activeTimer.isPaused ? (
+                  <Button variant="outline" className="flex-1" onClick={handleResumeTimer} disabled={loading}>
+                    <PlayCircleIcon className="mr-2 h-4 w-4" />
+                    Resume Timer
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="flex-1" onClick={handlePauseTimer} disabled={loading}>
+                    <PauseIcon className="mr-2 h-4 w-4" />
+                    Pause Timer
+                  </Button>
+                )}
+                <Button variant="destructive" className="flex-1" onClick={handleStopTimer} disabled={loading}>
+                  <StopIcon className="mr-2 h-4 w-4" />
+                  Stop Timer
+                </Button>
+              </>
             ) : (
               <Button variant="outline" className="w-full" disabled={true}>
                 No Active Timer
@@ -172,7 +220,7 @@ export default function TimerDashboard() {
                   placeholder="What are you working on?"
                   value={timerData.task}
                   onChange={handleInputChange}
-                  disabled={loading || !!activeTimer}
+                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
                   required
                 />
               </div>
@@ -185,7 +233,7 @@ export default function TimerDashboard() {
                   placeholder="Project name (optional)"
                   value={timerData.project}
                   onChange={handleInputChange}
-                  disabled={loading || !!activeTimer}
+                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
                 />
               </div>
 
@@ -197,11 +245,11 @@ export default function TimerDashboard() {
                   placeholder="Client name (optional)"
                   value={timerData.client}
                   onChange={handleInputChange}
-                  disabled={loading || !!activeTimer}
+                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading || !!activeTimer}>
+              <Button type="submit" className="w-full" disabled={loading || (!!activeTimer && !activeTimer.isPaused)}>
                 <PlayIcon className="mr-2 h-4 w-4" />
                 Start Timer
               </Button>
@@ -212,4 +260,3 @@ export default function TimerDashboard() {
     </div>
   )
 }
-

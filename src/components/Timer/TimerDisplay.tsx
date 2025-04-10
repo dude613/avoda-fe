@@ -1,28 +1,61 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { Card } from "../ui/card-b"
 
-export default function TimerDisplay({ startTime }: { startTime: string }) {
+interface TimerDisplayProps {
+  startTime: string
+  isPaused?: boolean
+  pausedAt?: string
+  totalPausedTime?: number
+  className?: string
+  showLabels?: boolean
+  size?: "sm" | "md" | "lg"
+}
+
+export default function TimerDisplay({
+  startTime,
+  isPaused = false,
+  pausedAt,
+  totalPausedTime = 0,
+  className = "",
+  showLabels = true,
+  size = "md",
+}: TimerDisplayProps) {
   const [elapsed, setElapsed] = useState(0)
 
   useEffect(() => {
     if (!startTime) return
 
     const start = new Date(startTime).getTime()
+    const pausedTime = pausedAt ? new Date(pausedAt).getTime() : null
 
     const updateElapsed = () => {
       const now = Date.now()
-      const elapsedSeconds = Math.floor((now - start) / 1000)
+      let elapsedMs = now - start - (totalPausedTime || 0) * 1000
+
+      // If timer is paused, calculate elapsed time up to the pause point
+      if (isPaused && pausedTime) {
+        elapsedMs = pausedTime - start - (totalPausedTime || 0) * 1000
+      }
+
+      const elapsedSeconds = Math.floor(elapsedMs / 1000)
       setElapsed(elapsedSeconds)
     }
 
     // Update immediately
     updateElapsed()
 
-    // Then update every second
-    const intervalId = setInterval(updateElapsed, 1000)
+    // Only set interval if not paused
+    let intervalId: number | undefined
+    if (!isPaused) {
+      intervalId = window.setInterval(updateElapsed, 1000)
+    }
 
-    return () => clearInterval(intervalId)
-  }, [startTime])
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [startTime, isPaused, pausedAt, totalPausedTime])
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)
@@ -32,11 +65,17 @@ export default function TimerDisplay({ startTime }: { startTime: string }) {
     return [hours, minutes, secs].map((val) => val.toString().padStart(2, "0")).join(":")
   }
 
+  const sizeClasses = {
+    sm: "text-lg p-2",
+    md: "text-3xl p-4",
+    lg: "text-4xl p-6",
+  }
+
   return (
-    <Card className="flex items-center justify-center p-4 bg-primary/5">
+    <Card className={`flex items-center justify-center ${isPaused ? "bg-amber-50" : "bg-primary/5"} ${className}`}>
       <div className="text-center">
-        <div className="text-3xl font-mono font-bold tracking-widest">{formatTime(elapsed)}</div>
-        <div className="text-xs text-muted-foreground mt-1">HH:MM:SS</div>
+        <div className={`font-mono font-bold tracking-widest ${sizeClasses[size]}`}>{formatTime(elapsed)}</div>
+        {showLabels && <div className="text-xs text-muted-foreground mt-1">HH:MM:SS</div>}
       </div>
     </Card>
   )
