@@ -356,7 +356,7 @@ const AddTeamMembers = () => {
 
               <Button
                 type="submit"
-                variant="create"
+                variant="default"
                 isLoading={loading}
                 loadingText={TEAM_INVITATION_BTN_LOADER}
                 icon={<FaArrowRight />}
