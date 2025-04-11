@@ -373,7 +373,7 @@ export default function TimerDashboard() {
                   placeholder="What are you working on?"
                   value={timerData.task}
                   onChange={handleInputChange}
-                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
+                  disabled={loading || (!!activeTimer)}
                   required
                 />
               </div>
@@ -386,7 +386,7 @@ export default function TimerDashboard() {
                   placeholder="Project name (optional)"
                   value={timerData.project}
                   onChange={handleInputChange}
-                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
+                  disabled={loading || (!!activeTimer)}
                 />
               </div>
 
@@ -398,7 +398,7 @@ export default function TimerDashboard() {
                   placeholder="Client name (optional)"
                   value={timerData.client}
                   onChange={handleInputChange}
-                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
+                  disabled={loading || (!!activeTimer)}
                 />
               </div>
 
@@ -410,12 +410,12 @@ export default function TimerDashboard() {
                   placeholder="Add a note (optional)"
                   value={timerData.note}
                   onChange={handleInputChange}
-                  disabled={loading || (!!activeTimer && !activeTimer.isPaused)}
+                  disabled={loading || (!!activeTimer)}
                   className="min-h-[80px]"
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading || (!!activeTimer && !activeTimer.isPaused)}>
+              <Button type="submit" className="w-full" disabled={loading || (!!activeTimer)}>
                 <PlayIcon className="w-4 h-4 mr-2" />
                 Start Timer
               </Button>
