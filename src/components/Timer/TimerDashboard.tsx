@@ -66,25 +66,25 @@ export default function TimerDashboard() {
   const handleStartTimer = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!timerData.task.trim()) {
-      toast.error("Task name is required")
-      return
-    }
-
-    try {
-      const resultAction = await dispatch(startTimer(timerData))
-      if (startTimer.fulfilled.match(resultAction)) {
-        // Clear form after successful timer start
-        setTimerData({
-          task: "",
-          project: "",
-          client: "",
-        })
-      }
-    } catch (error) {
-      console.error("Failed to start timer:", error)
-    }
+  if (!timerData.task.trim()) {
+    toast.error("Task name is required")
+    return
   }
+
+  try {
+    const resultAction = await dispatch(startTimer(timerData))
+    if (startTimer.fulfilled.match(resultAction)) {
+      // Clear form after successful timer start
+      setTimerData({
+        task: "",
+        project: "",
+        client: "",
+      })
+    }
+  } catch (error) {
+    console.error("Failed to start timer:", error)
+  }
+}
 
   const handleStopTimer = async () => {
     if (activeTimer) {
@@ -164,6 +164,29 @@ export default function TimerDashboard() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleStartTimer} className="space-y-4">
+            <div className="space-y-2">
+                <Label htmlFor="client">Client</Label>
+                <Input
+                  id="client"
+                  name="client"
+                  placeholder="Client name"
+                  value={timerData.client}
+                  onChange={handleInputChange}
+                  disabled={loading || !!activeTimer}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="project">Project</Label>
+                <Input
+                  id="project"
+                  name="project"
+                  placeholder="Project name"
+                  value={timerData.project}
+                  onChange={handleInputChange}
+                  disabled={loading || !!activeTimer}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="task">Task Name *</Label>
                 <Input
@@ -177,29 +200,8 @@ export default function TimerDashboard() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="project">Project</Label>
-                <Input
-                  id="project"
-                  name="project"
-                  placeholder="Project name (optional)"
-                  value={timerData.project}
-                  onChange={handleInputChange}
-                  disabled={loading || !!activeTimer}
-                />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="client">Client</Label>
-                <Input
-                  id="client"
-                  name="client"
-                  placeholder="Client name (optional)"
-                  value={timerData.client}
-                  onChange={handleInputChange}
-                  disabled={loading || !!activeTimer}
-                />
-              </div>
+              
 
               <Button type="submit" className="w-full" disabled={loading || !!activeTimer}>
                 <PlayIcon className="mr-2 h-4 w-4" />
