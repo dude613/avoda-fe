@@ -36,7 +36,6 @@ export default function TimerDisplay({ startTime }: { startTime: string }) {
     <Card className="flex items-center justify-center p-4 bg-primary/5">
       <div className="text-center">
         <div className="text-3xl font-mono font-bold tracking-widest">{formatTime(elapsed)}</div>
-        <div className="text-xs text-muted-foreground mt-1">HH:MM:SS</div>
       </div>
     </Card>
   )

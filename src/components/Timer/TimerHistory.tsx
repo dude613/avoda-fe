@@ -104,7 +104,7 @@ export default function TimerHistory() {
       <CardHeader>
         <CardTitle className="flex items-center">
           <ClockIcon className="mr-2 h-5 w-5" />
-          Timer History
+          Timer Logs
         </CardTitle>
         <CardDescription>View your past time tracking sessions</CardDescription>
       </CardHeader>
