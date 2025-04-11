@@ -619,6 +619,7 @@ export default function TeamMembers() {
                     value={formData.role}
                     onChange={handleInputChange}
                   >
+                    {/* TODO Add icons/improve ui a bit */}
                     <option value="">Select a role</option>
                     <option value="admin">Admin</option>
                     <option value="manager">Manager</option>
