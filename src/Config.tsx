@@ -21,7 +21,7 @@ export const UPDATE_USER_PROFILE = `${url}/auth/update-profile`;
 export const UPDATE_USER_PROFILE_PICTURE = `${url}/auth/upload-image`;
 
 export const LOGOUT_API = `${url}/auth/logout`;
-export const All_USER_INFO=`${url}/auth/allUserInfo`
+export const All_USER_INFO = `${url}/auth/allUserInfo`
 
 
 //..................Timer API Endpoints....................\\
