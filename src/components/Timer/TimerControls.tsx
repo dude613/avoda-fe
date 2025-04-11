@@ -16,6 +16,7 @@ import {
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog"
 import { Input } from "../ui/input"
+import { Textarea } from "../ui/textarea"
 import { Label } from "../ui/label"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { PlayIcon, PauseIcon, MonitorStopIcon as StopIcon, PlayCircleIcon } from "lucide-react"
@@ -31,9 +32,10 @@ export default function TimerControls() {
     task: "",
     project: "",
     client: "",
+    note: "",
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setTimerData((prev) => ({ ...prev, [name]: value }))
   }
@@ -53,6 +55,7 @@ export default function TimerControls() {
           task: "",
           project: "",
           client: "",
+          note: "",
         })
         setIsStartModalOpen(false)
       }
@@ -116,7 +119,7 @@ export default function TimerControls() {
                     disabled={loading}
                     className="text-green-600 hover:text-green-700 hover:bg-green-50"
                   >
-                    <PlayCircleIcon className="h-5 w-5" />
+                    <PlayCircleIcon className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -133,7 +136,7 @@ export default function TimerControls() {
                     disabled={loading}
                     className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
                   >
-                    <PauseIcon className="h-5 w-5" />
+                    <PauseIcon className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -151,7 +154,7 @@ export default function TimerControls() {
                   disabled={loading}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <StopIcon className="h-5 w-5" />
+                  <StopIcon className="w-5 h-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -171,7 +174,7 @@ export default function TimerControls() {
                 disabled={loading}
                 className="text-green-600 hover:text-green-700 hover:bg-green-50"
               >
-                <PlayIcon className="h-5 w-5" />
+                <PlayIcon className="w-5 h-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -187,7 +190,7 @@ export default function TimerControls() {
             <DialogTitle>Start New Timer</DialogTitle>
             <DialogDescription>Enter task details to start tracking your time</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleStartTimer} className="space-y-4 pt-4">
+          <form onSubmit={handleStartTimer} className="pt-4 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="header-task">Task Name *</Label>
               <Input
@@ -222,12 +225,24 @@ export default function TimerControls() {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="header-note">Note</Label>
+              <Textarea
+                id="header-note"
+                name="note"
+                placeholder="Add a note (optional)"
+                value={timerData.note}
+                onChange={handleInputChange}
+                className="min-h-[80px]"
+              />
+            </div>
+
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsStartModalOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={loading || !timerData.task.trim()}>
-                <PlayIcon className="mr-2 h-4 w-4" />
+                <PlayIcon className="w-4 h-4 mr-2" />
                 Start Timer
               </Button>
             </div>
