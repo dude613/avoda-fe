@@ -1,3 +1,4 @@
+//src/components/Header.tsx
 import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -27,7 +28,7 @@ const Header = () => {
 
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md relative z-10 flex h-14 items-center justify-between px-4 sm:px-6">
+    <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50 flex h-14 items-center justify-between px-4 sm:px-6">
       <Link
         to="/"
         className="text-xl font-bold tracking-tight hover:opacity-90"
