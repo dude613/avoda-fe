@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios"
-import { TIMER_START, TIMER_STOP, TIMER_ACTIVE, TIMER_HISTORY } from "../Config"
+import { TIMER_START, TIMER_STOP, TIMER_ACTIVE, TIMER_HISTORY, TIMER_PAUSE, TIMER_RESUME } from "../Config"
 
 // Types
 export interface Timer {
@@ -11,6 +11,9 @@ export interface Timer {
   startTime: string
   endTime?: string
   isActive: boolean
+  isPaused?: boolean
+  pausedAt?: string
+  totalPausedTime?: number
   duration: number
 }
 
@@ -47,9 +50,6 @@ const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
 })
 
-/**
- * Start a new timer
- */
 export async function startTimerAPI(timerData: TimerFormData): Promise<TimerResponse> {
   try {
     const response = await axios.post(TIMER_START, timerData, {
@@ -65,9 +65,6 @@ export async function startTimerAPI(timerData: TimerFormData): Promise<TimerResp
   }
 }
 
-/**
- * Stop an active timer
- */
 export async function stopTimerAPI(timerId: string): Promise<TimerResponse> {
   try {
     const response = await axios.put(
@@ -87,9 +84,44 @@ export async function stopTimerAPI(timerId: string): Promise<TimerResponse> {
   }
 }
 
-/**
- * Get the currently active timer (if any)
- */
+export async function pauseTimerAPI(timerId: string): Promise<TimerResponse> {
+  try {
+    const response = await axios.put(
+      `${TIMER_PAUSE}/${timerId}`,
+      {},
+      {
+        headers: getAuthHeaders(),
+      },
+    )
+    return response.data
+  } catch (error: any) {
+    console.error("Error pausing timer:", error)
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to pause timer",
+    }
+  }
+}
+
+export async function resumeTimerAPI(timerId: string): Promise<TimerResponse> {
+  try {
+    const response = await axios.put(
+      `${TIMER_RESUME}/${timerId}`,
+      {},
+      {
+        headers: getAuthHeaders(),
+      },
+    )
+    return response.data
+  } catch (error: any) {
+    console.error("Error resuming timer:", error)
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to resume timer",
+    }
+  }
+}
+
 export async function getActiveTimerAPI(): Promise<ActiveTimerResponse> {
   try {
     const response = await axios.get(TIMER_ACTIVE, {
@@ -107,9 +139,6 @@ export async function getActiveTimerAPI(): Promise<ActiveTimerResponse> {
   }
 }
 
-/**
- * Get timer history with pagination
- */
 export async function getTimerHistoryAPI(page = 1, limit = 10): Promise<TimerHistoryResponse> {
   try {
     const response = await axios.get(`${TIMER_HISTORY}?page=${page}&limit=${limit}`, {
@@ -127,4 +156,3 @@ export async function getTimerHistoryAPI(page = 1, limit = 10): Promise<TimerHis
     }
   }
 }
-
