@@ -44,18 +44,16 @@ export default function ResendForgotEmail() {
     return (
         <>
             <Toaster />
-            <Card>
+            <Card layout={"centeredAndSpaced"}>
                 <div className="flex items-center justify-center">
                     <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
                         <LuPlane className="text-4xl" />
                     </div>
                 </div>
-
-                <h2 className="mt-8 text-2xl font-bold text-gray-800 ">
+                <h2 className="mt-5 text-2xl font-bold">
                     {titles.CHECK_EMAIL_TITLE}
                 </h2>
-
-                <p className="text-gray-600 text-sm mt-4">
+                <p className="text-gray-600 m-5">
                     {titles.CHECK_EMAIL_SUBTITLE}
                 </p>
                 <Button
