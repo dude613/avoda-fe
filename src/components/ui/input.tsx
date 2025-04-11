@@ -1,5 +1,6 @@
-import * as React from "react"; // Keep React import
-import { useId } from "react"; // Import useId
+//src/components/ui/input.tsx
+import * as React from "react";
+import { useId } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Label } from "./label";
@@ -16,48 +17,66 @@ const inputVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
-interface InputProps 
+interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-    VariantProps<typeof inputVariants> {
-  error?: boolean; // For styling the input border
-  errorMessage?: string; // For displaying the error text
+  VariantProps<typeof inputVariants> {
+  error?: boolean;
+  errorMessage?: string;
   label?: string;
-  labelAnimation?: boolean; // Add labelAnimation prop
-  ref?: React.Ref<HTMLInputElement>; // Add ref prop
+  labelAnimation?: boolean;
+  // ✅ Removed `ref` from props — handled by forwardRef
 }
 
-function Input({
-  className,
-  type,
-  error,
-  errorMessage,
-  label,
-  labelAnimation, // Destructure labelAnimation
-  variant,
-  ref, // Destructure ref
-  ...props
-}: InputProps) {
-  const id = useId(); // Generate unique ID
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    { className, type, error, errorMessage, label, labelAnimation, variant, ...props },
+    ref
+  ) => {
+    const id = useId();
 
-  if (labelAnimation && label) {
-    // Render animated label structure
-    return (
-      <div className="group relative">
-        <label
-          htmlFor={id}
-          className={cn(
-            "origin-start text-muted-foreground/70 group-focus-within:text-foreground has-[+input:not(:placeholder-shown)]:text-foreground absolute top-1/2 block -translate-y-1/2 cursor-text px-1 text-sm transition-all group-focus-within:pointer-events-none group-focus-within:top-0 group-focus-within:cursor-default group-focus-within:text-xs group-focus-within:font-medium has-[+input:not(:placeholder-shown)]:pointer-events-none has-[+input:not(:placeholder-shown)]:top-0 has-[+input:not(:placeholder-shown)]:cursor-default has-[+input:not(:placeholder-shown)]:text-xs has-[+input:not(:placeholder-shown)]:font-medium",
-            error && "text-destructive" // Apply error color to label text if error
+    if (labelAnimation && label) {
+      return (
+        <div className="group relative">
+          <label
+            htmlFor={id}
+            className={cn(
+              "origin-start text-muted-foreground/70 group-focus-within:text-foreground absolute top-1/2 block -translate-y-1/2 cursor-text px-1 text-sm transition-all group-focus-within:pointer-events-none group-focus-within:top-0 group-focus-within:cursor-default group-focus-within:text-xs group-focus-within:font-medium has-[+input:not(:placeholder-shown)]:pointer-events-none has-[+input:not(:placeholder-shown)]:top-0 has-[+input:not(:placeholder-shown)]:cursor-default has-[+input:not(:placeholder-shown)]:text-xs has-[+input:not(:placeholder-shown)]:font-medium",
+              error && "text-destructive"
+            )}
+          >
+            <span className="bg-background inline-flex px-2">{label}</span>
+          </label>
+          <input
+            id={id}
+            type={type}
+            placeholder=" "
+            data-slot="input"
+            ref={ref}
+            className={cn(
+              inputVariants({ variant, className }),
+              error && "border-destructive focus-visible:border-destructive"
+            )}
+            {...props}
+          />
+          {errorMessage && (
+            <p className="text-sm text-destructive mt-1">{errorMessage}</p>
           )}
-        >
-          <span className="bg-background inline-flex px-2">{label}</span>
-        </label>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-1">
+        {label && (
+          <Label htmlFor={props.id || id} className="block text-sm font-medium text-foreground">
+            {label}
+          </Label>
+        )}
         <input
-          id={id}
+          id={props.id || id}
           type={type}
-          placeholder=" " // Required for :placeholder-shown selector
           data-slot="input"
           ref={ref}
           className={cn(
@@ -66,40 +85,13 @@ function Input({
           )}
           {...props}
         />
-        {/* Display errorMessage below the input if provided */}
         {errorMessage && (
           <p className="text-sm text-destructive mt-1">{errorMessage}</p>
         )}
       </div>
     );
   }
-
-  // Render standard input structure
-  return (
-    <div className="space-y-1">
-      {label && (
-        <Label htmlFor={props.id || id} className="block text-sm font-medium text-foreground">
-          {label}
-        </Label>
-      )}
-      <input
-        id={props.id || id}
-        type={type}
-        data-slot="input"
-        ref={ref}
-        className={cn(
-          inputVariants({ variant, className }),
-          error && "border-destructive focus-visible:border-destructive"
-        )}
-        {...props}
-      />
-      {/* Display errorMessage if provided */}
-      {errorMessage && (
-        <p className="text-sm text-destructive mt-1">{errorMessage}</p>
-      )}
-    </div>
-  );
-}
+);
 Input.displayName = "Input";
 
 export { Input, inputVariants };
