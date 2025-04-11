@@ -6,6 +6,8 @@ import {
   type TimerFormData,
   startTimerAPI,
   stopTimerAPI,
+  pauseTimerAPI,
+  resumeTimerAPI,
   getActiveTimerAPI,
   getTimerHistoryAPI,
 } from "../../service/timerApi"
@@ -44,17 +46,20 @@ export const fetchActiveTimer = createAsyncThunk("timer/fetchActiveTimer", async
   }
 })
 
-export const fetchTimerHistory = createAsyncThunk<any, any, any>("timer/fetchTimerHistory", async (page = 1, { rejectWithValue }) => {
-  try {
-    const response = await getTimerHistoryAPI(page)
-    if (!response.success) {
-      return rejectWithValue(response.error || "Failed to fetch timer history")
+export const fetchTimerHistory = createAsyncThunk<any, any, any>(
+  "timer/fetchTimerHistory",
+  async (page = 1, { rejectWithValue }) => {
+    try {
+      const response = await getTimerHistoryAPI(page)
+      if (!response.success) {
+        return rejectWithValue(response.error || "Failed to fetch timer history")
+      }
+      return response
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch timer history")
     }
-    return response
-  } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to fetch timer history")
-  }
-})
+  },
+)
 
 export const startTimer = createAsyncThunk(
   "timer/startTimer",
@@ -83,6 +88,30 @@ export const stopTimer = createAsyncThunk("timer/stopTimer", async (timerId: str
   }
 })
 
+export const pauseTimer = createAsyncThunk("timer/pauseTimer", async (timerId: string, { rejectWithValue }) => {
+  try {
+    const response = await pauseTimerAPI(timerId)
+    if (!response.success) {
+      return rejectWithValue(response.error || "Failed to pause timer")
+    }
+    return response
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to pause timer")
+  }
+})
+
+export const resumeTimer = createAsyncThunk("timer/resumeTimer", async (timerId: string, { rejectWithValue }) => {
+  try {
+    const response = await resumeTimerAPI(timerId)
+    if (!response.success) {
+      return rejectWithValue(response.error || "Failed to resume timer")
+    }
+    return response
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to resume timer")
+  }
+})
+
 // Timer slice
 const timerSlice = createSlice({
   name: "timer",
@@ -93,6 +122,12 @@ const timerSlice = createSlice({
     },
     clearActiveTimer: (state) => {
       state.activeTimer = null
+    },
+    pauseActiveTimer: (state, action: PayloadAction<Timer>) => {
+      state.activeTimer = action.payload
+    },
+    resumeActiveTimer: (state, action: PayloadAction<Timer>) => {
+      state.activeTimer = action.payload
     },
     addTimerToHistory: (state, action: PayloadAction<Timer>) => {
       // Add to the beginning of the array
@@ -162,11 +197,44 @@ const timerSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+
+      // pauseTimer
+      .addCase(pauseTimer.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(pauseTimer.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.timer) {
+          state.activeTimer = action.payload.timer
+        }
+      })
+      .addCase(pauseTimer.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+
+      // resumeTimer
+      .addCase(resumeTimer.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(resumeTimer.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.timer) {
+          state.activeTimer = action.payload.timer
+        }
+      })
+      .addCase(resumeTimer.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
   },
 })
 
 // Actions
-export const { updateActiveTimer, clearActiveTimer, addTimerToHistory } = timerSlice.actions
+export const { updateActiveTimer, clearActiveTimer, pauseActiveTimer, resumeActiveTimer, addTimerToHistory } =
+  timerSlice.actions
 
 // Selectors
 export const selectActiveTimer = (state: RootState) => state.timer.activeTimer
