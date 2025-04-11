@@ -16,7 +16,7 @@ import {
 
 const Header = () => {
   const { APP_NAME, LOGIN_LINK_TEXT, REGISTER_LINK_TEXT } = headerContent
-  const [showProfile, setShowProfile] = useState(false)
+  const [, setShowProfile] = useState(false)
   const { userProfile } = useSelector((state: RootState) => state.userProfile) // Add RootState type
   const dispatch = useDispatch<AppDispatch>() // Add AppDispatch type
   const userId = localStorage.getItem("userId")
