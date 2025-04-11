@@ -3,12 +3,16 @@ import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Avatar, NavigationLink } from "@/components/ui"
-import { Drawer } from "@/components/drawer"
 import UserProfile from "./user-profile-drawer/UserProfile"
 import { headerContent } from "@/constants/Header"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserProfile } from "@/redux/slice/UserProfile"
 import type { AppDispatch, RootState } from "@/redux/Store"// Import your store types
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+} from "@/components/ui/drawer"
 
 const Header = () => {
   const { APP_NAME, LOGIN_LINK_TEXT, REGISTER_LINK_TEXT } = headerContent
@@ -38,30 +42,26 @@ const Header = () => {
 
       <nav>
         {accessToken ? (
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-white/10 focus:ring-white/50"
-              onClick={() => setShowProfile(!showProfile)}
-              aria-label="Open profile"
-            >
-              <Avatar
-                variant="default"
-                src={userProfile?.data?.picture}
-                fallback={userProfile?.data?.userName || "User"}
-                className="border-white/30"
-              />
-            </Button>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button
+                size="icon"
+                aria-label="Open profile"
+                className="rounded-full"
+              >
+                <Avatar
+                  variant="default"
+                  src={userProfile?.data?.picture}
+                  fallback={userProfile?.data?.userName[0] || "A"}
+                  className="hover:border-black transition-all"
+                />
+              </Button>
+            </DrawerTrigger>
 
-            <Drawer
-              isOpen={showProfile}
-              onClose={() => setShowProfile(false)}
-              className="max-h-[85vh]"
-            >
+            <DrawerContent className="fixed right-0 top-0 bottom-0 w-[90vw] sm:w-[400px] bg-background border-l z-50 p-6">
               <UserProfile setShowProfile={setShowProfile} />
-            </Drawer>
-          </div>
+            </DrawerContent>
+          </Drawer>
         ) : (
           <div className="flex items-center gap-3">
             {isLoginPage ? (
@@ -73,7 +73,7 @@ const Header = () => {
                 {REGISTER_LINK_TEXT}
               </NavigationLink>
             ) : isRegisterPage ? (
-              <NavigationLink 
+              <NavigationLink
                 to="/login"
                 variant="outline"
                 className="bg-white/10 hover:bg-white/20"
@@ -82,7 +82,7 @@ const Header = () => {
               </NavigationLink>
             ) : (
               <>
-                <NavigationLink 
+                <NavigationLink
                   to="/login"
                   variant="outline"
                   className="bg-white/10 hover:bg-white/20"
