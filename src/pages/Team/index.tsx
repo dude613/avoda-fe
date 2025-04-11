@@ -583,15 +583,13 @@ export default function TeamMembers() {
 
               <div className="space-y-4 text-left">
                 <div className="">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                  </label>
                   <Input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter team member name"
+                    labelAnimation
+                    label="Name"
                   />
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1">{errors.name}</p>
@@ -599,15 +597,13 @@ export default function TeamMembers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
                   <Input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter email address"
+                    labelAnimation
+                    label="Email"
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs mt-1">{errors.email}</p>
