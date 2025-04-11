@@ -70,7 +70,7 @@ export default function TeamMembers() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
-    role: "",
+    role: "employee",
   });
 
   const [errors, setErrors] = useState<FormErrors>({
@@ -80,7 +80,7 @@ export default function TeamMembers() {
   });
 
   const openAddModal = () => {
-    setFormData({ name: "", email: "", role: "" }); // Reset form
+    setFormData({ name: "", email: "", role: "employee" }); // Reset form
     setIsEditing(false);
 
     setShowAddModal(true);
@@ -237,88 +237,88 @@ export default function TeamMembers() {
   const columns: ColumnDef<TeamMember>[] = useMemo(
     () => {
       const cols: ColumnDef<TeamMember>[] = [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <input
-            type="checkbox"
-            onChange={(e) => table.toggleAllRowsSelected(e.target.checked)}
-            checked={table.getIsAllRowsSelected()}
-            className="cursor-pointer"
-          />
-        ),
-        cell: ({ row }) => (
-          <input
-            type="checkbox"
-            checked={row.getIsSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            className="cursor-pointer"
-          />
-        ),
-        accessorFn: (row) => row.id, // Added accessorFn
-      },
-      {
-        id: "name", // Added id
-        accessorFn: (row) => row.name, // Changed accessorKey to accessorFn
-        header: "Name",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Avatar src={row.original.avatar} alt={row.original.name} />
-            <span>{row.original.name}</span>
-          </div>
-        ),
-      },
-      { id: "email", accessorFn: (row) => row.email, header: "Email" }, // Changed accessorKey to accessorFn, added id
-      { id: "role", accessorFn: (row) => row.role, header: "Role" }, // Changed accessorKey to accessorFn, added id
-      {
-        id: "status", // Added id
-        accessorFn: (row) => row.status, // Changed accessorKey to accessorFn
-        header: "Status",
-        cell: ({ row }) => {
-          const status = row.original.status;
-          return (
-            <span
-              className={`px-2.5  text-sm rounded-full font-semibold ${status === "Active"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-                }`}
-            >
-              {status}
-            </span>
-          );
+        {
+          id: "select",
+          header: ({ table }) => (
+            <input
+              type="checkbox"
+              onChange={(e) => table.toggleAllRowsSelected(e.target.checked)}
+              checked={table.getIsAllRowsSelected()}
+              className="cursor-pointer"
+            />
+          ),
+          cell: ({ row }) => (
+            <input
+              type="checkbox"
+              checked={row.getIsSelected()}
+              onChange={row.getToggleSelectedHandler()}
+              className="cursor-pointer"
+            />
+          ),
+          accessorFn: (row) => row.id, // Added accessorFn
         },
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          const id = row.original.id;
-          return (
-            <div className="">
-              <Button
-                size="icon"
-                variant="ghost"
-                className=" "
-                onClick={() => openEditModal(row.original)}
-              >
-                <Pencil size={16} />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="  text-red-600"
-                onClick={() => handleDeleteClick(id)}
-              >
-                <Trash size={16} />
-              </Button>
+        {
+          id: "name", // Added id
+          accessorFn: (row) => row.name, // Changed accessorKey to accessorFn
+          header: "Name",
+          cell: ({ row }) => (
+            <div className="flex items-center gap-2">
+              <Avatar src={row.original.avatar} alt={row.original.name} />
+              <span>{row.original.name}</span>
             </div>
-          );
+          ),
         },
-        accessorFn: (row) => row.id, // Added accessorFn
-      },
-    ];
-    return cols;
-  }, [openDropdown]
+        { id: "email", accessorFn: (row) => row.email, header: "Email" }, // Changed accessorKey to accessorFn, added id
+        { id: "role", accessorFn: (row) => row.role, header: "Role" }, // Changed accessorKey to accessorFn, added id
+        {
+          id: "status", // Added id
+          accessorFn: (row) => row.status, // Changed accessorKey to accessorFn
+          header: "Status",
+          cell: ({ row }) => {
+            const status = row.original.status;
+            return (
+              <span
+                className={`px-2.5  text-sm rounded-full font-semibold ${status === "Active"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+                  }`}
+              >
+                {status}
+              </span>
+            );
+          },
+        },
+        {
+          id: "actions",
+          header: "Actions",
+          cell: ({ row }) => {
+            const id = row.original.id;
+            return (
+              <div className="">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className=" "
+                  onClick={() => openEditModal(row.original)}
+                >
+                  <Pencil size={16} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="  text-red-600"
+                  onClick={() => handleDeleteClick(id)}
+                >
+                  <Trash size={16} />
+                </Button>
+              </div>
+            );
+          },
+          accessorFn: (row) => row.id, // Added accessorFn
+        },
+      ];
+      return cols;
+    }, [openDropdown]
   );
 
   const table = useReactTable<TeamMember>({
