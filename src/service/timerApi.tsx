@@ -61,9 +61,6 @@ const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
 })
 
-/**
- * Start a new timer
- */
 export async function startTimerAPI(timerData: TimerFormData): Promise<TimerResponse> {
   try {
     const response = await axios.post(TIMER_START, timerData, {
@@ -79,9 +76,6 @@ export async function startTimerAPI(timerData: TimerFormData): Promise<TimerResp
   }
 }
 
-/**
- * Stop an active timer
- */
 export async function stopTimerAPI(timerId: string): Promise<TimerResponse> {
   try {
     const response = await axios.put(
