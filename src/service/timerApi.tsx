@@ -95,9 +95,6 @@ export async function stopTimerAPI(timerId: string): Promise<TimerResponse> {
   }
 }
 
-/**
- * Pause an active timer
- */
 export async function pauseTimerAPI(timerId: string): Promise<TimerResponse> {
   try {
     const response = await axios.put(
@@ -117,9 +114,6 @@ export async function pauseTimerAPI(timerId: string): Promise<TimerResponse> {
   }
 }
 
-/**
- * Resume a paused timer
- */
 export async function resumeTimerAPI(timerId: string): Promise<TimerResponse> {
   try {
     const response = await axios.put(
@@ -139,9 +133,6 @@ export async function resumeTimerAPI(timerId: string): Promise<TimerResponse> {
   }
 }
 
-/**
- * Update a timer's note
- */
 export async function updateTimerNoteAPI(timerId: string, note: string): Promise<TimerResponse> {
   try {
     const response = await axios.put(
@@ -161,9 +152,6 @@ export async function updateTimerNoteAPI(timerId: string, note: string): Promise
   }
 }
 
-/**
- * Delete a timer's note
- */
 export async function deleteTimerNoteAPI(timerId: string): Promise<TimerResponse> {
   try {
     const response = await axios.delete(`${TIMER_DELETE_NOTE}/${timerId}`, {
@@ -179,9 +167,6 @@ export async function deleteTimerNoteAPI(timerId: string): Promise<TimerResponse
   }
 }
 
-/**
- * Get the currently active timer (if any)
- */
 export async function getActiveTimerAPI(): Promise<ActiveTimerResponse> {
   try {
     const response = await axios.get(TIMER_ACTIVE, {
@@ -199,9 +184,6 @@ export async function getActiveTimerAPI(): Promise<ActiveTimerResponse> {
   }
 }
 
-/**
- * Get timer history with pagination and filters
- */
 export async function getTimerHistoryAPI(page = 1, filters = {}, limit = 10): Promise<TimerHistoryResponse> {
   try {
     // Build query parameters
