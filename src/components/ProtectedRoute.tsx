@@ -1,16 +1,22 @@
+"use client";
+
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/redux/Store";
-import { isAuthorized, UserRole } from "@/config/permissions";
+import type { RootState, AppDispatch } from "@/redux/Store";
+import { isAuthorized, type UserRole } from "@/config/permissions";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 
 const ProtectedRoute: React.FC = () => {
   const [accessToken] = useState(localStorage.getItem("accessToken"));
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const { userProfile, loading } = useSelector((state: RootState) => state.userProfile);
-  const userRole = localStorage.getItem("userRole") as UserRole || null;
+  const { userProfile, loading } = useSelector(
+    (state: RootState) => state.userProfile
+  );
+  const userRole = (localStorage.getItem("userRole") as UserRole) || null;
 
   useEffect(() => {
     if (accessToken && !userProfile?.data) {
@@ -22,14 +28,22 @@ const ProtectedRoute: React.FC = () => {
   }, [accessToken, dispatch, userProfile?.data]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (!accessToken) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAuthorized(userRole, location.pathname)) {
+  // if (!isAuthorized(userRole, location.pathname)) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
+
+  if (location.pathname === "/team" && userRole !== "admin") {
     return <Navigate to="/unauthorized" replace />;
   }
 

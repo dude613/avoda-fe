@@ -161,11 +161,11 @@ export default function CreateOrganization() {
   }, [formData, setValue]);
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center w-full h-full">
       <Toaster />
       <Card variant="elevated" size="lg">
           <Form {...form}>
-            <div className="space-y-2 mb-8">
+            <div className="mb-8 space-y-2">
               <ProgressBar
                 currentStep={1}
                 totalSteps={2}
@@ -185,7 +185,7 @@ export default function CreateOrganization() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Form Items */}
               <FormItem className="mb-8">
-                <FormLabel required className="text-sm font-medium mb-2">
+                <FormLabel required className="mb-2 text-sm font-medium">
                   {ORGANIZATION_NAME}
                 </FormLabel>
                 <div className="relative">
@@ -203,7 +203,7 @@ export default function CreateOrganization() {
                     )}
                   />
                   {errors.organizationName && (
-                    <p className="text-destructive text-xs mt-1">
+                    <p className="mt-1 text-xs text-destructive">
                       {errors.organizationName?.message}
                     </p>
                   )}
@@ -213,7 +213,7 @@ export default function CreateOrganization() {
                 </FormDescription>
               </FormItem>
               <FormItem className="mt-8">
-                <FormLabel className="text-sm font-medium mb-2">
+                <FormLabel className="mb-2 text-sm font-medium">
                   {ORGANIZATION_INDUSTRY}
                 </FormLabel>
                 <Select
@@ -252,7 +252,7 @@ export default function CreateOrganization() {
                   <option value="other">{ORGANIZATION_SELECT_OTHER}</option>
                 </Select>
                 {errors.industry && (
-                  <p className="text-destructive text-xs">
+                  <p className="text-xs text-destructive">
                     {errors.industry.message}
                   </p>
                 )}
@@ -262,7 +262,7 @@ export default function CreateOrganization() {
               </FormItem>
 
               <FormItem className="mb-4">
-                <FormLabel className="text-sm font-medium mb-2">
+                <FormLabel className="mb-2 text-sm font-medium">
                   {ORGANIZATION_COMPANY_SIZE_TEXT}
                 </FormLabel>
                 <CardSelect
@@ -272,11 +272,11 @@ export default function CreateOrganization() {
                   rules={{ required: ORGANIZATION_COMPANY_REQUIRED }}
                 />
                 {errors.companySize && (
-                  <p className="text-destructive text-xs">
+                  <p className="text-xs text-destructive">
                     {errors.companySize.message}
                   </p>
                 )}
-                <FormDescription className="text-xs text-textPrimary opacity-70 mb-8">
+                <FormDescription className="mb-8 text-xs text-textPrimary opacity-70">
                   {ORGANIZATION_SELECT_ERROR}
                 </FormDescription>
               </FormItem>
@@ -293,12 +293,12 @@ export default function CreateOrganization() {
               >
                 {ORGANIZATION_BUTTON_TEXT}
               </Button>
-              <FormDescription className="text-xs text-textPrimary opacity-70 mb-4 text-center">
+              <FormDescription className="mb-4 text-xs text-center text-textPrimary opacity-70">
                 {ORGANIZATION_FOOTER_TEXT}
               </FormDescription>
             </form>
           </Form>
         </Card>
-    </>
+    </div>
   );
 }

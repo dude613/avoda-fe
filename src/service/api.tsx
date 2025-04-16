@@ -8,10 +8,13 @@ import {
   SKIP_ORGANIZATION,
   UPDATE_USER_PROFILE,
   UPDATE_USER_PROFILE_PICTURE,
-  USER_ARCHIVED,
+  ARCHIVE_USER,
   EDIT_TEAM_MEMBER,
   LOGOUT_API,
   All_USER_INFO,
+  UNARCHIVE_TEAM_MEMBER,
+  DELETE_TEAM_MEMBER,
+  GET_ACHIVED_USERS,
 } from "../Config";
 
 interface OrganizationFormData {
@@ -35,7 +38,7 @@ interface ProfileFormData {
   name: string;
   email: string;
   role: string;
-  userId:string
+  userId: string;
 }
 
 const getAuthHeaders = () => ({
@@ -161,11 +164,11 @@ export async function UploadUserPicture(formData: FormData) {
   }
 }
 
-export async function ArchivedUser(userId: string) {
+export async function ArchiveTeamMember(userId: string, organizationName: string) {
   try {
     const response = await axios.post(
-      USER_ARCHIVED,
-      { userId },
+      ARCHIVE_USER,
+      { userId, organizationName },
       {
         headers: getAuthHeaders(),
       }
@@ -177,6 +180,64 @@ export async function ArchivedUser(userId: string) {
     return null;
   }
 }
+
+export async function unarchiveTeamMember(userId: string, organizationName: string) {
+  try {
+    const response = await axios.put(`${UNARCHIVE_TEAM_MEMBER}/${userId}/${organizationName}`,
+      { userId },
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during unarchive API call:", error);
+    return null;
+  }
+}
+export async function deleteTeamMember(userId: string, organizationName: string) {
+  try {
+    const response = await axios.delete(`${DELETE_TEAM_MEMBER}/${userId}/${organizationName}`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during deleting team member:", error);
+    return null;
+  }
+}
+
+export async function fetchArchivedTeamMembers() {
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`${GET_ACHIVED_USERS}/${userId}`, {
+      headers: getAuthHeaders(),
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("error fetching archived team members", error);
+    return error;
+  }
+}
+
+export const GetUserInfoApi = async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`${All_USER_INFO}/${userId}`, {
+      headers: getAuthHeaders(),
+    });
+    const data = response?.data?.allUserDetails;
+    return data;
+  } catch (error) {
+    console.log("error fetch organization", error);
+    return error;
+  }
+};
 
 export async function EditTeamMemberAPI(formData: TeamMemberEditPayload) {
   try {
@@ -218,17 +279,3 @@ export async function LogoutAPI(formData: { userId: string }) {
     };
   }
 }
-
-export const GetUserInfoApi = async () => {
-  try {
-    const userId = localStorage.getItem("userId");
-    const response = await axios.get(`${All_USER_INFO}/${userId}`, {
-      headers: getAuthHeaders(),
-    });
-    const data = response?.data?.allUserDetails;
-    return data;
-  } catch (error) {
-    console.log("error fetch organization", error);
-    return error;
-  }
-};

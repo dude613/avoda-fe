@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -11,21 +13,16 @@ import {
   selectTimerPagination,
   updateTimerNote,
   deleteTimerNote,
+  editTimer,
+  deleteTimer,
 } from "../../redux/slice/Timer"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card-b"
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ClockIcon,
-  ArrowUpDownIcon,
-  PencilIcon,
-  TrashIcon,
-  CheckIcon,
-  XIcon,
-} from "lucide-react"
+import { ClockIcon, ArrowUpDownIcon, PencilIcon, TrashIcon, CheckIcon, XIcon, Edit2Icon } from "lucide-react"
 import { Button } from "../ui/button"
 import { Skeleton } from "../ui/skeleton"
 import { Textarea } from "../ui/textarea"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
 import { format } from "date-fns"
 import {
   useReactTable,
@@ -40,7 +37,17 @@ import toast from "react-hot-toast"
 import { FilterPanel } from "../filter/FilterPanel"
 import { DateRangeFilter } from "../filter/DateRangeFilter"
 import { TextFilter } from "../filter/TextFilter"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import Pagination from "../ui/Pagination"
 
+// Define the Timer interface with optional notes field
 type TimerWithOptionalFields = {
   id: string
   task: string
@@ -74,6 +81,19 @@ export default function TimerHistory() {
   const [editedNote, setEditedNote] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  // Edit timer states
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedTimer, setSelectedTimer] = useState<TimerWithOptionalFields | null>(null)
+  const [editFormData, setEditFormData] = useState({
+    task: "",
+    project: "",
+    client: "",
+    note: "",
+    startTime: "",
+    endTime: "",
+  })
+
   // Deduplicate timer history based on ID
   const uniqueTimerHistory = useMemo(() => {
     const uniqueTimers = new Map<string, TimerWithOptionalFields>()
@@ -100,7 +120,8 @@ export default function TimerHistory() {
   }, [editingTimerId])
 
   const handlePageChange = (page: number) => {
-    dispatch(fetchTimerHistory({ page }))
+    dispatch(fetchTimerHistory({ page: page }));
+    table.setPageIndex(page - 1);
   }
 
   const formatDate = (dateString: string | number | Date | undefined) => {
@@ -125,7 +146,6 @@ export default function TimerHistory() {
   const handleEditNote = (timer: TimerWithOptionalFields) => {
     setEditingTimerId(timer.id)
     setEditedNote(timer.note || "")
-    // i handled the focus by the useEffect
   }
 
   const handleSaveNote = async () => {
@@ -161,6 +181,73 @@ export default function TimerHistory() {
   const handleCancelEdit = () => {
     setEditingTimerId(null)
     setEditedNote("")
+  }
+
+  const handleOpenEditModal = (timer: TimerWithOptionalFields) => {
+    setSelectedTimer(timer)
+    setEditFormData({
+      task: timer.task || "",
+      project: timer.project || "",
+      client: timer.client || "",
+      note: timer.note || "",
+      startTime: timer.startTime ? new Date(timer.startTime).toISOString().slice(0, 16) : "",
+      endTime: timer.endTime ? new Date(timer.endTime).toISOString().slice(0, 16) : "",
+    })
+    setShowEditModal(true)
+  }
+
+  const handleOpenDeleteModal = (timer: TimerWithOptionalFields) => {
+    setSelectedTimer(timer)
+    setShowDeleteModal(true)
+  }
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSaveTimer = async () => {
+    if (!selectedTimer) return
+
+    try {
+      await dispatch(
+        editTimer({
+          timerId: selectedTimer.id,
+          timerData: {
+            task: editFormData.task,
+            project: editFormData.project || undefined,
+            client: editFormData.client || undefined,
+            note: editFormData.note || undefined,
+            startTime: editFormData.startTime || undefined,
+            endTime: editFormData.endTime || undefined,
+          },
+        }),
+      ).unwrap()
+
+      toast.success("Timer updated successfully")
+      setShowEditModal(false)
+      dispatch(fetchTimerHistory({ page: currentPage }))
+    } catch (error) {
+      toast.error("Failed to update timer")
+      console.error("Error updating timer:", error)
+    }
+  }
+
+  const handleDeleteTimer = async () => {
+    if (!selectedTimer) return
+
+    try {
+      await dispatch(deleteTimer(selectedTimer.id)).unwrap()
+      toast.success("Timer deleted successfully")
+      setShowDeleteModal(false)
+      dispatch(fetchTimerHistory({ page: currentPage }))
+    } catch (error) {
+      toast.error("Failed to delete timer")
+      console.error("Error deleting timer:", error)
+    }
   }
 
   const handleApplyFilters = () => {
@@ -213,7 +300,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             Task
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -225,7 +312,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             Project
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -237,7 +324,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             Client
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -249,7 +336,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             Start Time
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -266,7 +353,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             End Time
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -281,7 +368,7 @@ export default function TimerHistory() {
           <div className="flex items-center whitespace-nowrap">
             Duration
             <ArrowUpDownIcon
-              className="w-4 h-4 ml-2 cursor-pointer"
+              className="ml-2 h-4 w-4 cursor-pointer"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             />
           </div>
@@ -313,11 +400,11 @@ export default function TimerHistory() {
                 />
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={handleSaveNote} className="flex items-center gap-1">
-                    <CheckIcon className="w-3 h-3" />
+                    <CheckIcon className="h-3 w-3" />
                     Save
                   </Button>
                   <Button size="sm" variant="ghost" onClick={handleCancelEdit} className="flex items-center gap-1">
-                    <XIcon className="w-3 h-3" />
+                    <XIcon className="h-3 w-3" />
                     Cancel
                   </Button>
                 </div>
@@ -329,20 +416,49 @@ export default function TimerHistory() {
             <div className="flex items-center gap-2 min-w-[200px]">
               <div className="flex-1 break-words">{timer.note || "-"}</div>
               <div className="flex gap-1 shrink-0">
-                <Button size="sm" variant="ghost" onClick={() => handleEditNote(timer)} className="w-8 h-8 p-0">
-                  <PencilIcon className="w-4 h-4" />
+                <Button size="sm" variant="ghost" onClick={() => handleEditNote(timer)} className="h-8 w-8 p-0">
+                  <PencilIcon className="h-4 w-4" />
                 </Button>
                 {timer.note && (
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleDeleteNote(timerId)}
-                    className="w-8 h-8 p-0 text-destructive hover:text-destructive"
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
-                    <TrashIcon className="w-4 h-4" />
+                    <TrashIcon className="h-4 w-4" />
                   </Button>
                 )}
               </div>
+            </div>
+          )
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const timer = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleOpenEditModal(timer)}
+                className="flex items-center gap-1"
+              >
+                <Edit2Icon className="h-4 w-4" />
+                <span className="sr-only md:not-sr-only md:inline-block">Edit</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleOpenDeleteModal(timer)}
+                className="flex items-center gap-1 text-destructive hover:text-destructive"
+              >
+                <TrashIcon className="h-4 w-4" />
+                <span className="sr-only md:not-sr-only md:inline-block">Delete</span>
+              </Button>
             </div>
           )
         },
@@ -351,24 +467,33 @@ export default function TimerHistory() {
     [editingTimerId, editedNote],
   )
 
+
   const table = useReactTable({
-    data: uniqueTimerHistory,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
+  data: uniqueTimerHistory,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  state: {
+    sorting,
+  },
+  onSortingChange: setSorting,
+  manualPagination: true,
+  pageCount: totalPages,
+  meta: {
+    onPageIndexChange: (pageIndex: number) => {
+      dispatch(fetchTimerHistory({ page: pageIndex + 1 }));
     },
-    onSortingChange: setSorting,
-  })
+  },
+});
+
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center">
-            <ClockIcon className="w-5 h-5 mr-2" />
+            <ClockIcon className="mr-2 h-5 w-5" />
             Timer History
           </div>
           <div className="flex items-center gap-2">
@@ -416,27 +541,27 @@ export default function TimerHistory() {
       <CardContent>
         {historyLoading ? (
           <div className="space-y-2">
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
-            <Skeleton className="w-full h-10" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
           </div>
         ) : uniqueTimerHistory.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
-            <ClockIcon className="w-12 h-12 mb-2" />
+            <ClockIcon className="mb-2 h-12 w-12" />
             <p>No timer history found</p>
             <p className="text-sm">Start tracking time to see your history here</p>
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto border rounded-md">
+            <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-left border-collapse">
                 <thead>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id} className="border-b">
                       {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="px-4 py-3 font-semibold">
+                        <th key={header.id} className="py-3 px-4 font-semibold">
                           {header.isPlaceholder
                             ? null
                             : flexRender(header.column.columnDef.header, header.getContext())}
@@ -449,7 +574,7 @@ export default function TimerHistory() {
                   {table.getRowModel().rows.map((row) => (
                     <tr key={row.id} className="border-b hover:bg-gray-50">
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3">
+                        <td key={cell.id} className="py-3 px-4">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
@@ -459,34 +584,115 @@ export default function TimerHistory() {
               </table>
             </div>
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center py-4 mt-4 space-x-2">
-                <div className="inline-flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeftIcon className="w-4 h-4" />
-                  </Button>
-                  <span className="px-2 text-sm">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRightIcon className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
+            <Pagination table={table} totalPages={totalPages} currentPage={currentPage}/>
           </>
         )}
       </CardContent>
+
+      {/* Edit Timer Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Timer</DialogTitle>
+            <DialogDescription>Update timer details</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="task">Task Name *</Label>
+              <Input
+                id="task"
+                name="task"
+                value={editFormData.task}
+                onChange={handleEditFormChange}
+                placeholder="What were you working on?"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project">Project</Label>
+              <Input
+                id="project"
+                name="project"
+                value={editFormData.project}
+                onChange={handleEditFormChange}
+                placeholder="Project name (optional)"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="client">Client</Label>
+              <Input
+                id="client"
+                name="client"
+                value={editFormData.client}
+                onChange={handleEditFormChange}
+                placeholder="Client name (optional)"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="startTime">Start Time</Label>
+              <Input
+                id="startTime"
+                name="startTime"
+                type="datetime-local"
+                value={editFormData.startTime}
+                onChange={handleEditFormChange}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="endTime">End Time</Label>
+              <Input
+                id="endTime"
+                name="endTime"
+                type="datetime-local"
+                value={editFormData.endTime}
+                onChange={handleEditFormChange}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="note">Note</Label>
+              <Textarea
+                id="note"
+                name="note"
+                value={editFormData.note}
+                onChange={handleEditFormChange}
+                placeholder="Add a note (optional)"
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveTimer}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Timer Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Timer</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this timer? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteTimer}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

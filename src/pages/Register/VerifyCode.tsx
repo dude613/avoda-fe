@@ -14,11 +14,13 @@ const VerifyCode: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
   const otp = queryParams.get("otp");
+  const role = queryParams.get("role");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
 
   useEffect(() => {
+    console.log({role});
     if (!email) {
       navigate("/register", { replace: true });
     }
@@ -46,9 +48,10 @@ const VerifyCode: React.FC = () => {
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: otpNumber }),
+        body: JSON.stringify({ email, otp: otpNumber, role: role ?? "employee" }),
       });
       const data = await response.json();
+      console.log({data});
       if (data.success) {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user.id);
@@ -104,11 +107,11 @@ const VerifyCode: React.FC = () => {
     <>
       <Toaster />
       <div className="flex items-center justify-center min-h-screen px-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+        <div className="w-full max-w-sm p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <h2 className="mb-2 text-xl font-semibold text-gray-800">
             {titles.VERIFY_CODE_TITLE}
           </h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="mb-4 text-sm text-gray-500">
             {titles.VERIFY_CODE_SUBTITLE} {email}
           </p>
 
@@ -116,7 +119,7 @@ const VerifyCode: React.FC = () => {
             <OTP value={code} onChange={setCode} maxLength={6} />
           </div>
 
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+          {error && <p className="mb-2 text-xs text-red-500">{error}</p>}
 
           <Button onClick={handleVerify} className="w-full" disabled={loading}>
             {loading ? (
@@ -133,11 +136,11 @@ const VerifyCode: React.FC = () => {
             )}
           </Button>
 
-          <p className="text-gray-500 text-sm text-center mt-3">
+          <p className="mt-3 text-sm text-center text-gray-500">
             {messages.CODE_NOT_RECEIVED_TEXT}{" "}
           </p>
           <p
-            className="text-black text-sm text-center mt-3 cursor-pointer hover:underline"
+            className="mt-3 text-sm text-center text-black cursor-pointer hover:underline"
             onClick={handleResend}
           >
             {resending ? (
