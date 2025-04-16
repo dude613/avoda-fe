@@ -174,7 +174,7 @@ const AddTeamMembers = () => {
   };
 
   return (
-    <>
+    <div className="w-full flex flex-col h-full items-center justify-center">
       <Toaster />
       <Card variant="elevated" size="lg">
         <Form {...form}>
@@ -372,7 +372,7 @@ const AddTeamMembers = () => {
           </div>
         </Form>
       </Card>
-    </>
+    </div>
   );
 };
 

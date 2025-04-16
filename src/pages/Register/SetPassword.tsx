@@ -86,13 +86,13 @@ const SetPassword: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center w-full h-full">
       <Toaster />
       <Card>
-        <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
+        <h2 className="mb-2 text-xl font-semibold text-center text-gray-800">
           {titles.SET_PASSWORD_TITLE}
         </h2>
-        <p className="text-xs text-gray-500 mb-4 text-center">
+        <p className="mb-4 text-xs text-center text-gray-500">
           {titles.SET_PASSWORD_SUBTITLE}
         </p>
 
@@ -124,7 +124,7 @@ const SetPassword: React.FC = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
                 {formErrors.password && (
-                  <p className="text-destructive text-xs mt-1">
+                  <p className="mt-1 text-xs text-destructive">
                     {formErrors.password.message as string}
                   </p>
                 )}
@@ -158,7 +158,7 @@ const SetPassword: React.FC = () => {
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
                 {formErrors.confirmPassword && (
-                  <p className="text-destructive text-xs mt-1">
+                  <p className="mt-1 text-xs text-destructive">
                     {formErrors.confirmPassword.message as string}
                   </p>
                 )}
@@ -186,7 +186,7 @@ const SetPassword: React.FC = () => {
           }
         </Button>
       </Card>
-    </>
+    </div>
   );
 };
 

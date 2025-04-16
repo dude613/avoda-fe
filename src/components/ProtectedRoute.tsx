@@ -1,8 +1,12 @@
+"use client";
+
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/redux/Store";
-import { isAuthorized, UserRole } from "@/config/permissions";
+import type { RootState, AppDispatch } from "@/redux/Store";
+import { type UserRole } from "@/config/permissions";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 
 const ProtectedRoute: React.FC = () => {
@@ -31,14 +35,22 @@ const ProtectedRoute: React.FC = () => {
   }, [accessToken, dispatch, userProfile?.data, navigate]); // Add navigate to dependency array
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (!accessToken) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAuthorized(userRole, location.pathname)) {
+  // if (!isAuthorized(userRole, location.pathname)) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
+
+  if (location.pathname === "/team" && userRole !== "admin") {
     return <Navigate to="/unauthorized" replace />;
   }
 

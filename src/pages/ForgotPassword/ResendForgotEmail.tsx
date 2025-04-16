@@ -42,7 +42,7 @@ export default function ResendForgotEmail() {
         }
     }
     return (
-        <>
+        <div className="w-full h-full flex flex-col items-center justify-center">
             <Toaster />
             <Card layout={"centeredAndSpaced"}>
                 <div className="flex items-center justify-center">
@@ -61,6 +61,6 @@ export default function ResendForgotEmail() {
                     onClick={handleSubmit}
                 >{buttons.RESEND_EMAIL_BUTTON_TEXT}</Button>
             </Card>
-        </>
+        </div>
     );
 }
