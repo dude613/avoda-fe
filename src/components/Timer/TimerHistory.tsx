@@ -125,7 +125,6 @@ export default function TimerHistory() {
   const handleEditNote = (timer: TimerWithOptionalFields) => {
     setEditingTimerId(timer.id)
     setEditedNote(timer.note || "")
-    // i handled the focus by the useEffect
   }
 
   const handleSaveNote = async () => {
