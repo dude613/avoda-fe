@@ -10,6 +10,8 @@ import {
   resumeTimerAPI,
   getActiveTimerAPI,
   getTimerHistoryAPI,
+  updateTimerNoteAPI,
+  deleteTimerNoteAPI,
 } from "../../service/timerApi"
 
 interface TimerState {
@@ -46,11 +48,16 @@ export const fetchActiveTimer = createAsyncThunk("timer/fetchActiveTimer", async
   }
 })
 
-export const fetchTimerHistory = createAsyncThunk<any, any, any>(
+interface FetchTimerHistoryParams {
+  page?: number;
+  filters?: any;
+}
+
+export const fetchTimerHistory = createAsyncThunk(
   "timer/fetchTimerHistory",
-  async (page = 1, { rejectWithValue }) => {
+  async ({ page = 1, filters = {} }: FetchTimerHistoryParams = {}, { rejectWithValue }) => {
     try {
-      const response = await getTimerHistoryAPI(page)
+      const response = await getTimerHistoryAPI(page, filters)
       if (!response.success) {
         return rejectWithValue(response.error || "Failed to fetch timer history")
       }
@@ -111,6 +118,36 @@ export const resumeTimer = createAsyncThunk("timer/resumeTimer", async (timerId:
     return rejectWithValue(error.message || "Failed to resume timer")
   }
 })
+
+export const updateTimerNote = createAsyncThunk(
+  "timer/updateTimerNote",
+  async ({ timerId, note }: { timerId: string; note: string }, { rejectWithValue }) => {
+    try {
+      const response = await updateTimerNoteAPI(timerId, note)
+      if (!response.success) {
+        return rejectWithValue(response.error || "Failed to update timer note")
+      }
+      return { ...response, timerId, note }
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update timer note")
+    }
+  },
+)
+
+export const deleteTimerNote = createAsyncThunk(
+  "timer/deleteTimerNote",
+  async (timerId: string, { rejectWithValue }) => {
+    try {
+      const response = await deleteTimerNoteAPI(timerId)
+      if (!response.success) {
+        return rejectWithValue(response.error || "Failed to delete timer note")
+      }
+      return { ...response, timerId }
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to delete timer note")
+    }
+  },
+)
 
 // Timer slice
 const timerSlice = createSlice({
@@ -228,6 +265,20 @@ const timerSlice = createSlice({
       .addCase(resumeTimer.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload as string
+      })
+
+      // updateTimerNote
+      .addCase(updateTimerNote.fulfilled, (state, action) => {
+        const { timerId, note } = action.payload
+        state.timerHistory = state.timerHistory.map((timer) => (timer.id === timerId ? { ...timer, note } : timer))
+      })
+
+      // deleteTimerNote
+      .addCase(deleteTimerNote.fulfilled, (state, action) => {
+        const { timerId } = action.payload
+        state.timerHistory = state.timerHistory.map((timer) =>
+          timer.id === timerId ? { ...timer, note: undefined } : timer,
+        )
       })
   },
 })
