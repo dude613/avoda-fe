@@ -74,15 +74,10 @@ export default function TimerHistory() {
   const [editedNote, setEditedNote] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Deduplicate timer history based on ID
+  // Use the timer history directly from Redux
+  // If deduplication is needed, it should be handled in the Redux slice
   const uniqueTimerHistory = useMemo(() => {
-    const uniqueTimers = new Map<string, TimerWithOptionalFields>()
-    timerHistory.forEach((timer) => {
-      if (!uniqueTimers.has(timer.id)) {
-        uniqueTimers.set(timer.id, timer as TimerWithOptionalFields)
-      }
-    })
-    return Array.from(uniqueTimers.values())
+    return timerHistory as TimerWithOptionalFields[]
   }, [timerHistory])
 
   useEffect(() => {
