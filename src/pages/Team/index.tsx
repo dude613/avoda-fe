@@ -1,36 +1,68 @@
-//src/pages/Team/index.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import type React from "react";
+
 import { useState, useMemo, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   flexRender,
+  type SortingState,
 } from "@tanstack/react-table";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import { VscSettings } from "react-icons/vsc";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/Store";
-import { fetchOrganizations } from "@/redux/slice/OrganizationUser";
-import { Pencil, Trash } from "lucide-react";
+import type { AppDispatch, RootState } from "../../redux/Store";
+import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
 import {
   AddTeamMemberAPI,
-  ArchivedUser,
+  ArchiveTeamMember,
   EditTeamMemberAPI,
   fetchOrganization,
+  unarchiveTeamMember,
+  deleteTeamMember,
+  fetchArchivedTeamMembers,
 } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
-import { Select } from "@/components/ui/select";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card-b";
+import { Avatar } from "../../components/ui/avatar";
+import { Select } from "../../components/ui/select";
 import { useMediaQuery } from "react-responsive";
-import { ColumnDef } from "@tanstack/react-table";
+import { FilterPanel, TextFilter } from "@/components/filter";
+import {
+  PencilIcon,
+  TrashIcon,
+  UserPlusIcon,
+  UsersIcon,
+  ArchiveIcon,
+  RefreshCwIcon,
+  ArrowUpDownIcon,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Tabs } from "@/components/ui/tabs";
 
 interface TeamMember {
   id: string;
+  userId: string;
   name: string;
   email: string;
   role: string;
@@ -38,6 +70,7 @@ interface TeamMember {
   avatar?: string;
   organizationName?: string;
   address?: string;
+  userDeleteStatus?: string;
 }
 
 interface FormData {
@@ -47,60 +80,98 @@ interface FormData {
 }
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
+
 export default function TeamMembers() {
   const dispatch = useDispatch<AppDispatch>();
   const userId = localStorage.getItem("userId");
+  const userRole = localStorage.getItem("userRole");
+  const isAdmin = userRole === "admin";
   const { teamMembers, loading } = useSelector(
     (state: RootState) => state.organization
   );
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  // State
   const [globalFilter, setGlobalFilter] = useState("");
-  const [rowSelection, setRowSelection] = useState({});
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [organizationId, setOrganizationId] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [showArchivedUsers, setShowArchivedUsers] = useState(false)
+  const [archivedTeamMembers, setArchivedTeamMembers] = useState<TeamMember[]>(
+    []
+  );
+  const [archivedLoading, setArchivedLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("active");
 
+  // Modal states
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUnarchiveModal, setShowUnarchiveModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserName, setSelectedUserName] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
-
   const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    role: "employee",
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({
     name: "",
     email: "",
     role: "",
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [currentPage] = useState(1);
+  const [pageSize] = useState(10);
 
+  // Filter active team members vs archived team members
+  const activeTeamMembers = useMemo(
+    () =>
+      teamMembers.filter((member) => member?.userDeleteStatus !== "archive"),
+    [teamMembers]
+  );
+
+  // Modal handlers
   const openAddModal = () => {
-    setFormData({ name: "", email: "", role: "employee" }); // Reset form
+    setFormData({ name: "", email: "", role: "" });
     setIsEditing(false);
-
     setShowAddModal(true);
   };
 
-  // Open modal for editing an existing member
   const openEditModal = (member: TeamMember) => {
     setFormData(member);
     setIsEditing(true);
-
     setShowAddModal(true);
   };
 
+  const openArchiveModal = (id: string, name: string) => {
+    setSelectedUserId(id);
+    setSelectedUserName(name);
+    setShowArchiveModal(true);
+  };
+
+  const openDeleteModal = (id: string, name: string) => {
+    setSelectedUserId(id);
+    setSelectedUserName(name);
+    setShowDeleteModal(true);
+  };
+
+  const openUnarchiveModal = (id: string, name: string) => {
+    setSelectedUserId(id);
+    setSelectedUserName(name);
+    setShowUnarchiveModal(true);
+  };
+
+  // Fetch organization data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchOrganization();
         if (data && data.success && data.data.length > 0) {
           const orgId = data.data[0].id;
+          const orgName = data.data[0].name;
           setOrganizationId(orgId);
+          setOrganizationName(orgName);
         }
       } catch (error) {
         console.log("error for fetch Organization data", error);
@@ -109,22 +180,49 @@ export default function TeamMembers() {
     fetchData();
   }, []);
 
+  // Fetch team members
   useEffect(() => {
     if (userId) {
       dispatch(fetchOrganizations(userId as string));
     }
   }, [dispatch, userId]);
 
+  // Add a function to fetch archived team members
+  const fetchArchivedMembers = async () => {
+    if (!userId) return;
+
+    setArchivedLoading(true);
+    try {
+      const response = await fetchArchivedTeamMembers();
+      if (response.success) {
+        setArchivedTeamMembers(response.archivedTeamMembers || []);
+      } else {
+        toast.error(response.error || "Failed to fetch archived team members");
+      }
+    } catch (error) {
+      console.error("Error fetching archived team members:", error);
+      toast.error("An error occurred while fetching archived team members");
+    } finally {
+      setArchivedLoading(false);
+    }
+  };
+
+  // Add a new useEffect to fetch archived team members when the tab changes
+  useEffect(() => {
+    if (activeTab === "archived" && userId) {
+      fetchArchivedMembers();
+    }
+  }, [activeTab, userId]);
+
+  // Form handlers
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-
     if (name in errors) {
       setErrors((prev) => ({
         ...prev,
@@ -132,6 +230,7 @@ export default function TeamMembers() {
       }));
     }
   };
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
 
@@ -150,246 +249,472 @@ export default function TeamMembers() {
     }
 
     setErrors(newErrors);
-
-    // Return true only if there are no errors
     return Object.keys(newErrors).length === 0;
   };
 
-  const addTeamMember = async () => {
+  // API handlers
+  const handleAddTeamMember = async () => {
     setIsLoading(true);
     if (!validateForm()) {
       setIsLoading(false);
       return;
     }
+
     if (isEditing) {
       const payload = { ...formData, orgId: organizationId };
       try {
         const response = await EditTeamMemberAPI(payload);
         if (response?.success === true) {
-          toast.success(response?.message, {
-            duration: 2000,
-          });
+          toast.success(
+            response?.message || "Team member updated successfully"
+          );
           setFormData({ name: "", email: "", role: "" });
           setShowAddModal(false);
           dispatch(fetchOrganizations(userId as string));
         } else {
-          toast.error(response?.error || response?.response?.data?.error);
+          toast.error(
+            response?.error ||
+              response?.response?.data?.error ||
+              "Failed to update team member"
+          );
         }
       } catch (error) {
         console.error("Error during API call:", error);
+        toast.error("An error occurred while updating team member");
       } finally {
         setIsLoading(false);
-        setFormData({ name: "", email: "", role: "" });
-        setShowAddModal(false);
       }
     } else {
       const payload = [{ ...formData, orgId: organizationId }];
       try {
         const response = await AddTeamMemberAPI({ members: payload });
         if (response?.success === true) {
-          toast.success(response?.message, {
-            duration: 2000,
-          });
+          toast.success(response?.message || "Team member added successfully");
           setFormData({ name: "", email: "", role: "" });
           setShowAddModal(false);
           dispatch(fetchOrganizations(userId as string));
         } else {
-          toast.error(response?.error || response?.response?.data?.error);
+          toast.error(
+            response?.error ||
+              response?.response?.data?.error ||
+              "Failed to add team member"
+          );
         }
       } catch (error) {
         console.error("Error during API call:", error);
+        toast.error("An error occurred while adding team member");
       } finally {
         setIsLoading(false);
-        setFormData({ name: "", email: "", role: "" });
-        setShowAddModal(false);
       }
     }
   };
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedUserId(id);
-    setShowModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
+  const handleArchiveTeamMember = async () => {
     try {
       if (!selectedUserId) {
-        toast.error("No user ID selected for Archived", { duration: 2000 });
+        toast.error("No team member selected for archiving");
         return;
       }
-      const res = await ArchivedUser(selectedUserId);
+
+      const res = await ArchiveTeamMember(selectedUserId, organizationName);
       if (res?.success === true) {
-        toast.success(res?.message || "User archived successfully", {
-          duration: 2000,
-        });
+        toast.success(res?.message || "Team member archived successfully");
+        dispatch(fetchOrganizations(userId as string));
+        // Refresh archived members if we're on that tab
+        if (activeTab === "archived") {
+          fetchArchivedMembers();
+        }
       } else {
-        toast.error(res?.error || "Something went wrong", { duration: 2000 });
-        console.error("Failed to delete user:", res);
+        toast.error(res?.error || "Failed to archive team member");
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error archiving user:", error);
+      toast.error("An error occurred while archiving team member");
     } finally {
-      dispatch(fetchOrganizations(userId as string));
-      setShowModal(false);
+      setShowArchiveModal(false);
+      setSelectedUserId(null);
     }
   };
 
-  const columns: ColumnDef<TeamMember>[] = useMemo(
-    () => {
-      const cols: ColumnDef<TeamMember>[] = [
-        {
-          id: "select",
-          header: ({ table }) => (
-            <input
-              type="checkbox"
-              onChange={(e) => table.toggleAllRowsSelected(e.target.checked)}
-              checked={table.getIsAllRowsSelected()}
-              className="cursor-pointer"
-            />
-          ),
-          cell: ({ row }) => (
-            <input
-              type="checkbox"
-              checked={row.getIsSelected()}
-              onChange={row.getToggleSelectedHandler()}
-              className="cursor-pointer"
-            />
-          ),
-          accessorFn: (row) => row.id, // Added accessorFn
-        },
-        {
-          id: "name", // Added id
-          accessorFn: (row) => row.name, // Changed accessorKey to accessorFn
-          header: "Name",
-          cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-              <Avatar src={row.original.avatar} alt={row.original.name} />
-              <span>{row.original.name}</span>
-            </div>
-          ),
-        },
-        { id: "email", accessorFn: (row) => row.email, header: "Email" }, // Changed accessorKey to accessorFn, added id
-        { id: "role", accessorFn: (row) => row.role, header: "Role" }, // Changed accessorKey to accessorFn, added id
-        {
-          id: "status", // Added id
-          accessorFn: (row) => row.status, // Changed accessorKey to accessorFn
-          header: "Status",
-          cell: ({ row }) => {
-            const status = row.original.status;
-            return (
-              <span
-                className={`px-2.5  text-sm rounded-full font-semibold ${status === "Active"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-                  }`}
-              >
-                {status}
-              </span>
-            );
-          },
-        },
-        {
-          id: "actions",
-          header: "Actions",
-          cell: ({ row }) => {
-            const id = row.original.id;
-            return (
-              <div className="">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className=" "
-                  onClick={() => openEditModal(row.original)}
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="  text-red-600"
-                  onClick={() => handleDeleteClick(id)}
-                >
-                  <Trash size={16} />
-                </Button>
-              </div>
-            );
-          },
-          accessorFn: (row) => row.id, // Added accessorFn
-        },
-      ];
-      return cols;
-    }, [openDropdown]
+  const handleUnarchiveTeamMember = async () => {
+    try {
+      if (!selectedUserId) {
+        toast.error("No team member selected for unarchiving");
+        return;
+      }
+
+      const res = await unarchiveTeamMember(selectedUserId, organizationName);
+      if (res?.success === true) {
+        toast.success(res?.message || "Team member unarchived successfully");
+        // Refresh both lists
+        dispatch(fetchOrganizations(userId as string));
+        fetchArchivedMembers();
+      } else {
+        toast.error(res?.error || "Failed to unarchive team member");
+      }
+    } catch (error) {
+      console.error("Error unarchiving team member:", error);
+      toast.error("An error occurred while unarchiving team member");
+    } finally {
+      setShowUnarchiveModal(false);
+      setSelectedUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      if (!selectedUserId) {
+        toast.error("No team member selected for deletion");
+        return;
+      }
+      const res = await deleteTeamMember(selectedUserId, organizationName);
+      if (res?.success === true) {
+        toast.success(res?.message || "Team member deleted successfully");
+        dispatch(fetchOrganizations(userId as string));
+      } else {
+        toast.error(res?.error || "Failed to delete team member");
+      }
+      dispatch(fetchOrganizations(userId as string));
+    } catch (error) {
+      console.error("Error deleting team member:", error);
+      toast.error("An error occurred while deleting team member");
+    } finally {
+      setShowDeleteModal(false);
+      setSelectedUserId(null);
+    }
+  };
+
+  // Filter handlers
+  const handleApplyFilters = () => {
+  };
+
+  const handleClearFilters = () => {
+    setNameFilter("");
+    setEmailFilter("");
+    setRoleFilter("");
+    setGlobalFilter("");
+  };
+
+  const hasActiveFilters = !!(
+    nameFilter ||
+    emailFilter ||
+    roleFilter ||
+    globalFilter
   );
 
-  const table = useReactTable<TeamMember>({
-    data: teamMembers || [],
-    columns,
+  // Table columns
+  const columns: ColumnDef<TeamMember, any>[] = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Name
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Avatar src={row.original.avatar} alt={row.original.name} />
+            <span>{row.original.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Email
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Role
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Status
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+        cell: ({ row }) => {
+          const status = row.original.status;
+          return (
+            <span
+              className={`px-2.5 py-1 text-sm rounded-full font-semibold ${
+                status === "active"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        accessorFn: (row) => row.id,
+        cell: ({ row }) => {
+          const member = row.original;
+          return (
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openEditModal(member)}
+                  >
+                    <PencilIcon className="w-4 h-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                    onClick={() => openArchiveModal(member.userId, member.name)}
+                  >
+                    <ArchiveIcon className="w-4 h-4" />
+                    <span className="sr-only">Archive</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => openDeleteModal(member.userId, member.name)}
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [isAdmin]
+  );
+
+  // Archived team members columns
+  const archivedColumns: ColumnDef<TeamMember, any>[] = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Name
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Avatar src={row.original.avatar} alt={row.original.name} />
+            <span>{row.original.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Email
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Role
+            <ArrowUpDownIcon
+              className="w-4 h-4 ml-2 cursor-pointer"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            />
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        accessorFn: (row) => row.id,
+        cell: ({ row }) => {
+          const member = row.original;
+          return (
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex items-center gap-1"
+                  onClick={() => openUnarchiveModal(member.userId, member.name)}
+                >
+                  <RefreshCwIcon className="w-4 h-4" />
+                  Unarchive
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [isAdmin]
+  );
+
+  // Setup tables
+  const activeTable = useReactTable({
+    data: activeTeamMembers,
+    columns: columns as any,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { rowSelection, globalFilter },
-    onRowSelectionChange: setRowSelection,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      globalFilter,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize,
+      },
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
-  const MobileView = () => (
+  const archivedTable = useReactTable({
+    data: archivedTeamMembers,
+    columns: archivedColumns as any,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      globalFilter,
+      pagination: {
+        pageIndex: 0,
+        pageSize: 5,
+      },
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+  });
+
+  // Mobile view component
+  const MobileView = ({ data }: { data: TeamMember[] }) => (
     <div className="space-y-4">
-      {table.getRowModel().rows.map((row) => (
-        <Card key={row.id} className="p-4">
+      {data.map((member) => (
+        <Card key={member.id} className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Avatar src={row.original.avatar} alt={row.original.name} />
+              <Avatar src={member.avatar} alt={member.name} />
               <div>
-                <h3 className="font-semibold">{row.original.name}</h3>
-                <p className="text-sm text-gray-500">{row.original.email}</p>
+                <h3 className="font-semibold">{member.name}</h3>
+                <p className="text-sm text-gray-500">{member.email}</p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setOpenDropdown(
-                  openDropdown === row.original.id ? null : row.original.id
-                );
-              }}
-            >
-              <HiOutlineDotsHorizontal className="h-5 w-5" />
-            </Button>
           </div>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
               <span className="text-sm text-gray-500">Role</span>
-              <p className="font-medium">{row.original.role}</p>
+              <p className="font-medium">{member.role}</p>
             </div>
             <div>
               <span className="text-sm text-gray-500">Status</span>
               <p
-                className={`font-medium ${row.original.status === "Active"
-                  ? "text-green-600"
-                  : "text-red-600"
-                  }`}
+                className={`font-medium ${
+                  member.status === "active" ? "text-green-600" : "text-red-600"
+                }`}
               >
-                {row.original.status}
+                {member.status}
               </p>
             </div>
           </div>
-          {openDropdown === row.original.id && (
-            <div className="">
+          {isAdmin && (
+            <div className="flex justify-end gap-2 mt-4">
               <Button
-                size="icon"
-                variant="ghost"
-                className=" "
-                onClick={() => openEditModal(row.original)}
+                size="sm"
+                variant="outline"
+                onClick={() => openEditModal(member)}
               >
-                <Pencil size={16} />
+                <PencilIcon className="w-4 h-4 mr-1" />
+                Edit
               </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="  text-red-600"
-                onClick={() => handleDeleteClick(row.original.id)}
-              >
-                <Trash size={16} />
-              </Button>
+              {member.userDeleteStatus === "active" ? (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-amber-600 border-amber-600"
+                    onClick={() => openArchiveModal(member.userId, member.name)}
+                  >
+                    <ArchiveIcon className="w-4 h-4 mr-1" />
+                    Archive
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600 border-red-600"
+                    onClick={() => openDeleteModal(member.userId, member.name)}
+                  >
+                    <TrashIcon className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openUnarchiveModal(member.userId, member.name)}
+                >
+                  <RefreshCwIcon className="w-4 h-4 mr-1" />
+                  Unarchive
+                </Button>
+              )}
             </div>
           )}
         </Card>
@@ -398,105 +723,123 @@ export default function TeamMembers() {
   );
 
   return (
-    <div className="flex justify-center items-center  w-full">
+    <div className="p-4 md:p-8">
       <Toaster />
-      <div className="p-4 md:p-8 text-center w-full">
-        <div className="mb-6 mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold">Team Members</h1>
-          <p className="text-gray-600">
-            Manage your organization's team members
-          </p>
-        </div>
-        {/*TODO Check Card Size relative to login/register*/}
-        <Card size="full" layout="responsive">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 w-full">
-            {/* Search + Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-[60%]">
-              <Input
-                type="search"
-                placeholder="Search team members..."
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full sm:w-[250px]"
-              />
-              <Select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full sm:w-[200px] text-center"
-              >
-                <option value="">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="employee">Employee</option>
-              </Select>
-            </div>
 
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto md:ml-auto">
-              <Button variant="outline" className="w-full sm:w-[120px]">
-                <VscSettings className="mr-2" />
-                View
-              </Button>
-              <Button className="w-full sm:w-[150px]" onClick={openAddModal}>
-                <IoMdAddCircleOutline className="mr-2" />
-                Add Member
-              </Button>
-            </div>
-          </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Team Management</h1>
+        <p className="text-muted-foreground">
+          Manage your organization's team members
+        </p>
+      </div>
 
-          {loading ? (
-            <div className="flex justify-center items-center h-[400px] w-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : isMobile ? (
-            <MobileView />
-          ) : (
-            <div className="w-full overflow-x-auto relative">
-              <div className="min-w-full inline-block align-middle">
-                <div className="overflow-hidden">
-                  <table className="min-w-full table-fixed border-collapse">
+      <Tabs
+        tabs={[
+          { value: "active", label: "Active Members" },
+          { value: "archived", label: "Archived Members" },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        className="mb-4"
+      />
+
+      {activeTab === "active" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex flex-col items-center justify-between sm:flex-row">
+              <div className="flex items-center">
+                <UsersIcon className="w-5 h-5 mr-2" />
+                Team Members
+              </div>
+              <div className="flex items-center w-full gap-2 mt-2 sm:mt-0 sm:w-2/5">
+                <FilterPanel
+                  title="Filter Members"
+                  onApply={handleApplyFilters}
+                  onClear={handleClearFilters}
+                  hasActiveFilters={hasActiveFilters}
+                >
+                  <TextFilter
+                    value={nameFilter}
+                    onChange={setNameFilter}
+                    label="Name"
+                    placeholder="Filter by name..."
+                  />
+
+                  <TextFilter
+                    value={emailFilter}
+                    onChange={setEmailFilter}
+                    label="Email"
+                    placeholder="Filter by email..."
+                    className="mt-4"
+                  />
+
+                  <TextFilter
+                    value={roleFilter}
+                    onChange={setRoleFilter}
+                    label="Role"
+                    placeholder="Filter by role..."
+                    className="mt-4"
+                  />
+                </FilterPanel>
+
+                {isAdmin && (
+                  <Button
+                    onClick={openAddModal}
+                    size="sm"
+                    className="flex items-center gap-1"
+                  >
+                    <UserPlusIcon className="w-4 h-4" />
+                    Add Member
+                  </Button>
+                )}
+              </div>
+            </CardTitle>
+            <CardDescription className="hidden sm:flex">
+              View and manage your team members
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex justify-center items-center h-[400px]">
+                <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary"></div>
+              </div>
+            ) : isMobile ? (
+              <MobileView data={activeTeamMembers} />
+            ) : (
+              <div className="border rounded-md">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
                     <thead>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
+                      {activeTable.getHeaderGroups().map((headerGroup) => (
+                        <tr
+                          key={headerGroup.id}
+                          className="border-b bg-muted/50"
+                        >
                           {headerGroup.headers.map((header) => (
                             <th
                               key={header.id}
-                              className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider bg-gray-50"
-                              style={{
-                                width:
-                                  header.id === "select"
-                                    ? "40px"
-                                    : header.id === "actions"
-                                      ? "100px"
-                                      : "auto",
-                              }}
+                              className="px-4 py-3 font-medium"
                             >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
                             </th>
                           ))}
                         </tr>
                       ))}
                     </thead>
-                    <tbody className="bg-white ">
-                      {table.getRowModel().rows.length > 0 ? (
-                        table.getRowModel().rows.map((row) => (
-                          <tr key={row.id} className="hover:bg-gray-50">
+                    <tbody>
+                      {activeTable.getRowModel().rows.length > 0 ? (
+                        activeTable.getRowModel().rows.map((row) => (
+                          <tr
+                            key={row.id}
+                            className="transition-colors border-b hover:bg-muted/50"
+                          >
                             {row.getVisibleCells().map((cell) => (
-                              <td
-                                key={cell.id}
-                                className="px-6 py-3 text-left whitespace-nowrap text-sm text-gray-600"
-                                style={{
-                                  width:
-                                    cell.column.id === "select"
-                                      ? "40px"
-                                      : cell.column.id === "actions"
-                                        ? "100px"
-                                        : "auto",
-                                }}
-                              >
+                              <td key={cell.id} className="px-4 py-3">
                                 {flexRender(
                                   cell.column.columnDef.cell,
                                   cell.getContext()
@@ -509,142 +852,247 @@ export default function TeamMembers() {
                         <tr>
                           <td
                             colSpan={columns.length}
-                            className="px-6 py-24 text-center"
+                            className="h-24 text-center"
                           >
-                            <div className="flex flex-col items-center justify-center">
-                              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                <svg
-                                  className="w-8 h-8 text-gray-400"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                  />
-                                </svg>
-                              </div>
-                              <h3 className="text-lg font-medium text-gray-900 mb-1">
-                                No team members found
-                              </h3>
-                              <p className="text-gray-500 mb-4">
-                                Get started by adding a new team member
-                              </p>
-                              <Button
-                                onClick={openAddModal}
-                                className="w-[200px]"
-                              >
-                                <IoMdAddCircleOutline className="mr-2" />
-                                Add Team Member
-                              </Button>
-                            </div>
+                            No team members found
                           </td>
                         </tr>
                       )}
                     </tbody>
                   </table>
                 </div>
+                {/* <Pagination table={activeTable} /> */}
               </div>
-            </div>
-          )}
+            )}
+          </CardContent>
         </Card>
+      )}
 
-        {/* Delete Confirmation Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center">
-            <Card className="p-6 max-w-md w-full mx-4">
-              <h2 className="text-xl font-bold mb-2">Confirm Deletion</h2>
-              <p className="text-gray-600 mb-4">
-                Are you sure you want to archive this team member?
-              </p>
-              <div className="flex justify-end gap-4">
-                <Button variant="outline" onClick={() => setShowModal(false)}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={handleConfirmDelete}>
-                  Archive
-                </Button>
+      {activeTab === "archived" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <ArchiveIcon className="w-5 h-5 mr-2" />
+              Archived Team Members
+            </CardTitle>
+            <CardDescription>
+              View and manage archived team members
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {archivedLoading ? (
+              <div className="flex justify-center items-center h-[200px]">
+                <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary"></div>
               </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Add Member Modal */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center">
-            <Card className="p-6 max-w-md w-full mx-4">
-              <h2 className="text-xl font-bold mb-4">
-                {" "}
-                {isEditing ? "Edit Team Member" : "Add Team Member"}
-              </h2>
-
-              <div className="space-y-4 text-left">
-                <div className="">
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    labelAnimation
-                    label="Name"
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-                  )}
+            ) : isMobile ? (
+              <MobileView data={archivedTeamMembers} />
+            ) : (
+              <div className="border rounded-md">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      {archivedTable.getHeaderGroups().map((headerGroup) => (
+                        <tr
+                          key={headerGroup.id}
+                          className="border-b bg-muted/50"
+                        >
+                          {headerGroup.headers.map((header) => (
+                            <th
+                              key={header.id}
+                              className="px-4 py-3 font-medium"
+                            >
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </th>
+                          ))}
+                        </tr>
+                      ))}
+                    </thead>
+                    <tbody>
+                      {archivedTable.getRowModel().rows.length > 0 ? (
+                        archivedTable.getRowModel().rows.map((row) => (
+                          <tr
+                            key={row.id}
+                            className="transition-colors border-b hover:bg-muted/50"
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <td key={cell.id} className="px-4 py-3">
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={archivedColumns.length}
+                            className="h-24 text-center"
+                          >
+                            No archived team members found
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-
-                <div>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    labelAnimation
-                    label="Email"
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Role
-                  </label>
-                  <Select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                  >
-                    {/* TODO Add icons/improve ui a bit */}
-                    <option value="">Select a role</option>
-                    <option value="admin">Admin</option>
-                    <option value="manager">Manager</option>
-                    <option value="employee">Employee</option>
-                  </Select>
-                  {errors.role && (
-                    <p className="text-red-500 text-xs mt-1">{errors.role}</p>
-                  )}
-                </div>
-                <div className="flex justify-end gap-4 mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowAddModal(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={addTeamMember} disabled={isLoading}>
-                    {isEditing ? "Update Member" : "Add Member"}
-                  </Button>
-                </div>
+                {/* <Pagination table={archivedTable} /> */}
               </div>
-            </Card>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Add/Edit Member Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditing ? "Edit Team Member" : "Add Team Member"}
+            </DialogTitle>
+            <DialogDescription>
+              {isEditing
+                ? "Update the team member's information"
+                : "Enter the details of the new team member"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter full name"
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive">{errors.name}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter email address"
+              />
+              {errors.email && (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+              >
+                <option value="">Select a role</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="employee">Employee</option>
+              </Select>
+              {errors.role && (
+                <p className="text-xs text-destructive">{errors.role}</p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddTeamMember} disabled={isLoading}>
+              {isLoading
+                ? "Processing..."
+                : isEditing
+                ? "Update Member"
+                : "Add Member"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Archive Confirmation Modal */}
+      <Dialog open={showArchiveModal} onOpenChange={setShowArchiveModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Archive Team Member</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive {selectedUserName}? They will no
+              longer appear in the active team members list.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowArchiveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleArchiveTeamMember}>
+              Archive Member
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Team Member</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to permanently delete {selectedUserName}?
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUser}>
+              Delete Permanently
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unarchive Confirmation Modal */}
+      <Dialog open={showUnarchiveModal} onOpenChange={setShowUnarchiveModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Unarchive Team Member</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to unarchive {selectedUserName}? They will
+              appear in the active team members list again.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowUnarchiveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleUnarchiveTeamMember}>
+              Unarchive Member
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

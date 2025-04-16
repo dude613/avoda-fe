@@ -9,6 +9,8 @@ import {
   TIMER_RESUME,
   TIMER_UPDATE_NOTE,
   TIMER_DELETE_NOTE,
+  TIMER_EDIT,
+  TIMER_DELETE,
 } from "../Config"
 
 // Types
@@ -32,6 +34,15 @@ export interface TimerFormData {
   project?: string
   client?: string
   note?: string
+}
+
+export interface TimerEditData {
+  task: string
+  project?: string
+  client?: string
+  note?: string
+  startTime?: string
+  endTime?: string
 }
 
 export interface TimerHistoryResponse {
@@ -167,6 +178,36 @@ export async function deleteTimerNoteAPI(timerId: string): Promise<TimerResponse
   }
 }
 
+export async function editTimerAPI(timerId: string, timerData: TimerEditData): Promise<TimerResponse> {
+  try {
+    const response = await axios.put(`${TIMER_EDIT}/${timerId}`, timerData, {
+      headers: getAuthHeaders(),
+    })
+    return response.data
+  } catch (error: any) {
+    console.error("Error editing timer:", error)
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to edit timer",
+    }
+  }
+}
+
+export async function deleteTimerAPI(timerId: string): Promise<TimerResponse> {
+  try {
+    const response = await axios.delete(`${TIMER_DELETE}/${timerId}`, {
+      headers: getAuthHeaders(),
+    })
+    return response.data
+  } catch (error: any) {
+    console.error("Error deleting timer:", error)
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to delete timer",
+    }
+  }
+}
+
 export async function getActiveTimerAPI(): Promise<ActiveTimerResponse> {
   try {
     const response = await axios.get(TIMER_ACTIVE, {
@@ -197,6 +238,8 @@ export async function getTimerHistoryAPI(page = 1, filters = {}, limit = 10): Pr
         params.append(key, value as string)
       }
     })
+
+    console.log("API Request with params:", params.toString())
 
     const response = await axios.get(`${TIMER_HISTORY}?${params.toString()}`, {
       headers: getAuthHeaders(),
