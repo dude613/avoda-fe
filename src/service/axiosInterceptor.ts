@@ -7,7 +7,7 @@ export const setupAxiosInterceptors = () => {
       return response
     },
     (error) => {
-      if (error.response && error.response.status === 401) {
+      if (error?.response && error.response.status === 401) {
         localStorage.removeItem("accessToken")
         localStorage.removeItem("userId")
         localStorage.removeItem("userRole")

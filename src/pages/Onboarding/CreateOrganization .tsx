@@ -13,7 +13,7 @@ import {
   ProgressBar,
   Select,
 } from "@/components/ui";
-import   {CardSelect} from "@/components/card-select";
+import {CardSelect} from "@/components/card-select";
 import {
   FormItem,
   FormLabel,

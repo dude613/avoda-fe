@@ -30,7 +30,6 @@ const SetPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    console.log(roleFromQuery, role, "rfQ");
     if (!email) {
       navigate("/register");
     }

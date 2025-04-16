@@ -118,9 +118,13 @@ export default function TeamMembers() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
+    role: "employee",
+  });
+  const [errors, setErrors] = useState<FormErrors>({
+    name: "",
+    email: "",
     role: "",
   });
-  const [errors, setErrors] = useState<FormErrors>({});
   const [currentPage] = useState(1);
   const [pageSize] = useState(10);
 
@@ -133,7 +137,7 @@ export default function TeamMembers() {
 
   // Modal handlers
   const openAddModal = () => {
-    setFormData({ name: "", email: "", role: "" });
+    setFormData({ name: "", email: "", role: "employee" });
     setIsEditing(false);
     setShowAddModal(true);
   };
@@ -268,7 +272,7 @@ export default function TeamMembers() {
           toast.success(
             response?.message || "Team member updated successfully"
           );
-          setFormData({ name: "", email: "", role: "" });
+          setFormData({ name: "", email: "", role: "employee" });
           setShowAddModal(false);
           dispatch(fetchOrganizations(userId as string));
         } else {
@@ -290,7 +294,7 @@ export default function TeamMembers() {
         const response = await AddTeamMemberAPI({ members: payload });
         if (response?.success === true) {
           toast.success(response?.message || "Team member added successfully");
-          setFormData({ name: "", email: "", role: "" });
+          setFormData({ name: "", email: "", role: "employee" });
           setShowAddModal(false);
           dispatch(fetchOrganizations(userId as string));
         } else {
@@ -385,8 +389,7 @@ export default function TeamMembers() {
   };
 
   // Filter handlers
-  const handleApplyFilters = () => {
-  };
+  const handleApplyFilters = () => {};
 
   const handleClearFilters = () => {
     setNameFilter("");

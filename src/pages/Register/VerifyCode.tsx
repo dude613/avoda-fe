@@ -21,7 +21,6 @@ const VerifyCode: React.FC = () => {
   const [resending, setResending] = useState(false);
 
   useEffect(() => {
-    console.log({role});
     if (!email) {
       navigate("/register", { replace: true });
     }
@@ -52,7 +51,6 @@ const VerifyCode: React.FC = () => {
         body: JSON.stringify({ email, otp: otpNumber, role: role ?? "employee" }),
       });
       const data = await response.json();
-      console.log({data});
       if (data.success) {
         if (data.user && data.accessToken) {
           localStorage.setItem("userId", data.user.id);
