@@ -31,6 +31,15 @@ const createMockStore = (preloadedState?: Partial<RootState>) => {
           currentPage: 1,
         },
       ) => state,
+      // Add mock clients reducer to match the main store structure
+      clients: (
+        state = {
+          clients: [],
+          archivedClients: [],
+          loading: false,
+          error: null,
+        },
+      ) => state,
     },
     preloadedState,
   })
