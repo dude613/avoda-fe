@@ -1,10 +1,7 @@
+"use client";
+
 import "./App.css";
-import {
-  Routes,
-  Route,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SetPassword from "./pages/Register/SetPassword";
@@ -17,18 +14,22 @@ import ResendForgotEmail from "./pages/ForgotPassword/ResendForgotEmail";
 import ResetNewPassword from "./pages/ForgotPassword/ResetNewPassword";
 import CreateOrganization from "./pages/Onboarding/CreateOrganization ";
 import Header from "./components/Header";
-import AuthLayout from "./layouts/AuthLayout"; // Import the new layout
+import AuthLayout from "./layouts/AuthLayout";
 import TimerPage from "./pages/Timer";
 import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
 import TeamMembers from "./pages/Team";
-import DebugPage from "./pages/Debug"; // Import the new DebugPage
+import ClientsPage from "./pages/Clients";
+import DebugPage from "./pages/Debug";
 import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname !== "/register" && location.pathname !== "/register/setPassword") {
+    if (
+      location.pathname !== "/register" &&
+      location.pathname !== "/register/setPassword"
+    ) {
       localStorage.removeItem("email");
     }
   }, [location.pathname]);
@@ -39,7 +40,10 @@ function App() {
       {/* <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] w-full px-4"> */}
       <Routes>
         {/* Public routes without AuthLayout */}
-        <Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
+        <Route
+          path="/"
+          element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />}
+        />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* Authentication routes wrapped in AuthLayout */}
@@ -60,6 +64,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/timer" element={<TimerPage />} />
           <Route path="/team" element={<TeamMembers />} />
+          <Route path="/clients" element={<ClientsPage />} />
         </Route>
         {/* Add the debug route */}
         <Route path="/debug" element={<DebugPage />} />
