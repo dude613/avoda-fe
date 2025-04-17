@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react" // Import useRef
 import { toast, Toaster } from "react-hot-toast"
 import {
   UserPlus,
@@ -81,7 +81,7 @@ export default function ClientsPage() {
   const [emailFilter, setEmailFilter] = useState("")
   const [industryFilter, setIndustryFilter] = useState("")
   const [sorting, setSorting] = useState<SortingState>([])
-  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null) // Use useRef
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
@@ -110,6 +110,15 @@ export default function ClientsPage() {
     fetchFilteredClients()
     fetchArchivedFilteredClients()
   }, [fetchFilteredClients, fetchArchivedFilteredClients])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Handle client actions
   const handleAddClient = async (newClient: Omit<Client, "id" | "status" | "projects">) => {
@@ -240,28 +249,24 @@ export default function ClientsPage() {
     setGlobalFilter(value)
 
     // Clear any existing timeout
-    if (searchTimeout) {
-      clearTimeout(searchTimeout)
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
     }
 
     // Set a new timeout
-    const timeout = setTimeout(() => {
+    searchTimeoutRef.current = setTimeout(() => {
       // If global search is used, apply it to all filter fields
       if (value) {
         setNameFilter(value)
-        setEmailFilter(value)
-        setIndustryFilter(value)
       } else {
         setNameFilter("")
         setEmailFilter("")
         setIndustryFilter("")
       }
 
-      fetchFilteredClients(value ? { name: value, email: value, industry: value } : undefined)
-      fetchArchivedFilteredClients(value ? { name: value, email: value, industry: value } : undefined)
+      fetchFilteredClients(value ? { name: value } : undefined)
+      fetchArchivedFilteredClients(value ? { name: value } : undefined)
     }, 500) // 500ms debounce
-
-    setSearchTimeout(timeout)
   }
 
   const hasActiveFilters = !!(nameFilter || emailFilter || industryFilter || globalFilter)
