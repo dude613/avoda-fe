@@ -106,11 +106,3 @@ export {
   DialogTitle,
   DialogDescription,
 }
-
-Right now there is just one field for Rate per Hour.
-
-We need to gameplan to set 2 things.
-
-1: billing periods - per month/week etc.
-
-2: Ensure totals/reporting etc does not change when rate is changed from past.

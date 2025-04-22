@@ -1,6 +1,3 @@
-
-//............. Page content
-
 export const teamContent = {
     TEAM_STEP: "Step 2 of 2",
     TEAM_TITLE: "Add Employees",
