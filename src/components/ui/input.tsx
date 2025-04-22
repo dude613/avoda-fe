@@ -26,7 +26,6 @@ interface InputProps
   errorMessage?: string;
   label?: string;
   labelAnimation?: boolean;
-  // ✅ Removed `ref` from props — handled by forwardRef
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

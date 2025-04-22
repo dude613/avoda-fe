@@ -47,7 +47,6 @@ interface ButtonProps
   icon?: React.ReactNode
 }
 
-// ✅ Ref forwarding version
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {

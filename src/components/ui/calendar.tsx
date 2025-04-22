@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
  
 import React from "react";
-import * as SubframeCore from "@subframe/core";
+import SubframeCore from "@subframe/core";
 
 type CalendarRootProps = React.ComponentProps<typeof SubframeCore.Calendar> & {
   className?: string;
 };
+
 
 const CalendarRoot = React.forwardRef<HTMLElement, CalendarRootProps>(
   function CalendarRoot({ className, ...otherProps }: CalendarRootProps, ref) {
