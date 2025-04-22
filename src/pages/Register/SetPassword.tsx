@@ -70,7 +70,7 @@ const SetPassword: React.FC = () => {
       const responseData = await response.json();
       if (response.ok && responseData.success === true) {
         toast.success(responseData?.message || toasts.REGISTER_SUCCESS_TOAST);
-        navigate(`/register/verifyCode?email=${encodeURIComponent(email)}`, {
+        navigate(`/register/verifyCode?email=${encodeURIComponent(email)}&role=${role}`, {
           replace: true,
         });
       } else if (response.status === 400) {
@@ -88,7 +88,7 @@ const SetPassword: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
       <Toaster />
-      <Card>
+      <Card layout="centeredAndSpaced">
         <h2 className="mb-2 text-xl font-semibold text-center text-gray-800">
           {titles.SET_PASSWORD_TITLE}
         </h2>

@@ -197,10 +197,6 @@ const timerSlice = createSlice({
     resumeActiveTimer: (state, action: PayloadAction<Timer>) => {
       state.activeTimer = action.payload
     },
-    addTimerToHistory: (state, action: PayloadAction<Timer>) => {
-      // Add to the beginning of the array
-      state.timerHistory = [action.payload, ...state.timerHistory]
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -329,8 +325,7 @@ const timerSlice = createSlice({
 })
 
 // Actions
-export const { updateActiveTimer, clearActiveTimer, pauseActiveTimer, resumeActiveTimer, addTimerToHistory } =
-  timerSlice.actions
+export const { updateActiveTimer, clearActiveTimer, pauseActiveTimer, resumeActiveTimer } = timerSlice.actions
 
 // Selectors
 export const selectActiveTimer = (state: RootState) => state.timer.activeTimer

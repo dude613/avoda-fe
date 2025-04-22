@@ -48,7 +48,7 @@ const VerifyCode: React.FC = () => {
       const response = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: otpNumber, role: role ?? "employee" }),
+        body: JSON.stringify({ email, otp: otpNumber, role: role ?? "admin" }),
       });
       const data = await response.json();
       if (data.success) {
@@ -61,7 +61,7 @@ const VerifyCode: React.FC = () => {
           });
           setTimeout(() => {
             navigate(
-              data.user.role === "admin" ? "/create-organization" : "/team",
+              data.user.role === "admin" ? "/create-organization" : "/timer",
               { replace: true }
             );
           }, 1000);
