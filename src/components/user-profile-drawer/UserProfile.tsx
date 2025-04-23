@@ -345,18 +345,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
               </div>
             )}
 
-            <div className="flex flex-col gap-3 pt-4 sm:flex-row">
-              <Button disabled={isSubmitting || !isDirty}>
-                {isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowProfile(false)}
-              >
-                {CANCEL_BUTTON_TEXT}
-              </Button>
-            </div>
+            {isDirty && (
+              <div className="flex flex-col gap-3 pt-4 sm:flex-row">
+                <Button disabled={isSubmitting}>
+                  {isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowProfile(false)}
+                >
+                  {CANCEL_BUTTON_TEXT}
+                </Button>
+              </div>
+            )}
           </form>
         </div>
       </div>
