@@ -21,7 +21,7 @@ const inputVariants = cva(
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-  VariantProps<typeof inputVariants> {
+    VariantProps<typeof inputVariants> {
   error?: boolean;
   errorMessage?: string;
   label?: string;
@@ -30,12 +30,13 @@ interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type, error, errorMessage, label, labelAnimation, variant, ...props },
+    { className, type, error, errorMessage, label, labelAnimation, variant, id: propId, ...props },
     ref
   ) => {
-    const id = useId();
+    const generatedId = useId();
+    const id = propId || generatedId;
 
-    if (labelAnimation && label) {
+    if (labelAnimation === true && label) {
       return (
         <div className="group relative">
           <label
@@ -69,12 +70,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <Label htmlFor={props.id || id} className="block text-sm font-medium text-foreground">
+          <Label htmlFor={id} className="block text-sm font-medium text-foreground text-left">
             {label}
           </Label>
         )}
         <input
-          id={props.id || id}
+          id={id}
           type={type}
           data-slot="input"
           ref={ref}
@@ -91,6 +92,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
 Input.displayName = "Input";
 
 export { Input, inputVariants };
