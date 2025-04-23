@@ -19,8 +19,8 @@ import { Input } from "../../components/ui/input"
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../redux/Store";
 import { fetchOrganizations } from "../../redux/slice/OrganizationUser";
-import { ArchivedUser } from "@/service/api";
-import toast, { Toaster } from "react-hot-toast";
+// import { ArchiveTeamMember } from "@/service/api";
+import { Toaster } from "react-hot-toast";
 
 import { TeamMember } from "../../types/TeamMember";
 import { ColumnDef } from "@tanstack/react-table";
@@ -40,34 +40,34 @@ export default function Dashboard() {
   const [rowSelection, setRowSelection] = useState({});
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  // const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedUserId(id);
-    setShowModal(true);
-  };
+  // const handleDeleteClick = (id: string) => {
+  //   setSelectedUserId(id);
+  //   setShowModal(true);
+  // };
 
-  const handleConfirmDelete = async () => {
-    try {
-      if (!selectedUserId) {
-        toast.error("No user ID selected for Archived", { duration: 2000 });
-        return;
-      }
-      const res = await ArchivedUser(selectedUserId);
-      if (res?.success === true) {
-        toast.success(res?.message || "User archived successfully", {
-          duration: 2000,
-        });
-      } else {
-        toast.error(res?.error || "Something went wrong", { duration: 2000 });
-        console.error("Failed to delete user:", res);
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    } finally {
-      setShowModal(false);
-    }
-  };
+  // const handleConfirmDelete = async () => {
+  //   try {
+  //     if (!selectedUserId) {
+  //       toast.error("No user ID selected for Archived", { duration: 2000 });
+  //       return;
+  //     }
+  //     const res = await ArchiveTeamMember(selectedUserId);
+  //     if (res?.success === true) {
+  //       toast.success(res?.message || "User archived successfully", {
+  //         duration: 2000,
+  //       });
+  //     } else {
+  //       toast.error(res?.error || "Something went wrong", { duration: 2000 });
+  //       console.error("Failed to delete user:", res);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting user:", error);
+  //   } finally {
+  //     setShowModal(false);
+  //   }
+  // };  might delete the whole page soon
 
   const columns: ColumnDef<TeamMember>[] = useMemo(() => {
     const cols: ColumnDef<TeamMember>[] = [
@@ -142,7 +142,7 @@ export default function Dashboard() {
           return (
             <div className="relative">
               <HiOutlineDotsHorizontal
-                className="cursor-pointer text-primary text-xl mr-4"
+                className="mr-4 text-xl cursor-pointer text-primary"
                 role="menu"
                 id="menu-button"
                 aria-expanded="true"
@@ -164,23 +164,23 @@ export default function Dashboard() {
                   aria-orientation="vertical"
                   aria-labelledby="menu-button"
                 >
-                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
                     Edit
                   </button>
-                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
                     Make a Copy
                   </button>
-                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
                     Favorite
                   </button>
-                  <button className="block px-4 py-2 text-left w-full hover:bg-gray-100">
+                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
                     Labels
                   </button>
                   <button
-                    className="block px-4 py-2 text-left w-full hover:bg-gray-100"
+                    className="block w-full px-4 py-2 text-left hover:bg-gray-100"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteClick(id);
+                      // handleDeleteClick(id);
                       setOpenDropdown(null); // Close dropdown after clicking
                     }}
                   >
@@ -209,18 +209,18 @@ export default function Dashboard() {
   return (
     <>
       <Toaster />
-      <div className="p-4 sm:p-6 md:p-8 w-full">
-        <div className="flex flex-col mb-4 w-full text-center">
-          <div className=" mb-4 w-full">
-            <h1 className="text-2xl sm:text-3xl font-bold">Users</h1>
-            <p className="text-primary text-sm leading-5 font-semibold">
+      <div className="w-full p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col w-full mb-4 text-center">
+          <div className="w-full mb-4 ">
+            <h1 className="text-2xl font-bold sm:text-3xl">Users</h1>
+            <p className="text-sm font-semibold leading-5 text-primary">
               Here's list to all users in your organization
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <div className="flex flex-col sm:flex-row justify-start items-stretch gap-4 w-full md:w-auto">
+        <div className="flex flex-col items-start justify-between gap-4 mb-4 md:flex-row md:items-center">
+          <div className="flex flex-col items-stretch justify-start w-full gap-4 sm:flex-row md:w-auto">
             <Input
               type="search"
               placeholder="Filter users..."
@@ -238,7 +238,7 @@ export default function Dashboard() {
               {"Status"}
             </Button>
           </div>
-          <div className="flex justify-end items-center gap-2 w-full md:w-auto">
+          <div className="flex items-center justify-end w-full gap-2 md:w-auto">
             <Button className="w-full sm:w-auto">{"View"}</Button>
             <Button className="w-full sm:w-auto">
               {<VscSettings size={20} />}
@@ -246,9 +246,9 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        <div className="bg-white shadow-md rounded-lg overflow-x-auto relative">
+        <div className="relative overflow-x-auto bg-white rounded-lg shadow-md">
           {table.getRowModel().rows.length > 0 ? (
-            <table className="w-full text-left border-collapse border border-gray-400 relative">
+            <table className="relative w-full text-left border border-collapse border-gray-400">
               <thead className="border border-gray-300">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
@@ -270,10 +270,10 @@ export default function Dashboard() {
                 {table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border border-gray-300 hover:bg-gray-100 transition"
+                    className="transition border border-gray-300 hover:bg-gray-100"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="py-4 px-4">
+                      <td key={cell.id} className="px-4 py-4">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -291,20 +291,20 @@ export default function Dashboard() {
         <Pagination table={table} />
 
         {showModal && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex justify-center items-center p-4">
-            <div className="bg-white p-6 rounded-md shadow-md">
-              <h2 className="text-xl font-bold mb-2">Confirm Deletion</h2>
+          <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+            <div className="p-6 bg-white rounded-md shadow-md">
+              <h2 className="mb-2 text-xl font-bold">Confirm Deletion</h2>
               <p>Are you sure you want to Archive this user?</p>
-              <div className="flex justify-center mt-4 gap-4">
+              <div className="flex justify-center gap-4 mt-4">
                 <Button
                   onClick={() => setShowModal(false)}
                   variant={"destructive"}
                 >
                   {"Cancel"}
                 </Button>
-                <Button onClick={handleConfirmDelete} variant={"outline"}>
+                {/* <Button onClick={handleConfirmDelete} variant={"outline"}>
                   {"Archive"}
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>

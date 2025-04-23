@@ -21,24 +21,24 @@ const inputVariants = cva(
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-  VariantProps<typeof inputVariants> {
+    VariantProps<typeof inputVariants> {
   error?: boolean;
   errorMessage?: string;
   label?: string;
   labelAnimation?: boolean;
-  // ✅ Removed `ref` from props — handled by forwardRef
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type, error, errorMessage, label, labelAnimation, variant, ...props },
+    { className, type, error, errorMessage, label, labelAnimation, variant, id: propId, ...props },
     ref
   ) => {
-    const id = useId();
+    const generatedId = useId();
+    const id = propId || generatedId;
 
-    if (labelAnimation && label) {
+    if (labelAnimation === true && label) {
       return (
-        <div className="group relative">
+        <div className="relative group">
           <label
             htmlFor={id}
             className={cn(
@@ -46,7 +46,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               error && "text-destructive"
             )}
           >
-            <span className="bg-background inline-flex px-2">{label}</span>
+            <span className="inline-flex px-2 bg-background">{label}</span>
           </label>
           <input
             id={id}
@@ -61,7 +61,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {errorMessage && (
-            <p className="text-sm text-destructive mt-1">{errorMessage}</p>
+            <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
           )}
         </div>
       );
@@ -70,12 +70,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <Label htmlFor={props.id || id} className="block text-sm font-medium text-foreground">
+          <Label htmlFor={id} className="block text-sm font-medium text-left text-foreground">
             {label}
           </Label>
         )}
         <input
-          id={props.id || id}
+          id={id}
           type={type}
           data-slot="input"
           ref={ref}
@@ -86,12 +86,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {errorMessage && (
-          <p className="text-sm text-destructive mt-1">{errorMessage}</p>
+          <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
         )}
       </div>
     );
   }
 );
+
 Input.displayName = "Input";
 
 export { Input, inputVariants };

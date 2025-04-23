@@ -1,16 +1,18 @@
 import sys
 import requests
 import os
+import time
 
 # --- Configuration & Constants (hardcoded) ---
 GITHUB_API_URL = "https://api.github.com"
-OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
-MODEL_NAME = "o3-mini"
+OPENAI_THREAD_URL = "https://api.openai.com/v1/threads"
+OPENAI_ASSISTANT_ID = "asst_JUTY7WIQ6hsKWEKWcVhQL78u"
+MODEL_NAME = "gpt4o-mini"
 MIN_DIFF_SIZE = 75
 
 # Our base prompt without the diff.
 BASE_PROMPT = (
-    "You are a seasoned code reviewer. Please analyze the following cumulative code diff - probably mainly for the frontend - and provide a strong but to the point review for the PR. Only comment on changes directly introduced in the diff — ignore unrelated assumptions or suggestions or hallucinations. Follow these instructions regarding content perfectly, do not hallucinate and ensure that you are following the directions as a whole since they apply to each section. Format your response in Markdown with the following structure:\n\n # PR Code Review Analysis\n\n ## Summary:\n Concisely summarize the changes introduced in the diff. No additional comments. No points about adding todos. No points about changing ENVs. No points about double checking. \n\n ## Changes:\n To the point bullet points listing only functional code changes. Ignore formatting, styling, test updates, or unrelated improvements. Write the file name after the period of each bullet point.\n\n ## Detailed Observations:\n Bullet points listing only functional issues or potential bugs directly introduced in the diff. No generic suggestions (like check accessibility or verify behavior). No points about changing styles/tailwind classes. No points about adding todos. No points about changing ENVs. No points about double checking. No points about changing regex and constants/text changes or updates. \n\n ## Fixes and Improvements:\n Bullet points listing actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node/Express backend. Only include specific, value-adding improvements or corrections related to core functionalities that appear in the diff. Write the file name for each bullet point at the end in parentheses. No points about changing regex and constants/text changes. No points about adding todos. Do not mention testing, accessibility, or behavioral verification unless clearly broken in the code diff itself. Do not mention fixes or improvements that contain action to: Verify or Double Check or Confirm That or Check Constants etc. Rate bug fixes, 3 or 5 or 8 or 10. 10 being a super critical - a fix-now urgent bug.\n Lastly, make the markdown fun but proffessional with seperate icons exactly as follows to make it a little more enjoyable to read, they should be in front of the line item.. Icon for New Features:trophy:. Icon for Updates of/on Existing Features:stars:. Icon for Removals:skull:. Icon for Fixes:rocket:. Icon for Refactoring:wrench.\n\n ## React19 Changes: In React 19, forwardRef is no longer necessary. Pass ref as a prop instead. In addition to ref as a prop, refs can also return a callback function for cleanup. When a component unmounts, React will call the cleanup function. There’s no need for <Context.Provider> anymore. You can use <Context> directly instead.  useActionState - This hook simplifies managing form states and form submissions. useFormStatus - This hook manages the status of the last form submission, and it must be called from inside a component that is also inside a form. useOptimistic - This hook lets you optimistically update the UI before the Server Action finishes executing, rather than waiting for the response. When the async action completes, the UI updates with the final state from the server. New API: use - The use function offers first-class support for promises and context during rendering. Unlike other React Hooks, use can be called within loops, conditional statements, and early returns. Error handling and loading will be handled by the nearest Suspense boundary."
+    "You are a seasoned code reviewer. Please analyze the following cumulative code diff - probably mainly for the frontend - and provide a strong but to the point review for the PR. Only comment on changes directly introduced in the diff — ignore unrelated assumptions or suggestions or hallucinations. Follow these instructions regarding content perfectly, do not hallucinate and ensure that you are following the directions as a whole since they apply to each section. Format your response in Markdown with the following structure:\r\n\r\n # PR Code Review Analysis\r\n\r\n ## Summary:\r\n Concisely summarize the changes introduced in the diff. No additional comments. No points about adding todos. No points about changing ENVs. No points about double checking. \r\n\r\n ## Changes:\r\n To the point bullet points listing only functional code changes. Ignore formatting, styling, test updates, or unrelated improvements. Write the file name after the period of each bullet point.\r\n\r\n ## Detailed Observations:\r\n Bullet points listing only functional issues or potential bugs directly introduced in the diff. No generic suggestions (like check accessibility or verify behavior). No points about changing styles/tailwind classes. No points about adding todos. No points about changing ENVs. No points about double checking. No points about changing regex and constants/text changes or updates. \r\n\r\n ## Fixes and Improvements:\r\n Bullet points listing actionable recommendations to take care of any fixes. We are using React19 and TailwindV4 with a Node/Express backend. Only include specific, value-adding improvements or corrections related to core functionalities that appear in the diff. Write the file name for each bullet point at the end in parentheses. No points about changing regex and constants/text changes. No points about adding todos. Do not mention testing, accessibility, or behavioral verification unless clearly broken in the code diff itself. Do not mention fixes or improvements that contain action to: Verify or Double Check or Confirm That or Check Constants etc. Rate bug fixes, 3 or 5 or 8 or 10. 10 being a super critical - a fix-now urgent bug.\r\n Lastly, make the markdown fun but proffessional with seperate icons exactly as follows to make it a little more enjoyable to read, they should be in front of the line item.. Icon for New Features:trophy:. Icon for Updates of/on Existing Features:stars:. Icon for Removals:skull:. Icon for Fixes:rocket:. Icon for Refactoring:wrench.\r\n\r\n ## React19 Changes: In React 19, forwardRef is no longer necessary. Pass ref as a prop instead. In addition to ref as a prop, refs can also return a callback function for cleanup. When a component unmounts, React will call the cleanup function. There’s no need for <Context.Provider> anymore. You can use <Context> directly instead. useActionState - This hook simplifies managing form states and form submissions. useFormStatus - This hook manages the status of the last form submission, and it must be called from inside a component that is also inside a form. useOptimistic - This hook lets you optimistically update the UI before the Server Action finishes executing, rather than waiting for the response. When the async action completes, the UI updates with the final state from the server. New API: use - The use function offers first-class support for promises and context during rendering. Unlike other React Hooks, use can be called within loops, conditional statements, and early returns. Error handling and loading will be handled by the nearest Suspense boundary."
 )
 
 # Retrieve configuration from environment variables or hardcoded for local testing
@@ -46,24 +48,42 @@ def calculate_diff_size(diff_text: str):
     removed_count = diff_text.count("\n-")
     return added_count + removed_count
 
-def call_openai_api(prompt: str, openai_api_key: str):
-    """
-    Call OpenAI's API with the provided prompt and return the response text.
-    """
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {openai_api_key}"
-    }
-    body = {
-        "model": MODEL_NAME,
-        "messages": [
-            {"role": "user", "content": prompt}
-        ]
-    }
-    response = requests.post(OPENAI_API_URL, headers=headers, json=body)
+def create_thread():
+    response = requests.post(OPENAI_THREAD_URL, headers=openai_headers(), json={})
     response.raise_for_status()
-    data = response.json()
-    return data["choices"][0]["message"]["content"]
+    return response.json()["id"]
+
+def add_message(thread_id, content):
+    url = f"{OPENAI_THREAD_URL}/{thread_id}/messages"
+    response = requests.post(url, headers=openai_headers(), json={"role": "user", "content": content})
+    response.raise_for_status()
+
+def run_assistant(thread_id):
+    url = f"{OPENAI_THREAD_URL}/{thread_id}/runs"
+    response = requests.post(url, headers=openai_headers(), json={"assistant_id": OPENAI_ASSISTANT_ID})
+    response.raise_for_status()
+    return response.json()["id"]
+
+def wait_for_completion(thread_id, run_id):
+    url = f"{OPENAI_THREAD_URL}/{thread_id}/runs/{run_id}"
+    while True:
+        response = requests.get(url, headers=openai_headers())
+        status = response.json()["status"]
+        if status in ["completed", "failed"]:
+            return status
+        time.sleep(2)
+def fetch_response(thread_id):
+    url = f"{OPENAI_THREAD_URL}/{thread_id}/messages"
+    response = requests.get(url, headers=openai_headers())
+    return response.json()["data"][0]["content"][0]["text"]["value"]
+
+def openai_headers():
+    return {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+        "OpenAI-Beta": "assistants=v2"
+    }
+
 
 def get_existing_comments():
     """
@@ -133,9 +153,9 @@ def main():
 
     # Extensions to ignore
     ignore_extensions = (
-        '.yml', '.css', '.json', '.lock', '.env', '.txt', 
-        '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', 
-        '.ttf', '.woff', '.woff2', '.eot', '.otf', '.webp', '.md', '.htm', '.xml', '.jsonld', '.csv', '.yaml', '.yml', '.toml'
+    '.yml', '.css', '.json', '.lock', '.env', '.txt', 
+    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', 
+    '.ttf', '.woff', '.woff2', '.eot', '.otf', '.webp', '.md', '.htm', '.xml', '.jsonld', '.csv', '.yaml', '.yml', '.toml'
     )
 
     aggregated_diff = ""
@@ -163,11 +183,18 @@ def main():
         print("No applicable diffs found to review.")
         return
 
+    comments = get_existing_comments()
+    existing_comment_id = find_existing_pr_review_comment(comments)
+    if existing_comment_id:
+        print(f"Found existing PR review comment {existing_comment_id}.")
+        delete_existing_comment(existing_comment_id)
+        print(f"Existing comment {existing_comment_id} deleted.")
+
+    # Check if the total diff size is below the minimum threshold. If so, post a comment and skip AI review.
     if total_diff_size < MIN_DIFF_SIZE:
         print(f"Total diff size ({total_diff_size}) is less than {MIN_DIFF_SIZE}. Posting comment and skipping AI review.")
         small_diff_comment = f"Skipping AI review: Total diff size ({total_diff_size} characters) is below the minimum threshold of {MIN_DIFF_SIZE} characters."
         try:
-            # Optional: Add logic here to find and delete existing "too small" comments if needed
             post_comment(small_diff_comment)
             print("Posted comment indicating diff is too small.")
         except Exception as e:
@@ -175,34 +202,18 @@ def main():
         return # Exit after posting the comment
 
     # Create the prompt for the entire PR
-    prompt = BASE_PROMPT + aggregated_diff
-    print("Sending aggregated diff to OpenAI API...")
-    try:
-        review_response = call_openai_api(prompt, OPENAI_API_KEY)
-    except Exception as e:
-        print(f"Error calling OpenAI API: {e}")
-        return
+    print("Creating thread and sending diff to assistant...")
+    thread_id = create_thread()
+    add_message(thread_id, BASE_PROMPT + "\n\n" + aggregated_diff)
+    run_id = run_assistant(thread_id)
+    status = wait_for_completion(thread_id, run_id)
 
-    output_filename = "pr_review_summary.txt"
-    save_review_to_file(output_filename, review_response)
-
-    # Fetch the list of comments and check if an existing review comment exists
-    comments = get_existing_comments()
-    existing_comment_id = find_existing_pr_review_comment(comments)
-
-    if existing_comment_id:
-        print(f"Found existing PR review comment {existing_comment_id}. Deleting it...")
-        delete_existing_comment(existing_comment_id)
-
-    print("Posting review comment...")
-    post_comment(review_response)
-
-    if os.path.exists(output_filename):
-        print("Logging AI PR Review...")
-        with open(output_filename, "r") as f:
-            print(f.read())
+    if status == "completed":
+        review = fetch_response(thread_id)
+        post_comment(review)
+        print("Review posted successfully.")
     else:
-        print("No AI PR Review found.")
+        print("Assistant run failed.")
 
 if __name__ == "__main__":
     main()

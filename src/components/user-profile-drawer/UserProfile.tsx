@@ -17,10 +17,11 @@ import { LogoutAPI, UpdateProfile, UploadUserPicture } from "@/service/api";
 import { Toaster, toast } from "react-hot-toast";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 import type { AppDispatch, RootState } from "@/redux/Store";
-import { Upload, Save, User, Shield } from "lucide-react";
+import { Upload, User, Shield } from "lucide-react";
 import { userProfileContent } from "@/constants/UserProfile";
 import { useNavigate } from "react-router-dom";
 import * as constants from "@/constants/Auth";
+import { Select } from "../ui";
 
 interface ProfileFormData {
   name: string;
@@ -41,7 +42,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     FULL_NAME_PLACEHOLDER,
     ROLE_LABEL,
     SELECT_ROLE,
-    SELECT_USER_VALUE,
     SELECT_ADMIN_VALUE,
     SELECT_EMPLOYEE_VALUE,
     SELECT_MANAGER_VALUE,
@@ -99,7 +99,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
       setValue("role", profileData.role);
       setImage(
         profileData.picture || (
-          <div className="flex items-center justify-center w-full h-full bg-gray-300 text-white text-xl rounded-full">
+          <div className="flex items-center justify-center w-full h-full text-xl text-white bg-gray-300 rounded-full">
             {profileData.userName?.[0]?.toUpperCase() || ""}
           </div>
         )
@@ -169,10 +169,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
   if (!profileData) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-pulse flex flex-col items-center p-8">
-          <div className="w-24 h-24 bg-gray-200 rounded-full mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        <div className="flex flex-col items-center p-8 animate-pulse">
+          <div className="w-24 h-24 mb-4 bg-gray-200 rounded-full"></div>
+          <div className="w-3/4 h-4 mb-3 bg-gray-200 rounded"></div>
+          <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
@@ -186,6 +186,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
       if (response.success) {
         localStorage.removeItem("userId");
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("userRole");
         setShowProfile(false);
         toast.success(USER_LOGOUT_SUCCESS, { duration: 2000 });
         navigate("/login", { replace: true });
@@ -203,11 +204,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     <>
       <Toaster position="top-center" />
       <div className="p:4 sm:p-6 w-full max-h-[90vh] overflow-y-auto">
-        <div className="max-w-3xl mx-auto p-6 text-black bg-white">
-          <div className="flex justify-between items-center mb-6 pb-4 border-b">
+        <div className="max-w-3xl p-6 mx-auto text-black bg-white">
+          <div className="flex items-center justify-between pb-4 mb-6 border-b">
             <div className="text-black">
               <h2 className="text-2xl font-bold">{PROFILE_HEADING}</h2>
-              <p className="text-sm mt-1">{PROFILE_HEADING_TEXT}</p>
+              <p className="mt-1 text-sm">{PROFILE_HEADING_TEXT}</p>
             </div>
             <Button
               className="w-20"
@@ -220,25 +221,25 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
             </Button>
           </div>
 
-          <div className="flex justify-center mb-8 relative">
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border border-border shadow-md group">
+          <div className="relative flex justify-center mb-8">
+            <div className="relative w-32 h-32 overflow-hidden border rounded-full shadow-md border-border group">
               {typeof image === "string" ? (
                 <img
                   src={image || ""}
                   alt="Profile"
-                  className="w-full h-full object-cover"
+                  className="object-cover w-full h-full"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = "";
                   }}
                 />
               ) : (
-                <div className="flex items-center justify-center w-full h-full bg-primary-foreground text-primary text-xl rounded-full">
+                <div className="flex items-center justify-center w-full h-full text-xl rounded-full bg-primary-foreground text-primary">
                   {profileData.userName?.[0]?.toUpperCase() || "A"}
                 </div>
               )}
-              <label className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center transition-all duration-200 cursor-pointer">
-                <div className="opacity-0 group-hover:opacity-100 text-primary flex flex-col items-center transition-opacity">
+              <label className="absolute inset-0 flex items-center justify-center transition-all duration-200 bg-opacity-0 cursor-pointer group-hover:bg-opacity-50">
+                <div className="flex flex-col items-center transition-opacity opacity-0 group-hover:opacity-100 text-primary">
                   <Upload className="w-6 h-6 mb-1" />
                   <span className="text-xs font-medium">
                     {UPLOAD_PHOTO_TEXT}
@@ -253,18 +254,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
               </label>
             </div>
             {imageError && (
-              <p className="absolute -bottom-6 text-destructive text-sm">
+              <p className="absolute text-sm -bottom-6 text-destructive">
                 {imageError}
               </p>
             )}
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-3">
                 <Label
                   htmlFor="name"
-                  className="text-sm font-medium flex items-center gap-2"
+                  className="flex items-center gap-2 text-sm font-medium"
                 >
                   <User className="w-4 h-4" />
                   {FULL_NAME_LABEL}
@@ -288,7 +289,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
                   )}
                 />
                 {errors.name && (
-                  <p className="text-destructive text-xs mt-1">
+                  <p className="mt-1 text-xs text-destructive">
                     {errors.name.message}
                   </p>
                 )}
@@ -316,46 +317,48 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label
-                htmlFor="role"
-                className="text-sm font-medium flex items-center gap-2"
-              >
-                <Shield className="w-4 h-4 text-gray-500" />
-                {ROLE_LABEL}
-              </Label>
-              <Controller
-                name="role"
-                control={control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    id="role"
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  >
-                    <option value="">{SELECT_ROLE}</option>
-                    <option value="user">{SELECT_USER_VALUE}</option>
-                    <option value="admin">{SELECT_ADMIN_VALUE}</option>
-                    <option value="employee">{SELECT_EMPLOYEE_VALUE}</option>
-                    <option value="manager">{SELECT_MANAGER_VALUE}</option>
-                  </select>
-                )}
-              />
-            </div>
+            {profileData.role === "admin" && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="role"
+                  className="flex items-center gap-2 text-sm font-medium"
+                >
+                  <Shield className="w-4 h-4 text-gray-500" />
+                  {ROLE_LABEL}
+                </Label>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      id="role"
+                      className="w-full"
+                    >
+                      <option value="">{SELECT_ROLE}</option>
+                      <option value="admin">{SELECT_ADMIN_VALUE}</option>
+                      <option value="employee">{SELECT_EMPLOYEE_VALUE}</option>
+                      <option value="manager">{SELECT_MANAGER_VALUE}</option>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button disabled={isSubmitting || !isDirty}>
-                <Save className="w-4 h-4" />
-                {isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowProfile(false)}
-              >
-                {CANCEL_BUTTON_TEXT}
-              </Button>
-            </div>
+            {isDirty && (
+              <div className="flex flex-col gap-3 pt-4 sm:flex-row">
+                <Button disabled={isSubmitting}>
+                  {isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowProfile(false)}
+                >
+                  {CANCEL_BUTTON_TEXT}
+                </Button>
+              </div>
+            )}
           </form>
         </div>
       </div>

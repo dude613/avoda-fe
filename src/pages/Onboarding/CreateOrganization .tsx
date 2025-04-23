@@ -1,4 +1,3 @@
-//src/pages/Onboarding/CreateOrganization.tsx
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { GoOrganization } from "react-icons/go";
@@ -14,7 +13,7 @@ import {
   ProgressBar,
   Select,
 } from "@/components/ui";
-import { CardSelect } from "@/components/card-select";
+import {CardSelect} from "@/components/card-select";
 import {
   FormItem,
   FormLabel,
@@ -36,8 +35,9 @@ const companySizeOptions = [
     label: "Startup",
     icon: (isSelected: boolean) => (
       <FiUser
-        className={`text-4xl p-[3px] rounded-full transition ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
-          }`}
+        className={`text-4xl p-[3px] rounded-full transition ${
+          isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
+        }`}
       />
     ),
     description: "1-10 employees",
@@ -48,8 +48,9 @@ const companySizeOptions = [
     label: "Small",
     icon: (isSelected: boolean) => (
       <FiUsers
-        className={`text-4xl p-[3px] rounded-full transition ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
-          }`}
+        className={`text-4xl p-[3px] rounded-full transition ${
+          isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
+        }`}
       />
     ),
     description: "11-50 employees",
@@ -60,8 +61,9 @@ const companySizeOptions = [
     label: "Medium",
     icon: (isSelected: boolean) => (
       <FiUsers
-        className={`text-4xl p-[3px] rounded-full transition ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
-          }`}
+        className={`text-4xl p-[3px] rounded-full transition ${
+          isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
+        }`}
       />
     ),
     description: "51-200 employees",
@@ -72,8 +74,9 @@ const companySizeOptions = [
     label: "Large",
     icon: (isSelected: boolean) => (
       <LuBuilding
-        className={`text-4xl p-[3px] rounded-full transition ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
-          }`}
+        className={`text-4xl p-[3px] rounded-full transition ${
+          isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-500"
+        }`}
       />
     ),
     description: "201-500 employees",
@@ -158,143 +161,144 @@ export default function CreateOrganization() {
   }, [formData, setValue]);
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center w-full h-full">
       <Toaster />
       <Card variant="elevated" size="lg">
-        <Form {...form}>
-          <div className="space-y-2 mb-8">
-            <ProgressBar
-              currentStep={1}
-              totalSteps={2}
-              label={ORGANIZATION_TITLE}
-              statusText={ORGANIZATION_ADD_EMPLOYEE_TEXT}
-            />
-            <div className="flex items-center gap-2 mb-1">
-              <GoOrganization className="text-xl" />
-              <h2 className="text-xl font-bold">
-                {ORGANIZATION_CREATE_ORGANIZATION}
-              </h2>
+          <Form {...form}>
+            <div className="mb-8 space-y-2">
+              <ProgressBar
+                currentStep={1}
+                totalSteps={2}
+                label={ORGANIZATION_TITLE}
+                statusText={ORGANIZATION_ADD_EMPLOYEE_TEXT}
+              />
+              <div className="flex items-center gap-2 mb-1">
+                <GoOrganization className="text-xl" />
+                <h2 className="text-xl font-bold">
+                  {ORGANIZATION_CREATE_ORGANIZATION}
+                </h2>
+              </div>
+              <FormDescription className="text-xs text-muted-foreground opacity-70">
+                {ORGANIZATION_TEXT}
+              </FormDescription>
             </div>
-            <FormDescription className="text-xs text-muted-foreground opacity-70">
-              {ORGANIZATION_TEXT}
-            </FormDescription>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Form Items */}
-            <FormItem className="mb-8">
-              <FormLabel required className="text-sm font-medium mb-2">
-                {ORGANIZATION_NAME}
-              </FormLabel>
-              <div className="relative">
-                <Controller
-                  name="organizationName"
-                  control={control}
-                  rules={{ required: ORGANIZATION_REQUIRED }}
-                  render={({ field }) => (
-                    <Input
-                      placeholder={ORGANIZATION_PLACEHOLDER}
-                      {...field}
-                      className="text-sm"
-                      error={!!errors.organizationName}
-                    />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Form Items */}
+              <FormItem className="mb-8">
+                <FormLabel required className="mb-2 text-sm font-medium">
+                  {ORGANIZATION_NAME}
+                </FormLabel>
+                <div className="relative">
+                  <Controller
+                    name="organizationName"
+                    control={control}
+                    rules={{ required: ORGANIZATION_REQUIRED }}
+                    render={({ field }) => (
+                      <Input
+                        placeholder={ORGANIZATION_PLACEHOLDER}
+                        {...field}
+                        className="text-sm"
+                        error={!!errors.organizationName}
+                      />
+                    )}
+                  />
+                  {errors.organizationName && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {errors.organizationName?.message}
+                    </p>
                   )}
-                />
-                {errors.organizationName && (
-                  <p className="text-destructive text-xs mt-1">
-                    {errors.organizationName?.message}
+                </div>
+                <FormDescription className="text-xs text-textPrimary opacity-70">
+                  {ORGANIZATION_BODY_TEXT}
+                </FormDescription>
+              </FormItem>
+              <FormItem className="mt-8">
+                <FormLabel className="mb-2 text-sm font-medium">
+                  {ORGANIZATION_INDUSTRY}
+                </FormLabel>
+                <Select
+                  {...register("industry", {
+                    required: "Industry is required!",
+                  })}
+                  error={!!errors.industry}
+                  className={
+                    errors.industry ? "border-destructive" : "border-gray-300"
+                  }
+                >
+                  <option value="" disabled hidden>
+                    {ORGANIZATION_SELECT_INDUSTRY}
+                  </option>
+
+                  <option value="technology">
+                    {ORGANIZATION_SELECT_TECHNOLOGY}
+                  </option>
+
+                  <option value="healthCare">
+                    {ORGANIZATION_SELECT_HEALTHCARE}
+                  </option>
+
+                  <option value="finance">{ORGANIZATION_SELECT_FINANCE}</option>
+
+                  <option value="education">
+                    {ORGANIZATION_SELECT_EDUCATION}
+                  </option>
+
+                  <option value="retail">{ORGANIZATION_SELECT_RETAIL}</option>
+
+                  <option value="manufacturing">
+                    {ORGANIZATION_SELECT_MANUFACTURING}
+                  </option>
+
+                  <option value="other">{ORGANIZATION_SELECT_OTHER}</option>
+                </Select>
+                {errors.industry && (
+                  <p className="text-xs text-destructive">
+                    {errors.industry.message}
                   </p>
                 )}
-              </div>
-              <FormDescription className="text-xs text-textPrimary opacity-70">
-                {ORGANIZATION_BODY_TEXT}
-              </FormDescription>
-            </FormItem>
-            <FormItem className="mt-8">
-              <FormLabel className="text-sm font-medium mb-2">
-                {ORGANIZATION_INDUSTRY}
-              </FormLabel>
-              <Select
-                {...register("industry", {
-                  required: "Industry is required!",
-                })}
-                error={!!errors.industry}
-                className={
-                  errors.industry ? "border-destructive" : "border-gray-300"
-                }
-              >
-                <option value="" disabled hidden>
-                  {ORGANIZATION_SELECT_INDUSTRY}
-                </option>
+                <FormDescription className="text-xs text-textPrimary opacity-70">
+                  {ORGANIZATION_SELECT_ERROR}
+                </FormDescription>
+              </FormItem>
 
-                <option value="technology">
-                  {ORGANIZATION_SELECT_TECHNOLOGY}
-                </option>
+              <FormItem className="mb-4">
+                <FormLabel className="mb-2 text-sm font-medium">
+                  {ORGANIZATION_COMPANY_SIZE_TEXT}
+                </FormLabel>
+                <CardSelect
+                  name="companySize"
+                  control={control}
+                  options={companySizeOptions}
+                  rules={{ required: ORGANIZATION_COMPANY_REQUIRED }}
+                />
+                {errors.companySize && (
+                  <p className="text-xs text-destructive">
+                    {errors.companySize.message}
+                  </p>
+                )}
+                <FormDescription className="mb-8 text-xs text-textPrimary opacity-70">
+                  {ORGANIZATION_SELECT_ERROR}
+                </FormDescription>
+              </FormItem>
 
-                <option value="healthCare">
-                  {ORGANIZATION_SELECT_HEALTHCARE}
-                </option>
-
-                <option value="finance">{ORGANIZATION_SELECT_FINANCE}</option>
-
-                <option value="education">
-                  {ORGANIZATION_SELECT_EDUCATION}
-                </option>
-
-                <option value="retail">{ORGANIZATION_SELECT_RETAIL}</option>
-
-                <option value="manufacturing">
-                  {ORGANIZATION_SELECT_MANUFACTURING}
-                </option>
-
-                <option value="other">{ORGANIZATION_SELECT_OTHER}</option>
-              </Select>
-              {errors.industry && (
-                <p className="text-destructive text-xs">
-                  {errors.industry.message}
-                </p>
-              )}
-              <FormDescription className="text-xs text-textPrimary opacity-70">
-                {ORGANIZATION_SELECT_ERROR}
-              </FormDescription>
-            </FormItem>
-
-            <FormItem className="mb-4">
-              <FormLabel className="text-sm font-medium mb-2">
-                {ORGANIZATION_COMPANY_SIZE_TEXT}
-              </FormLabel>
-              <CardSelect
-                name="companySize"
-                control={control}
-                options={companySizeOptions}
-                rules={{ required: ORGANIZATION_COMPANY_REQUIRED }}
-              />
-              {errors.companySize && (
-                <p className="text-destructive text-xs">
-                  {errors.companySize.message}
-                </p>
-              )}
-              <FormDescription className="text-xs text-textPrimary opacity-70 mb-8">
-                {ORGANIZATION_SELECT_ERROR}
-              </FormDescription>
-            </FormItem>
-
-            <Button
-              type="submit"
-              variant="create"
-              isLoading={loading}
-              loadingText={ORGANIZATION_BUTTON_LOADING_TEXT}
-              className={`text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${loading ? "opacity-50" : ""
+              <Button
+                type="submit"
+                variant="create"
+                isLoading={loading}
+                loadingText={ORGANIZATION_BUTTON_LOADING_TEXT}
+                className={`text-sm text-white font-bold py-3 w-full rounded hover:bg-gray-900 transition cursor-pointer flex items-center justify-center ${
+                  loading ? "opacity-50" : ""
                 } hover:scale-105`}
-              icon={<FaArrowRight />}
-            >
-              {ORGANIZATION_BUTTON_TEXT}
-            </Button>
-            <FormDescription className="text-xs text-textPrimary opacity-70 mb-4 text-center">
-              {ORGANIZATION_FOOTER_TEXT}
-            </FormDescription>
-          </form>
-        </Form>
-      </Card>
-    </>
+                icon={<FaArrowRight />}
+              >
+                {ORGANIZATION_BUTTON_TEXT}
+              </Button>
+              <FormDescription className="mb-4 text-xs text-center text-textPrimary opacity-70">
+                {ORGANIZATION_FOOTER_TEXT}
+              </FormDescription>
+            </form>
+          </Form>
+        </Card>
+    </div>
   );
 }

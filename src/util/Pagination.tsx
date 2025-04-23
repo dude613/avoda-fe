@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 //src/util/Pagination.tsx
 import { Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -9,17 +8,17 @@ interface PaginationProps<T> {
 
 export default function Pagination<T>({ table }: PaginationProps<T>) {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-4 p-4 border-t gap-4">
+    <div className="flex flex-col items-start justify-between gap-4 p-4 mt-4 border-t md:flex-row md:items-center">
       <div>
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
 
-      <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-start md:justify-end w-full md:w-auto">
+      <div className="flex flex-wrap items-center justify-start w-full gap-2 md:gap-4 md:justify-end md:w-auto">
         <div className="flex items-center gap-2">
           <span className="text-sm">Rows per page:</span>
           <select
-            className="border p-1 rounded text-sm"
+            className="p-1 text-sm border rounded"
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
           >
