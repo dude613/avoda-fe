@@ -5,7 +5,6 @@ import {
   clearActiveTimer,
   pauseActiveTimer,
   resumeActiveTimer,
-  addTimerToHistory,
 } from "../redux/slice/Timer";
 import type { AppDispatch } from "../redux/Store";
 import type { Timer } from "./timerApi";
@@ -49,7 +48,7 @@ export const initializeSocket = (token: string, appDispatch: AppDispatch) => {
   socket.on("timer:stopped", (timer: Timer) => {
     if (dispatch) {
       dispatch(clearActiveTimer());
-      dispatch(addTimerToHistory(timer));
+      // History is updated via the stopTimer thunk's fulfilled action
       toast.success(`Timer for "${timer.task}" has stopped`);
     }
   });

@@ -153,7 +153,10 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
               type="number"
               placeholder="0.00"
               {...field}
-              onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
+              onChange={(e) => {
+                const value = Number.parseFloat(e.target.value);
+                field.onChange(isNaN(value) ? '' : value.toFixed(2));
+              }}
               className={errors.billingRate ? "border-destructive" : ""}
             />
           )}

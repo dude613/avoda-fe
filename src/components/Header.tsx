@@ -25,6 +25,7 @@ const Header = () => {
   const { userProfile } = useSelector((state: RootState) => state.userProfile) // Add RootState type
   const dispatch = useDispatch<AppDispatch>() // Add AppDispatch type
   const userId = localStorage.getItem("userId")
+  const role = localStorage.getItem("userRole")
   const accessToken = localStorage.getItem("accessToken")
   const location = useLocation()
   const [socketInitialized, setSocketInitialized] = useState(false)
@@ -52,7 +53,7 @@ const Header = () => {
   return (
     <header className="relative z-10 flex items-center justify-between px-4 shadow-md bg-primary text-primary-foreground h-14 sm:px-6">
       <Toaster />
-      <Link to="/" className="text-xl font-bold tracking-tight hover:opacity-90">
+      <Link to={role === "admin" ? "/team" : "/timer"} className="text-xl font-bold tracking-tight hover:opacity-90">
         {APP_NAME}
       </Link>
 

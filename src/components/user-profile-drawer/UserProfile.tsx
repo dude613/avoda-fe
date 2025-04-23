@@ -186,6 +186,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
       if (response.success) {
         localStorage.removeItem("userId");
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("userRole");
         setShowProfile(false);
         toast.success(USER_LOGOUT_SUCCESS, { duration: 2000 });
         navigate("/login", { replace: true });

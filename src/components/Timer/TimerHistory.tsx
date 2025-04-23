@@ -96,6 +96,10 @@ export default function TimerHistory() {
     endTime: "",
   })
 
+  // Add this near the top of the file, with the other useState declarations
+  const userRole = localStorage.getItem("userRole")
+  const isAdmin = userRole === "admin"
+
   // Deduplicate timer history based on ID
   const uniqueTimerHistory = useMemo(() => {
     return timerHistory as TimerWithOptionalFields[]
@@ -289,8 +293,10 @@ export default function TimerHistory() {
   // Using columnHelper for better type safety
   const columnHelper = createColumnHelper<TimerWithOptionalFields>()
 
-  const columns = useMemo(
-    () => [
+  // Modify the columns definition to conditionally include the actions column
+  const columns = useMemo(() => {
+    // Define all the regular columns
+    const baseColumns = [
       columnHelper.accessor("task", {
         header: ({ column }) => (
           <div className="flex items-center whitespace-nowrap">
@@ -430,59 +436,63 @@ export default function TimerHistory() {
           )
         },
       }),
-      columnHelper.display({
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          const timer = row.original
-          return (
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => handleOpenEditModal(timer)}
-                className="flex items-center gap-1"
-              >
-                <Edit2Icon className="w-4 h-4" />
-                <span className="sr-only md:not-sr-only md:inline-block">Edit</span>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => handleOpenDeleteModal(timer)}
-                className="flex items-center gap-1 text-destructive hover:text-destructive"
-              >
-                <TrashIcon className="w-4 h-4" />
-                <span className="sr-only md:not-sr-only md:inline-block">Delete</span>
-              </Button>
-            </div>
-          )
-        },
-      }),
-    ],
-    [editingTimerId, editedNote],
-  )
+    ]
 
+    // Create the complete columns array with conditional actions column
+    return isAdmin
+      ? [
+          ...baseColumns,
+          columnHelper.display({
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+              const timer = row.original
+              return (
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleOpenEditModal(timer)}
+                    className="flex items-center gap-1"
+                  >
+                    <Edit2Icon className="w-4 h-4" />
+                    <span className="sr-only md:not-sr-only md:inline-block">Edit</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleOpenDeleteModal(timer)}
+                    className="flex items-center gap-1 text-destructive hover:text-destructive"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                    <span className="sr-only md:not-sr-only md:inline-block">Delete</span>
+                  </Button>
+                </div>
+              )
+            },
+          }),
+        ]
+      : baseColumns
+  }, [editingTimerId, editedNote, isAdmin])
 
   const table = useReactTable({
-  data: uniqueTimerHistory,
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  getSortedRowModel: getSortedRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
-  state: {
-    sorting,
-  },
-  onSortingChange: setSorting,
-  manualPagination: true,
-  pageCount: totalPages,
-  meta: {
-    onPageIndexChange: (pageIndex: number) => {
-      dispatch(fetchTimerHistory({ page: pageIndex + 1 }));
+    data: uniqueTimerHistory,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
     },
-  },
-});
-
+    onSortingChange: setSorting,
+    manualPagination: true,
+    pageCount: totalPages,
+    meta: {
+      onPageIndexChange: (pageIndex: number) => {
+        dispatch(fetchTimerHistory({ page: pageIndex + 1 }))
+      },
+    },
+  })
 
   return (
     <Card>
@@ -580,115 +590,121 @@ export default function TimerHistory() {
               </table>
             </div>
 
-            <Pagination table={table} totalPages={totalPages} currentPage={currentPage}/>
+            <Pagination table={table} totalPages={totalPages} currentPage={currentPage} />
           </>
         )}
       </CardContent>
 
-      {/* Edit Timer Modal */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Timer</DialogTitle>
-            <DialogDescription>Update timer details</DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="task">Task Name *</Label>
-              <Input
-                id="task"
-                name="task"
-                value={editFormData.task}
-                onChange={handleEditFormChange}
-                placeholder="What were you working on?"
-                required
-              />
-            </div>
+      {/* Also modify the modals to only be accessible by admins
+      This is a safety measure in case someone tries to access them directly */}
+      {/* Edit Timer Modal - Only for admins */}
+      {isAdmin && (
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Timer</DialogTitle>
+              <DialogDescription>Update timer details</DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="task">Task Name *</Label>
+                <Input
+                  id="task"
+                  name="task"
+                  value={editFormData.task}
+                  onChange={handleEditFormChange}
+                  placeholder="What were you working on?"
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="project">Project</Label>
-              <Input
-                id="project"
-                name="project"
-                value={editFormData.project}
-                onChange={handleEditFormChange}
-                placeholder="Project name (optional)"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="project">Project</Label>
+                <Input
+                  id="project"
+                  name="project"
+                  value={editFormData.project}
+                  onChange={handleEditFormChange}
+                  placeholder="Project name (optional)"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="client">Client</Label>
-              <Input
-                id="client"
-                name="client"
-                value={editFormData.client}
-                onChange={handleEditFormChange}
-                placeholder="Client name (optional)"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="client">Client</Label>
+                <Input
+                  id="client"
+                  name="client"
+                  value={editFormData.client}
+                  onChange={handleEditFormChange}
+                  placeholder="Client name (optional)"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="startTime">Start Time</Label>
-              <Input
-                id="startTime"
-                name="startTime"
-                type="datetime-local"
-                value={editFormData.startTime}
-                onChange={handleEditFormChange}
-              />
-            </div>
+              {/* <div className="space-y-2">
+                <Label htmlFor="startTime">Start Time</Label>
+                <Input
+                  id="startTime"
+                  name="startTime"
+                  type="datetime-local"
+                  value={editFormData.startTime}
+                  onChange={handleEditFormChange}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="endTime">End Time</Label>
-              <Input
-                id="endTime"
-                name="endTime"
-                type="datetime-local"
-                value={editFormData.endTime}
-                onChange={handleEditFormChange}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="endTime">End Time</Label>
+                <Input
+                  id="endTime"
+                  name="endTime"
+                  type="datetime-local"
+                  value={editFormData.endTime}
+                  onChange={handleEditFormChange}
+                />
+              </div> */}
 
-            <div className="space-y-2">
-              <Label htmlFor="note">Note</Label>
-              <Textarea
-                id="note"
-                name="note"
-                value={editFormData.note}
-                onChange={handleEditFormChange}
-                placeholder="Add a note (optional)"
-                className="min-h-[80px]"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="note">Note</Label>
+                <Textarea
+                  id="note"
+                  name="note"
+                  value={editFormData.note}
+                  onChange={handleEditFormChange}
+                  placeholder="Add a note (optional)"
+                  className="min-h-[80px]"
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveTimer}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEditModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveTimer}>Save Changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
-      {/* Delete Timer Confirmation Modal */}
-      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Timer</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this timer? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteTimer}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Delete Timer Confirmation Modal - Only for admins */}
+      {isAdmin && (
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete Timer</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this timer? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDeleteTimer}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   )
 }
