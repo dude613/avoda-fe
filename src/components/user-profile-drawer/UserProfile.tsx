@@ -21,6 +21,7 @@ import { Upload, Save, User, Shield } from "lucide-react";
 import { userProfileContent } from "@/constants/UserProfile";
 import { useNavigate } from "react-router-dom";
 import * as constants from "@/constants/Auth";
+import { Select } from "../ui";
 
 interface ProfileFormData {
   name: string;
@@ -316,42 +317,36 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label
-                htmlFor="role"
-                className="flex items-center gap-2 text-sm font-medium"
-              >
-                <Shield className="w-4 h-4 text-gray-500" />
-                {ROLE_LABEL}
-              </Label>
-              <Controller
-                name="role"
-                control={control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    id="role"
-                    disabled={profileData.role !== "admin"} // Disable for non-admin users
-                    className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  >
-                    <option value="">{SELECT_ROLE}</option>
-                    <option value="user">{SELECT_USER_VALUE}</option>
-                    <option value="admin">{SELECT_ADMIN_VALUE}</option>
-                    <option value="employee">{SELECT_EMPLOYEE_VALUE}</option>
-                    <option value="manager">{SELECT_MANAGER_VALUE}</option>
-                  </select>
-                )}
-              />
-              {profileData.role !== "admin" && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Only administrators can change roles.
-                </p>
-              )}
-            </div>
+            {profileData.role === "admin" && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="role"
+                  className="flex items-center gap-2 text-sm font-medium"
+                >
+                  <Shield className="w-4 h-4 text-gray-500" />
+                  {ROLE_LABEL}
+                </Label>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      id="role"
+                      className="w-full"
+                    >
+                      <option value="">{SELECT_ROLE}</option>
+                      <option value="admin">{SELECT_ADMIN_VALUE}</option>
+                      <option value="employee">{SELECT_EMPLOYEE_VALUE}</option>
+                      <option value="manager">{SELECT_MANAGER_VALUE}</option>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
 
             <div className="flex flex-col gap-3 pt-4 sm:flex-row">
               <Button disabled={isSubmitting || !isDirty}>
-                <Save className="w-4 h-4" />
                 {isSubmitting ? LOADING_BUTTON_TEXT : BUTTON_TEXT}
               </Button>
               <Button

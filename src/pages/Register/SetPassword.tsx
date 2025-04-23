@@ -116,11 +116,7 @@ const SetPassword: React.FC = () => {
                   placeholder={placeholders.PASSWORD_PLACEHOLDER}
                   error={formErrors.password?.message ? true : false}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                <button type="button" className="absolute right-3 top-8 text-muted-foreground hover:text-foreground hover:cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
                 {formErrors.password && (
@@ -152,7 +148,7 @@ const SetPassword: React.FC = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-8 text-muted-foreground hover:text-foreground hover:cursor-pointer"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
