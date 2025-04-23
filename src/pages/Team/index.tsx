@@ -27,8 +27,8 @@ import {
   fetchArchivedTeamMembers,
 } from "@/service/api";
 import toast, { Toaster } from "react-hot-toast";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -37,7 +37,6 @@ import {
   CardTitle,
 } from "../../components/ui/card-b";
 import { Avatar } from "../../components/ui/avatar";
-import { Select } from "../../components/ui/select";
 import { useMediaQuery } from "react-responsive";
 import { FilterPanel, TextFilter } from "@/components/filter";
 import {
@@ -49,16 +48,11 @@ import {
   RefreshCwIcon,
   ArrowUpDownIcon,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Tabs } from "@/components/ui/tabs";
+
+import AddEditTeamMemberModal from "@/pages/Team/AddEditTeamMemberModal";
+import ArchiveConfirmationModal from "./ArchiveConfirmationModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import UnarchiveConfirmationModal from "./UnarchiveConfirmationModal";
 
 interface TeamMember {
   id: string;
@@ -100,7 +94,6 @@ export default function TeamMembers() {
   const [organizationId, setOrganizationId] = useState("");
   const [organizationName, setOrganizationName] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [showArchivedUsers, setShowArchivedUsers] = useState(false)
   const [archivedTeamMembers, setArchivedTeamMembers] = useState<TeamMember[]>(
     []
   );
@@ -389,7 +382,7 @@ export default function TeamMembers() {
   };
 
   // Filter handlers
-  const handleApplyFilters = () => {};
+  const handleApplyFilters = () => { };
 
   const handleClearFilters = () => {
     setNameFilter("");
@@ -596,7 +589,7 @@ export default function TeamMembers() {
                   className="flex items-center gap-1"
                   onClick={() => openUnarchiveModal(member.userId, member.name)}
                 >
-                  <RefreshCwIcon className="w-4 h-4" />
+                  <RefreshCwIcon className="w-4 h-4 mr-1" />
                   Unarchive
                 </Button>
               )}
@@ -952,150 +945,41 @@ export default function TeamMembers() {
         </Card>
       )}
 
-      {/* Add/Edit Member Modal */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {isEditing ? "Edit Team Member" : "Add Team Member"}
-            </DialogTitle>
-            <DialogDescription>
-              {isEditing
-                ? "Update the team member's information"
-                : "Enter the details of the new team member"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter full name"
-              />
-              {errors.name && (
-                <p className="text-xs text-destructive">{errors.name}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter email address"
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-              >
-                <option value="">Select a role</option>
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="employee">Employee</option>
-              </Select>
-              {errors.role && (
-                <p className="text-xs text-destructive">{errors.role}</p>
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddTeamMember} disabled={isLoading}>
-              {isLoading
-                ? "Processing..."
-                : isEditing
-                ? "Update Member"
-                : "Add Member"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Add/Edit Team Member Modal */}
+      <AddEditTeamMemberModal
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+        isEditing={isEditing}
+        formData={formData}
+        errors={errors}
+        onInputChange={handleInputChange}
+        onSubmit={handleAddTeamMember}
+        isLoading={isLoading}
+      />
 
       {/* Archive Confirmation Modal */}
-      <Dialog open={showArchiveModal} onOpenChange={setShowArchiveModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Archive Team Member</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to archive {selectedUserName}? They will no
-              longer appear in the active team members list.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowArchiveModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="default" onClick={handleArchiveTeamMember}>
-              Archive Member
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ArchiveConfirmationModal
+        open={showArchiveModal}
+        onOpenChange={setShowArchiveModal}
+        selectedUserName={selectedUserName}
+        onArchive={handleArchiveTeamMember}
+      />
 
       {/* Delete Confirmation Modal */}
-      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Team Member</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to permanently delete {selectedUserName}?
-              This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteUser}>
-              Delete Permanently
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmationModal
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        selectedUserName={selectedUserName}
+        onDelete={handleDeleteUser}
+      />
 
       {/* Unarchive Confirmation Modal */}
-      <Dialog open={showUnarchiveModal} onOpenChange={setShowUnarchiveModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Unarchive Team Member</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to unarchive {selectedUserName}? They will
-              appear in the active team members list again.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowUnarchiveModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="default" onClick={handleUnarchiveTeamMember}>
-              Unarchive Member
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UnarchiveConfirmationModal
+        open={showUnarchiveModal}
+        onOpenChange={setShowUnarchiveModal}
+        selectedUserName={selectedUserName}
+        onUnarchive={handleUnarchiveTeamMember}
+      />
     </div>
   );
 }
