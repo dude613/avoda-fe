@@ -43,7 +43,7 @@ const SetPassword: React.FC = () => {
 
   // Session timeout related states and refs
   const [timeRemaining, setTimeRemaining] = useState(120); // 2 minutes in seconds
-  const [showWarning, setShowWarning] = useState(false);
+  const [, setShowWarning] = useState(false);
   const timerRef = useRef<number | null>(null);
   const warningShownRef = useRef(false);
 
