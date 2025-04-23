@@ -16,6 +16,7 @@ import {
   editTimerAPI,
   deleteTimerAPI,
 } from "../../service/timerApi"
+import toast from "react-hot-toast"
 
 interface TimerState {
   activeTimer: Timer | null
@@ -78,10 +79,12 @@ export const startTimer = createAsyncThunk(
     try {
       const response = await startTimerAPI(timerData)
       if (!response.success) {
+        toast.error(response?.error as string);
         return rejectWithValue(response.error || "Failed to start timer")
       }
       return response
     } catch (error: any) {
+      toast.error(error.message);
       return rejectWithValue(error.message || "Failed to start timer")
     }
   },

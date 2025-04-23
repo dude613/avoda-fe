@@ -63,17 +63,17 @@ export default function ResetNewPassword() {
     return (
         <>
             <Toaster />
-            <div className="flex items-center justify-center min-h-screen px-4">
-                <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-300 w-full max-w-sm">
+            <div className="flex items-center justify-center px-4">
+                <div className="w-full max-w-sm p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
                     <div className="flex items-center justify-center">
-                        <div className="bg-gray-200 rounded-full w-16 h-14 flex items-center justify-center">
+                        <div className="flex items-center justify-center w-16 bg-gray-200 rounded-full h-14">
                             <FiLock className="text-4xl" />
                         </div>
                     </div>
-                    <h2 className="mt-8 text-2xl font-bold text-gray-800 mb-2 text-center">
+                    <h2 className="mt-8 mb-2 text-2xl font-bold text-center text-gray-800">
                         {titles.RESET_PASSWORD_TITLE}
                     </h2>
-                    <p className="text-sm font-semibold text-gray-500 text-center mb-8">
+                    <p className="mb-8 text-sm font-semibold text-center text-gray-500">
                         {titles.RESET_PASSWORD_SUBTITLE}
                     </p>
 
@@ -127,7 +127,7 @@ export default function ResetNewPassword() {
                         >{buttons.RESET_PASSWORD_BUTTON_TEXT}</Button>
                     </form>
 
-                    <p className="text-gray-800 text-sm text-center mt-5">
+                    <p className="mt-5 text-sm text-center text-gray-800">
                         <Link to={"/login"} className="hover:underline">
                             {messages.BACK_TO_LOGIN_TEXT}
                         </Link>
