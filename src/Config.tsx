@@ -34,3 +34,9 @@ export const TIMER_UPDATE_NOTE = `${url}/timers/note`
 export const TIMER_DELETE_NOTE = `${url}/timers/note`
 export const TIMER_EDIT = `${url}/timers/edit`
 export const TIMER_DELETE = `${url}/timers/delete`
+
+//..................Client API Endpoints....................\\
+export const CLIENTS_API = `${url}/clients`
+
+//..................Permission API Endpoints....................\\
+export const PERMISSIONS_API = `${url}/permissions`
