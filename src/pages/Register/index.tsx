@@ -119,9 +119,9 @@ const Register: React.FC = () => {
               <Input
                 label="Email"
                 type="email"
-                placeholder="Enter your email"
                 error={errors.email?.message ? true : false}
                 {...field}
+                labelAnimation={true}
               />
             )}
           />
