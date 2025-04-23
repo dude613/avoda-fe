@@ -38,7 +38,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     if (labelAnimation === true && label) {
       return (
-        <div className="group relative">
+        <div className="relative group">
           <label
             htmlFor={id}
             className={cn(
@@ -46,7 +46,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               error && "text-destructive"
             )}
           >
-            <span className="bg-background inline-flex px-2">{label}</span>
+            <span className="inline-flex px-2 bg-background">{label}</span>
           </label>
           <input
             id={id}
@@ -61,7 +61,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {errorMessage && (
-            <p className="text-sm text-destructive mt-1">{errorMessage}</p>
+            <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
           )}
         </div>
       );
@@ -70,7 +70,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <Label htmlFor={id} className="block text-sm font-medium text-foreground text-left">
+          <Label htmlFor={id} className="block text-sm font-medium text-left text-foreground">
             {label}
           </Label>
         )}
@@ -86,7 +86,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {errorMessage && (
-          <p className="text-sm text-destructive mt-1">{errorMessage}</p>
+          <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
         )}
       </div>
     );
