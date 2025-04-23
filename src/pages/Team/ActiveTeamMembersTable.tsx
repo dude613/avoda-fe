@@ -153,15 +153,17 @@ const ActiveTeamMembersTable: React.FC<ActiveTeamMembersTableProps> = ({
                     <PencilIcon className="w-4 h-4" />
                     <span className="sr-only">Edit</span>
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                    onClick={() => openArchiveModal(member.userId, member.name)}
-                  >
-                    <ArchiveIcon className="w-4 h-4" />
-                    <span className="sr-only">Archive</span>
-                  </Button>
+                  {member.userDeleteStatus === "active" && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                      onClick={() => openArchiveModal(member.userId, member.name)}
+                    >
+                      <ArchiveIcon className="w-4 h-4" />
+                      <span className="sr-only">Archive</span>
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="ghost"
