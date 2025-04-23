@@ -307,7 +307,7 @@ export default function ClientsPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
           <DollarSign className="w-4 h-4 text-muted-foreground" />
-          <span>{row.original.billingRate}/hr</span>
+          <span>{row.original.billingRate?.toFixed(2)}/hr</span>
         </div>
       ),
     },
@@ -444,7 +444,7 @@ export default function ClientsPage() {
           </div>
           <div className="flex items-center justify-end gap-1">
             <DollarSign className="w-4 h-4 text-muted-foreground" />
-            <span className="-ml-1 text-sm">{client.billingRate}/hr</span>
+            <span className="-ml-1 text-sm">{client.billingRate?.toFixed(2)}/hr</span>
           </div>
         </div>
 

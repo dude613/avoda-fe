@@ -640,7 +640,7 @@ export default function TimerHistory() {
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="startTime">Start Time</Label>
                 <Input
                   id="startTime"
@@ -660,7 +660,7 @@ export default function TimerHistory() {
                   value={editFormData.endTime}
                   onChange={handleEditFormChange}
                 />
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="note">Note</Label>
