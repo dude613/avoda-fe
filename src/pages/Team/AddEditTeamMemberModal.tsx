@@ -5,19 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-interface TeamMember {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  avatar?: string;
-  organizationName?: string;
-  address?: string;
-  userDeleteStatus?: string;
-}
-
 interface FormData {
   name: string;
   email: string;
