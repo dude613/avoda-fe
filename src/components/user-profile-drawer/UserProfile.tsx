@@ -17,7 +17,7 @@ import { LogoutAPI, UpdateProfile, UploadUserPicture } from "@/service/api";
 import { Toaster, toast } from "react-hot-toast";
 import { getUserProfile } from "@/redux/slice/UserProfile";
 import type { AppDispatch, RootState } from "@/redux/Store";
-import { Upload, Save, User, Shield } from "lucide-react";
+import { Upload, User, Shield } from "lucide-react";
 import { userProfileContent } from "@/constants/UserProfile";
 import { useNavigate } from "react-router-dom";
 import * as constants from "@/constants/Auth";
@@ -42,7 +42,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ setShowProfile }) => {
     FULL_NAME_PLACEHOLDER,
     ROLE_LABEL,
     SELECT_ROLE,
-    SELECT_USER_VALUE,
     SELECT_ADMIN_VALUE,
     SELECT_EMPLOYEE_VALUE,
     SELECT_MANAGER_VALUE,
