@@ -23,12 +23,12 @@ const meta = {
       control: 'text',
       description: 'Optional description for the toast.',
     },
-     variant: {
-       control: { type: 'select' },
-       options: ['default', 'destructive', 'success'], // Add 'success' here
-       description: 'Visual style of the toast.',
-     },
-     withAction: {
+    variant: {
+      control: { type: 'select' },
+      options: ['default', 'destructive', 'success'], // Add 'success' here
+      description: 'Visual style of the toast.',
+    },
+    withAction: {
       control: 'boolean',
       description: 'Include an "Undo" action button in the toast.',
     },
@@ -116,20 +116,20 @@ export const SuccessToast: Story = {
 
 // Example with only a title
 export const TitleOnly: Story = {
-    args: {
-        title: 'Event Created',
-        variant: 'default',
-        withAction: false,
-    },
-    render: Interactive.render,
+  args: {
+    title: 'Event Created',
+    variant: 'default',
+    withAction: false,
+  },
+  render: Interactive.render,
 };
 
 // Example with only a description
 export const DescriptionOnly: Story = {
-    args: {
-        description: 'Your profile has been updated successfully.',
-        variant: 'default',
-        withAction: false,
-    },
-    render: Interactive.render,
+  args: {
+    description: 'Your profile has been updated successfully.',
+    variant: 'default',
+    withAction: false,
+  },
+  render: Interactive.render,
 };

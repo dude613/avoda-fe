@@ -64,7 +64,7 @@ export const WithListContent: Story = {
     triggerLabel: 'Show List',
   },
   render: (args) => (
-    <Popover open={args.open} onOpenChange={args.open !== undefined ? () => {} : undefined}>
+    <Popover open={args.open} onOpenChange={args.open !== undefined ? () => { } : undefined}>
       <PopoverTrigger asChild disabled={args.disabled}>
         <button type="button">{args.triggerLabel}</button>
       </PopoverTrigger>

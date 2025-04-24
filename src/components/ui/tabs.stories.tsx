@@ -33,7 +33,7 @@ export const Basic: Story = {
     tabs: tabOptions,
     activeTab: "tab1",
     variant: "default",
-    onTabChange: () => {},
+    onTabChange: () => { },
   },
   render: (args) => {
     const [activeTab, setActiveTab] = useState(args.activeTab);

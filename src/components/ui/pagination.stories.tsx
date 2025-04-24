@@ -10,7 +10,7 @@ import Pagination from "./pagination";
 
 // Minimal mock for TanStack Table API
 const mockTable = {
-  setPageIndex: () => {},
+  setPageIndex: () => { },
   getFilteredSelectedRowModel: () => ({ rows: [1, 2] }),
   getFilteredRowModel: () => ({ rows: [1, 2, 3, 4, 5] }),
   getState: () => ({ pagination: { pageSize: 10 } }),

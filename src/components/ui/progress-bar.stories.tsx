@@ -39,7 +39,7 @@ export default meta;
 
 export const Basic = {
   args: meta.args,
-  render: (args) => <ProgressBar {...args} />, 
+  render: (args) => <ProgressBar {...args} />,
 };
 
 export const Complete = {
@@ -49,7 +49,7 @@ export const Complete = {
     label: 'Complete',
     statusText: 'All done!',
   },
-  render: (args) => <ProgressBar {...args} />, 
+  render: (args) => <ProgressBar {...args} />,
 };
 
 export const ZeroProgress = {
@@ -59,7 +59,7 @@ export const ZeroProgress = {
     label: 'Not Started',
     statusText: '0%',
   },
-  render: (args) => <ProgressBar {...args} />, 
+  render: (args) => <ProgressBar {...args} />,
 };
 
 export const EdgeCases = {

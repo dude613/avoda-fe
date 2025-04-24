@@ -40,7 +40,7 @@ export default meta;
 
 // Define the type for the story's args based on argTypes
 type StoryArgs = React.ComponentProps<typeof Card> & {
-    children?: React.ReactNode; // Ensure children is part of the type
+  children?: React.ReactNode; // Ensure children is part of the type
 };
 
 
@@ -58,15 +58,15 @@ export const Interactive: Story = {
   // but basic text is controlled by args.children
   render: (args) => (
     <Card {...args}>
-        {/* Render text content from args */}
-        {typeof args.children === 'string' ? <p>{args.children}</p> : args.children}
+      {/* Render text content from args */}
+      {typeof args.children === 'string' ? <p>{args.children}</p> : args.children}
 
-        {/* Add some example fixed content for context if args.children is simple text */}
-        {typeof args.children === 'string' && (
-            <div className="mt-4 flex justify-end">
-                <Button size="sm">Action</Button>
-            </div>
-        )}
+      {/* Add some example fixed content for context if args.children is simple text */}
+      {typeof args.children === 'string' && (
+        <div className="mt-4 flex justify-end">
+          <Button size="sm">Action</Button>
+        </div>
+      )}
     </Card>
   ),
 };
@@ -93,22 +93,22 @@ export const Large: Story = {
 
 // Example: Centered and Spaced Layout
 export const CenteredSpaced: Story = {
-    args: {
-      ...Interactive.args,
-      layout: 'centeredAndSpaced',
-      children: 'This card content is centered and has spacing.',
-    },
-    render: (args) => (
-        // Need to wrap in a container for centering to be visible
-        <div className="w-full p-4">
-            <Card {...args}>
-                <h3 className="text-lg font-semibold">Card Title</h3>
-                <p>{args.children}</p>
-                <div className="flex justify-end">
-                    <Button variant="secondary" size="sm">Cancel</Button>
-                    <Button size="sm" className="ml-2">Confirm</Button>
-                </div>
-            </Card>
+  args: {
+    ...Interactive.args,
+    layout: 'centeredAndSpaced',
+    children: 'This card content is centered and has spacing.',
+  },
+  render: (args) => (
+    // Need to wrap in a container for centering to be visible
+    <div className="w-full p-4">
+      <Card {...args}>
+        <h3 className="text-lg font-semibold">Card Title</h3>
+        <p>{args.children}</p>
+        <div className="flex justify-end">
+          <Button variant="secondary" size="sm">Cancel</Button>
+          <Button size="sm" className="ml-2">Confirm</Button>
         </div>
-      ),
-  };
+      </Card>
+    </div>
+  ),
+};

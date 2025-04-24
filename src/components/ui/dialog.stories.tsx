@@ -55,7 +55,7 @@ export default meta;
 export const Basic: Story = {
   args: meta.args,
   render: (args) => (
-    <Dialog open={args.open} onOpenChange={args.open !== undefined ? () => {} : undefined}>
+    <Dialog open={args.open} onOpenChange={args.open !== undefined ? () => { } : undefined}>
       <DialogTrigger asChild>
         <button type="button">{args.triggerLabel}</button>
       </DialogTrigger>

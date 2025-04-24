@@ -48,7 +48,7 @@ type Story = StoryObj<CircularLoadingStoryArgs>;
 
 export const Basic: Story = {
   args: meta.args,
-  render: (args) => <CircularLoading {...args} />, 
+  render: (args) => <CircularLoading {...args} />,
 };
 
 export const Variants: Story = {
