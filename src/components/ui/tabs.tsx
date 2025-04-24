@@ -16,18 +16,18 @@ const tabsVariants = cva(
   }
 )
 
-interface TabsProps 
+interface TabsProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof tabsVariants> {
+  VariantProps<typeof tabsVariants> {
   tabs: { value: string; label: string }[]
   activeTab: string
   onTabChange: (value: string) => void
 }
 
-export const Tabs = ({ 
-  tabs, 
-  activeTab, 
-  onTabChange, 
+export const Tabs = ({
+  tabs,
+  activeTab,
+  onTabChange,
   className,
   variant,
 }: TabsProps) => (

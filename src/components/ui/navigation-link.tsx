@@ -5,11 +5,11 @@ import { buttonVariants } from "./button";
 
 type NavigationLinkProps = React.PropsWithChildren<
   LinkProps &
-    React.HTMLAttributes<HTMLAnchorElement> & {
-      variant?: "link" | "ghost" | "outline";
-      size?: "default" | "sm" | "lg" | "icon";
-      underline?: boolean;
-    }
+  React.HTMLAttributes<HTMLAnchorElement> & {
+    variant?: "link" | "ghost" | "outline";
+    size?: "default" | "sm" | "lg" | "icon";
+    underline?: boolean;
+  }
 >;
 
 const NavigationLink = ({

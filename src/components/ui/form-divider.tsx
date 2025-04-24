@@ -20,17 +20,17 @@ const formDividerVariants = cva("flex items-center border-border", {
   }
 })
 
-interface FormDividerProps 
+interface FormDividerProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof formDividerVariants> {
+  VariantProps<typeof formDividerVariants> {
   text: string
 }
 
-const FormDivider = ({ 
-  text, 
-  variant, 
-  size, 
-  className 
+const FormDivider = ({
+  text,
+  variant,
+  size,
+  className
 }: FormDividerProps) => (
   <div className={cn(formDividerVariants({ variant, size, className }))}>
     <hr className="flex-grow border" />

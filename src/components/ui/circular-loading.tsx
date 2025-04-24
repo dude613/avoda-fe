@@ -20,9 +20,9 @@ const spinnerVariants = cva("border-t-foreground border-r-foreground rounded-ful
   }
 })
 
-interface SpinnerProps 
+interface SpinnerProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof spinnerVariants> {}
+  VariantProps<typeof spinnerVariants> { }
 
 const CircularLoading = ({ variant, size, className }: SpinnerProps) => (
   <div className="flex items-center justify-center h-full">

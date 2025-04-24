@@ -15,9 +15,9 @@ const progressBarVariants = cva(
   }
 )
 
-interface ProgressBarProps 
+interface ProgressBarProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof progressBarVariants> {
+  VariantProps<typeof progressBarVariants> {
   currentStep: number
   totalSteps: number
   label: string
@@ -33,7 +33,7 @@ export const ProgressBar = ({
   variant,
 }: ProgressBarProps) => {
   const progress = (currentStep / totalSteps) * 100
-  
+
   return (
     <div className={cn(progressBarVariants({ variant, className }))}>
       <div className="flex justify-between items-center">
@@ -41,8 +41,8 @@ export const ProgressBar = ({
         <span className="text-sm text-muted-foreground">{statusText}</span>
       </div>
       <div className="w-full bg-muted rounded-full h-2">
-        <div 
-          className="bg-primary h-2 rounded-full transition-all duration-300" 
+        <div
+          className="bg-primary h-2 rounded-full transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>

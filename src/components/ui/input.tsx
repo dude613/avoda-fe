@@ -21,7 +21,7 @@ const inputVariants = cva(
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-    VariantProps<typeof inputVariants> {
+  VariantProps<typeof inputVariants> {
   error?: boolean;
   errorMessage?: string;
   label?: string;
