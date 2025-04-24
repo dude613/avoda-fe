@@ -106,12 +106,13 @@ function FormLabel({
   )
 }
 
-function FormRow ({ className, ...props }: React.ComponentProps<"div">){
+function FormRow({ className, ...props }: React.ComponentProps<"div">) {
 
-return(
-  
-  <div className={cn("flex gap-4 w-full", className)} {...props} />
-)}
+  return (
+
+    <div className={cn("flex gap-4 w-full", className)} {...props} />
+  )
+}
 
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {

@@ -16,7 +16,7 @@ interface CardSelectOption {
 }
 
 interface CardSelectProps<T extends FieldValues = FieldValues> {
-  name:  Path<T>;
+  name: Path<T>;
   control: Control<T>;
   options: CardSelectOption[];
   rules?: Omit<RegisterOptions<T, Path<T>>, "setValueAs" | "disabled" | "valueAsNumber" | "valueAsDate">;

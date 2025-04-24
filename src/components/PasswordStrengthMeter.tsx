@@ -43,7 +43,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
 
     let text;
     let color;
-    
+
     switch (strength) {
       case 0:
         text = PASSWORD_VERY_WEAK;
@@ -99,8 +99,8 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
           <div
             key={index}
             className={`h-1 flex-1 rounded-full ${index < strengthLevel
-                ? strengthColor
-                : "bg-gray-200 border border-dashed border-gray-300"
+              ? strengthColor
+              : "bg-gray-200 border border-dashed border-gray-300"
               }`}
           ></div>
         ))}

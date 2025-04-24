@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { userProfile, loading } = useSelector((state: RootState) => state.userProfile);
   const userRole = localStorage.getItem("userRole") as UserRole || null;
-//MediumTODO  incorporate fallback logic for missing localStorage values (userId, userRole) to ensure proper redirection and data fetching
+  //MediumTODO  incorporate fallback logic for missing localStorage values (userId, userRole) to ensure proper redirection and data fetching
   useEffect(() => {
     if (accessToken && !userProfile?.data) {
       const userId = localStorage.getItem("userId");
