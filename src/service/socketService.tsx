@@ -23,7 +23,9 @@ export const initializeSocket = (token: string, appDispatch: AppDispatch) => {
   // socket = io(`${baseUrl}/timer`, {
   //   auth: { token },
   // });
-  socket = io("ws://localhost:8001/timers", {
+  socket = io(import.meta.env.VITE_BACKEND_URL?.includes('localhost')
+    ? "ws://localhost:8001/timers"
+    : `wss://${import.meta.env.VITE_SOCKET_URL}/timers`, {
     auth: {
       token: token,
     },
