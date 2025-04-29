@@ -19,8 +19,11 @@ import TimerPage from "./pages/Timer";
 import AddTeamMembers from "./pages/Onboarding/AddTeamMembers";
 import TeamMembers from "./pages/Team";
 import ClientsPage from "./pages/Clients";
+import TasksPage from "./pages/Tasks";
+import TaskDetail from "./pages/Tasks/TaskDetail";
 import DebugPage from "./pages/Debug";
 import Unauthorized from "./pages/Unauthorized";
+import ProjectsPage from "./pages/Projects";
 
 function App() {
   const location = useLocation();
@@ -65,6 +68,9 @@ function App() {
           <Route path="/timer" element={<TimerPage />} />
           <Route path="/team" element={<TeamMembers />} />
           <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/tasks/:id" element={<TaskDetail />} />
         </Route>
         {/* Add the debug route */}
         <Route path="/debug" element={<DebugPage />} />

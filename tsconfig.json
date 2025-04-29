@@ -10,7 +10,9 @@
       "@/*": ["./src/*"]
     },
     "types": ["vitest", "vite/client", "vitest/config", "vitest/globals"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx"
   },
   "exclude": [
     "node_modules"
