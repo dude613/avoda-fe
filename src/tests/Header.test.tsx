@@ -31,7 +31,6 @@ const createMockStore = (preloadedState?: Partial<RootState>) => {
           currentPage: 1,
         },
       ) => state,
-      // Add mock clients reducer to match the main store structure
       clients: (
         state = {
           clients: [],
@@ -40,10 +39,13 @@ const createMockStore = (preloadedState?: Partial<RootState>) => {
           error: null,
         },
       ) => state,
+      project: (state = { projects: [], loading: false, error: null }) => state,
+      clientAssignments: (state = { assignments: [], loading: false, error: null }) => state,
+      tasks: (state = { tasks: [], loading: false, error: null }) => state,
     },
     preloadedState,
-  })
-}
+  });
+};
 
 describe("Header component", () => {
   // Reset mocks before each test in this suite

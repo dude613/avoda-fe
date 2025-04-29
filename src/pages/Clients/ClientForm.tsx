@@ -35,7 +35,6 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
       billingRate: 0,
       notes: "",
       status: "active",
-      projects: 0,
     },
   })
 
@@ -45,7 +44,6 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
       onSubmit({
         ...data,
         status: client?.status || "active",
-        projects: client?.projects || 0,
       })
     } catch (error) {
       toast.error("Failed to save client")
@@ -150,12 +148,11 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
           render={({ field }) => (
             <Input
               id="billingRate"
-              type="number"
               placeholder="0.00"
               {...field}
               onChange={(e) => {
-                const value = Number.parseFloat(e.target.value);
-                field.onChange(isNaN(value) ? '' : value.toFixed(2));
+                const value = e.target.value;
+                field.onChange(value);
               }}
               className={errors.billingRate ? "border-destructive" : ""}
             />

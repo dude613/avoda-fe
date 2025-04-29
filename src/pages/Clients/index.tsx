@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, useCallback, useRef } from "react" // Import useRef
+import { useState, useEffect, useCallback, useRef } from "react"
 import { toast, Toaster } from "react-hot-toast"
 import {
   UserPlus,
@@ -17,6 +17,8 @@ import {
   DollarSign,
   RefreshCw,
   AtSign,
+  Users,
+  FileText,
 } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch } from "@/redux/Store"
@@ -50,6 +52,7 @@ import {
 } from "@tanstack/react-table"
 
 import { ClientForm } from "./ClientForm"
+import { ProjectForm } from "./ProjectForm"
 import {
   fetchClients,
   fetchArchivedClients,
@@ -63,15 +66,22 @@ import {
   selectClientsLoading,
   type ClientFilters,
 } from "@/redux/slice/ClientSlice"
-import { Client } from "@/types/Client"
+import type { Client } from "@/types/Client"
+import type { Project } from "@/types/Project"
+
+// Import permission components and hooks
+import PermissionGate from "@/components/PermissionGate"
+import ClientAssignmentModal from "./ClientAssignmentModal"
+import { CLIENT_PERMISSIONS, PROJECT_PERMISSIONS } from "@/constants/Permissions"
+import { createProject } from "@/redux/slice/ProjectSlice"
 
 export default function ClientsPage() {
   const dispatch = useDispatch<AppDispatch>()
   const isMobile = useMediaQuery({ maxWidth: 768 })
 
   // Redux state
-  const clients = useSelector(selectClients)
-  const archivedClients = useSelector(selectArchivedClients)
+  const clients = useSelector(selectClients) || []
+  const archivedClients = useSelector(selectArchivedClients) || []
   const loading = useSelector(selectClientsLoading)
 
   // Local state
@@ -81,7 +91,10 @@ export default function ClientsPage() {
   const [emailFilter, setEmailFilter] = useState("")
   const [industryFilter, setIndustryFilter] = useState("")
   const [sorting, setSorting] = useState<SortingState>([])
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null) // Use useRef
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [pageIndex, setPageIndex] = useState(0)
+  const [pageSize] = useState(10)
+  // const [totalPages, setTotalPages] = useState(1)
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
@@ -89,6 +102,8 @@ export default function ClientsPage() {
   const [showArchiveModal, setShowArchiveModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showRestoreModal, setShowRestoreModal] = useState(false)
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [showProjectModal, setShowProjectModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
 
   // Fetch clients with filters
@@ -198,6 +213,22 @@ export default function ClientsPage() {
     }
   }
 
+  const handleCreateProject = async (project: Omit<Project, "id">) => {
+    try {
+      await dispatch(createProject(project)).unwrap()
+      setShowProjectModal(false)
+      toast.success("Project created successfully")
+      // Refresh the client list to update project count
+      fetchFilteredClients(buildFilters())
+    } catch (error) {
+      toast.error("Failed to create project")
+    }
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setPageIndex(newPage)
+  }
+
   // Open modals
   const openEditModal = (client: Client) => {
     setSelectedClient(client)
@@ -217,6 +248,16 @@ export default function ClientsPage() {
   const openRestoreModal = (client: Client) => {
     setSelectedClient(client)
     setShowRestoreModal(true)
+  }
+
+  const openAssignModal = (client: Client) => {
+    setSelectedClient(client)
+    setShowAssignModal(true)
+  }
+
+  const openProjectModal = (client: Client) => {
+    setSelectedClient(client)
+    setShowProjectModal(true)
   }
 
   // Helper function to build filters object
@@ -278,8 +319,8 @@ export default function ClientsPage() {
       header: "Client Name",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-            <div className="font-medium">{row.original.name}</div>
-            <div className="text-sm text-muted-foreground">{row.original.industry}</div>
+          <div className="font-medium">{row.original.name}</div>
+          <div className="text-sm text-muted-foreground">{row.original.industry}</div>
         </div>
       ),
     },
@@ -314,7 +355,7 @@ export default function ClientsPage() {
     {
       accessorKey: "projects",
       header: "Projects",
-      cell: ({ row }) => <Badge variant="outline">{row.original.projects || 0}</Badge>,
+      cell: ({ row }) => <Badge variant="outline">{row?.original?.projects?.length || 0}</Badge>,
     },
     {
       id: "actions",
@@ -327,25 +368,48 @@ export default function ClientsPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => openEditModal(row.original)}>
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
-            </DropdownMenuItem>
-            {activeTab === "active" ? (
-              <DropdownMenuItem onClick={() => openArchiveModal(row.original)} className="text-amber-600">
-                <Archive className="w-4 h-4 mr-2" />
-                Archive
+            <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+              <DropdownMenuItem onClick={() => openEditModal(row.original)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
               </DropdownMenuItem>
+            </PermissionGate>
+
+            <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+              <DropdownMenuItem onClick={() => openAssignModal(row.original)}>
+                <Users className="w-4 h-4 mr-2" />
+                Assign Employees
+              </DropdownMenuItem>
+            </PermissionGate>
+
+            <PermissionGate permissionName={PROJECT_PERMISSIONS.CREATE_PROJECT}>
+              <DropdownMenuItem onClick={() => openProjectModal(row.original)}>
+                <FileText className="w-4 h-4 mr-2" />
+                Create Project
+              </DropdownMenuItem>
+            </PermissionGate>
+
+            {activeTab === "active" ? (
+              <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                <DropdownMenuItem onClick={() => openArchiveModal(row.original)} className="text-amber-600">
+                  <Archive className="w-4 h-4 mr-2" />
+                  Archive
+                </DropdownMenuItem>
+              </PermissionGate>
             ) : (
               <>
-                <DropdownMenuItem onClick={() => openRestoreModal(row.original)} className="text-green-600">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Restore
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => openDeleteModal(row.original)} className="text-red-600">
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Permanently
-                </DropdownMenuItem>
+                <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                  <DropdownMenuItem onClick={() => openRestoreModal(row.original)} className="text-green-600">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Restore
+                  </DropdownMenuItem>
+                </PermissionGate>
+                <PermissionGate permissionName={CLIENT_PERMISSIONS.DELETE_CLIENT}>
+                  <DropdownMenuItem onClick={() => openDeleteModal(row.original)} className="text-red-600">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Permanently
+                  </DropdownMenuItem>
+                </PermissionGate>
               </>
             )}
           </DropdownMenuContent>
@@ -366,7 +430,7 @@ export default function ClientsPage() {
       sorting,
       globalFilter,
       pagination: {
-        pageIndex: 0,
+        pageIndex: pageIndex,
         pageSize: 10,
       },
     },
@@ -385,7 +449,7 @@ export default function ClientsPage() {
       sorting,
       globalFilter,
       pagination: {
-        pageIndex: 0,
+        pageIndex: pageIndex,
         pageSize: 10,
       },
     },
@@ -412,25 +476,48 @@ export default function ClientsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => openEditModal(client)}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              {!isArchived ? (
-                <DropdownMenuItem onClick={() => openArchiveModal(client)} className="text-amber-600">
-                  <Archive className="w-4 h-4 mr-2" />
-                  Archive
+              <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                <DropdownMenuItem onClick={() => openEditModal(client)}>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
                 </DropdownMenuItem>
+              </PermissionGate>
+
+              <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                <DropdownMenuItem onClick={() => openAssignModal(client)}>
+                  <Users className="w-4 h-4 mr-2" />
+                  Assign Employees
+                </DropdownMenuItem>
+              </PermissionGate>
+
+              <PermissionGate permissionName={PROJECT_PERMISSIONS.CREATE_PROJECT}>
+                <DropdownMenuItem onClick={() => openProjectModal(client)}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Create Project
+                </DropdownMenuItem>
+              </PermissionGate>
+
+              {!isArchived ? (
+                <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                  <DropdownMenuItem onClick={() => openArchiveModal(client)} className="text-amber-600">
+                    <Archive className="w-4 h-4 mr-2" />
+                    Archive
+                  </DropdownMenuItem>
+                </PermissionGate>
               ) : (
                 <>
-                  <DropdownMenuItem onClick={() => openRestoreModal(client)} className="text-green-600">
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Restore
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => openDeleteModal(client)} className="text-red-600">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete Permanently
-                  </DropdownMenuItem>
+                  <PermissionGate permissionName={CLIENT_PERMISSIONS.UPDATE_CLIENT}>
+                    <DropdownMenuItem onClick={() => openRestoreModal(client)} className="text-green-600">
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Restore
+                    </DropdownMenuItem>
+                  </PermissionGate>
+                  <PermissionGate permissionName={CLIENT_PERMISSIONS.DELETE_CLIENT}>
+                    <DropdownMenuItem onClick={() => openDeleteModal(client)} className="text-red-600">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Permanently
+                    </DropdownMenuItem>
+                  </PermissionGate>
                 </>
               )}
             </DropdownMenuContent>
@@ -449,17 +536,23 @@ export default function ClientsPage() {
         </div>
 
         <div className="flex items-center justify-between">
-        {client.phone && (
+          {client.phone && (
             <div className="flex items-center gap-1">
               <Phone className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">{client.phone}</span>
             </div>
           )}
-          <Badge variant="outline">{client.projects || 0} Projects</Badge>
+          <Badge variant="outline">{client?.projects?.length || 0} Projects</Badge>
         </div>
       </CardContent>
     </Card>
   )
+
+  const activeTableData = activeTab === "active" ? clients : archivedClients
+  const table = activeTab === "active" ? activeTable : archivedTable
+  // const currentTablePageIndex = table.getState().pagination.pageIndex
+  const tablePageSize = table.getState().pagination.pageSize
+  const calculatedTotalPages = Math.ceil(activeTableData.length / tablePageSize)
 
   return (
     <div className="p-4 md:p-8">
@@ -531,10 +624,12 @@ export default function ClientsPage() {
               </FilterPanel>
 
               {activeTab === "active" && (
-                <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-1">
-                  <UserPlus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Client</span>
-                </Button>
+                <PermissionGate permissionName={CLIENT_PERMISSIONS.CREATE_CLIENT}>
+                  <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-1">
+                    <UserPlus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Add Client</span>
+                  </Button>
+                </PermissionGate>
               )}
             </div>
           </CardTitle>
@@ -558,10 +653,12 @@ export default function ClientsPage() {
                     <Building className="w-12 h-12 mx-auto text-muted-foreground" />
                     <h3 className="mt-2 text-lg font-medium">No clients found</h3>
                     <p className="text-muted-foreground">Add your first client to get started</p>
-                    <Button onClick={() => setShowAddModal(true)} className="mt-4">
-                      <UserPlus className="w-4 h-4 mr-2" />
-                      Add Client
-                    </Button>
+                    <PermissionGate permissionName={CLIENT_PERMISSIONS.CREATE_CLIENT}>
+                      <Button onClick={() => setShowAddModal(true)} className="mt-4">
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Add Client
+                      </Button>
+                    </PermissionGate>
                   </div>
                 )
               ) : archivedClients.length > 0 ? (
@@ -609,10 +706,12 @@ export default function ClientsPage() {
                             <div>
                               <Building className="w-8 h-8 mx-auto text-muted-foreground" />
                               <p className="mt-2">No clients found</p>
-                              <Button onClick={() => setShowAddModal(true)} className="mt-4">
-                                <UserPlus className="w-4 h-4 mr-2" />
-                                Add Client
-                              </Button>
+                              <PermissionGate permissionName={CLIENT_PERMISSIONS.CREATE_CLIENT}>
+                                <Button onClick={() => setShowAddModal(true)} className="mt-4">
+                                  <UserPlus className="w-4 h-4 mr-2" />
+                                  Add Client
+                                </Button>
+                              </PermissionGate>
                             </div>
                           ) : (
                             <div>
@@ -629,6 +728,34 @@ export default function ClientsPage() {
             </div>
           )}
         </CardContent>
+        {/* Pagination */}
+        <div className="flex items-center justify-between px-4 py-3 border-t">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Showing <span className="font-medium">{pageIndex * pageSize + 1}</span> to{" "}
+              <span className="font-medium">{Math.min((pageIndex + 1) * pageSize, activeTableData.length)}</span> of{" "}
+              <span className="font-medium">{activeTableData.length}</span> results
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pageIndex - 1)}
+              disabled={pageIndex === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pageIndex + 1)}
+              disabled={pageIndex >= calculatedTotalPages - 1}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </Card>
 
       {/* Add Client Modal */}
@@ -713,6 +840,28 @@ export default function ClientsPage() {
               Restore Client
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Client Assignment Modal */}
+      {selectedClient && (
+        <ClientAssignmentModal open={showAssignModal} onOpenChange={setShowAssignModal} client={selectedClient} />
+      )}
+
+      {/* Project Creation Modal */}
+      <Dialog open={showProjectModal} onOpenChange={setShowProjectModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+            <DialogDescription>Create a new project for {selectedClient?.name}</DialogDescription>
+          </DialogHeader>
+          {selectedClient && (
+            <ProjectForm
+              client={selectedClient}
+              onSubmit={handleCreateProject}
+              onCancel={() => setShowProjectModal(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
